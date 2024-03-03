@@ -1,0 +1,49 @@
+<div>
+  <div class="d-flex justify-content-center">
+    <div class="col-md-8">
+      <h2 jhiTranslate="payments.uploadPayments.title">Payments - Upload Payments</h2>
+
+      <jhi-alert-error></jhi-alert-error>
+
+      <div class="container" spxDnd (fileDropped)="onFileDropped($event)">
+        <fa-icon icon="cloud-arrow-up" size="5x"></fa-icon>
+        <p></p>
+        <input type="file" accept=".csv" id="fileDropRef" multiple (change)="onFileBrowsed($event)" />
+        <h3>Drop CSV file here</h3>
+        <p></p>
+        <button class="btn btn-primary" for="fileDropRef">Browse for file</button>
+      </div>
+      <div class="files-list">
+        <div class="single-file" *ngFor="let value of this.getFiles(); let i = index">
+          <div class="file-icon">
+            <fa-icon icon="file-csv" size="3x"></fa-icon>
+          </div>
+          <div class="info">
+            <h4 class="name">
+              {{ value.file.name }}
+            </h4>
+            <p class="size">
+              {{ formatBytes(value.file.size) }}
+            </p>
+            <spx-progress [progress]="value.validateProgress" [ngClass]="{ progresserror: !value.validateSuccess }"></spx-progress>
+          </div>
+          <div class="save" (click)="save(value.file.name)">
+            <fa-icon
+              icon="cloud-arrow-down"
+              size="2x"
+              [ngClass]="{
+                progresserror: !value.validateSuccess,
+                progresssuccess: !value.validateSuccess && value.validateProgress == 100
+              }"
+            ></fa-icon>
+          </div>
+          <div class="delete" (click)="deleteFile(value.file.name)">
+            <fa-icon icon="trash-can" size="2x"></fa-icon>
+          </div>
+        </div>
+        <div class="alert alert-danger" *ngFor="let name of discardedFiles.values(); let i = index">Discarded file: {{ name }}</div>
+      </div>
+      <div class="example" (click)="example()">Download example Excel file <fa-icon icon="cloud-arrow-down" size="1x"></fa-icon></div>
+    </div>
+  </div>
+</div>
