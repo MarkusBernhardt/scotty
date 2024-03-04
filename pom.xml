@@ -75,6 +75,8 @@
         <sonar-maven-plugin.version>3.10.0.2594</sonar-maven-plugin.version>
         <spotless-maven-plugin.version>2.41.1</spotless-maven-plugin.version>
         <validation-api.version>3.0.2</validation-api.version>
+        <apache-poi.version>5.2.2</apache-poi.version>
+        <emerchantpay-genesis.version>1.17.7</emerchantpay-genesis.version>
     </properties>
 
     <dependencyManagement>
@@ -85,6 +87,21 @@
                 <version>${jhipster-dependencies.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi</artifactId>
+                <version>${apache-poi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml</artifactId>
+                <version>${apache-poi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.emerchantpay.gateway</groupId>
+                <artifactId>genesis-java</artifactId>
+                <version>${emerchantpay-genesis.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -221,6 +238,14 @@
             <artifactId>commons-lang3</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.ehcache</groupId>
             <artifactId>ehcache</artifactId>
             <classifier>jakarta</classifier>
@@ -269,6 +294,10 @@
             <groupId>org.testcontainers</groupId>
             <artifactId>postgresql</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.emerchantpay.gateway</groupId>
+            <artifactId>genesis-java</artifactId>
         </dependency>
     </dependencies>
 

@@ -1,6 +1,6 @@
-@import '~bootstrap/scss/functions';
-@import '~bootswatch/dist/slate/variables';
-@import '~bootstrap/scss/variables';
+@import 'bootstrap/scss/functions';
+@import 'bootswatch/dist/slate/variables';
+@import 'bootstrap/scss/variables';
 
 .container {
   padding: 2rem;
@@ -42,6 +42,35 @@
     align-items: center;
     border: dashed 2px $border-color;
     margin-bottom: 1rem;
+    flex-grow: 1;
+
+    .file-icon {
+      width: 50px;
+    }
+
+    .info {
+      width: 100%;
+      margin-left: 0.5rem;
+      margin-right: 0.5rem;
+    }
+
+    .name {
+      font-size: 14px;
+      font-weight: 500;
+      margin: 0;
+    }
+
+    .size {
+      font-size: 12px;
+      font-weight: 500;
+      margin: 0 0 0.25rem;
+    }
+    .execute {
+      display: flex;
+      margin-top: 1.2rem;
+      cursor: pointer;
+      align-self: flex-end;
+    }
 
     .delete {
       display: flex;
@@ -57,36 +86,77 @@
       cursor: pointer;
       align-self: flex-end;
     }
-
-    display: flex;
-    flex-grow: 1;
-
-    .name {
-      font-size: 14px;
-      font-weight: 500;
-      margin: 0;
-    }
-
-    .size {
-      font-size: 12px;
-      font-weight: 500;
-      margin: 0 0 0.25rem;
-    }
-
-    .info {
-      width: 100%;
-    }
-
-    .file-icon {
-      width: 50px;
-    }
   }
 }
 
-.progresserror {
+.fa-icon-error {
   color: $danger;
 }
 
-.progresssuccess {
+.fa-icon-warn {
+  color: $warning;
+}
+
+.fa-icon-success {
   color: $success;
+}
+
+.progress-cont {
+  height: 7px;
+  width: 100%;
+  border-radius: 4px;
+  position: relative;
+
+  .progress {
+    width: 0;
+    height: 100%;
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    border-radius: 4px;
+    transition: 0.5s all;
+    background-color: $success;
+  }
+
+  .progress-background {
+    width: 0;
+    height: 100%;
+    position: absolute;
+    z-index: 0;
+    top: 0;
+    left: 0;
+    border-radius: 4px;
+    background-color: $body-color;
+  }
+}
+
+.progress-cont-error {
+  .progress {
+    background-color: $danger;
+  }
+}
+
+.progress-cont-warn {
+  .progress {
+    background-color: $warning;
+  }
+}
+
+.info-table {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border-collapse: collapse;
+}
+
+.info-table-tr {
+  padding: 0;
+  margin: 0;
+}
+
+.info-table-td {
+  padding: 0;
+  margin: 0;
 }

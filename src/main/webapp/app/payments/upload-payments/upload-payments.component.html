@@ -1,22 +1,28 @@
 <div>
   <div class="d-flex justify-content-center">
     <div class="col-md-8">
-      <h2 jhiTranslate="payments.uploadPayments.title">Payments - Upload Payments</h2>
+      <h2 jhiTranslate="payments.uploadPayments.title">Upload Payments</h2>
 
       <jhi-alert-error></jhi-alert-error>
 
       <div class="container" spxDnd (fileDropped)="onFileDropped($event)">
         <fa-icon icon="cloud-arrow-up" size="5x"></fa-icon>
         <p></p>
-        <input type="file" accept=".csv" id="fileDropRef" multiple (change)="onFileBrowsed($event)" />
-        <h3>Drop CSV file here</h3>
+        <input
+          type="file"
+          accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          id="fileDropRef"
+          multiple
+          (change)="onFileBrowsed($event)"
+        />
+        <h3>Drop Excel file here</h3>
         <p></p>
         <button class="btn btn-primary" for="fileDropRef">Browse for file</button>
       </div>
       <div class="files-list">
         <div class="single-file" *ngFor="let value of this.getFiles(); let i = index">
           <div class="file-icon">
-            <fa-icon icon="file-csv" size="3x"></fa-icon>
+            <fa-icon icon="file-excel" size="3x"></fa-icon>
           </div>
           <div class="info">
             <h4 class="name">
@@ -25,15 +31,54 @@
             <p class="size">
               {{ formatBytes(value.file.size) }}
             </p>
-            <spx-progress [progress]="value.validateProgress" [ngClass]="{ progresserror: !value.validateSuccess }"></spx-progress>
+            <div class="progress-cont" [ngClass]="{ 'progress-cont-error': !value.validateSuccess }">
+              <div class="progress" [style.width]="value.validateProgress + '%'"></div>
+              <div class="progress-background" [style.width]="100 + '%'"></div>
+            </div>
+          </div>
+          <div class="execute" (click)="execute(value.file.name)">
+            <fa-icon
+              icon="play"
+              size="2x"
+              [ngClass]="{
+                'fa-icon-error': !value.validateSuccess,
+                'fa-icon-success': value.validateSuccess && value.validateProgress == 100
+              }"
+            ></fa-icon>
+          </div>
+          <div class="info">
+            <div>
+              <table class="info-table">
+                <tr class="info-table-tr">
+                  <td class="info-table-td"><h4 class="name">Payment Count</h4></td>
+                  <td class="info-table-td"><h4 class="name">Payment Amount</h4></td>
+                </tr>
+                <tr class="info-table-tr">
+                  <td class="info-table-td">
+                    <p class="size">{{ formatCount(value.validateCount) }}</p>
+                  </td>
+                  <td class="info-table-td">
+                    <p class="size">{{ formatCurrency(value.validateAmount / 100) }}</p>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div
+              class="progress-cont"
+              [ngClass]="{ 'progress-cont-error': value.executeSuccess === 1, 'progress-cont-warn': value.executeSuccess === 2 }"
+            >
+              <div class="progress" [style.width]="value.executeProgress + '%'"></div>
+              <div class="progress-background" [style.width]="100 + '%'"></div>
+            </div>
           </div>
           <div class="save" (click)="save(value.file.name)">
             <fa-icon
               icon="cloud-arrow-down"
               size="2x"
               [ngClass]="{
-                progresserror: !value.validateSuccess,
-                progresssuccess: !value.validateSuccess && value.validateProgress == 100
+                'fa-icon-error': value.executeSuccess === 1,
+                'fa-icon-warn': value.executeSuccess === 2 && value.validateProgress == 100,
+                'fa-icon-success': value.executeSuccess === 3 && value.validateProgress == 100
               }"
             ></fa-icon>
           </div>

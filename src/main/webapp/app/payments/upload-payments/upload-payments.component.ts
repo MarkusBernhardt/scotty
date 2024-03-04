@@ -1,14 +1,12 @@
-import { AfterViewInit, Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { PaymentsUploadPaymentsService } from './upload-payments.service';
 import { HttpEventType } from '@angular/common/http';
 import { Subscription } from 'rxjs';
-import {
-  PaymentsUploadPaymentsValidateResponse,
-  PaymentsUploadPaymentsExecuteResponse,
-  PaymentsUploadPaymentsExampleResponse,
-} from './upload-payments.model';
+import { PaymentsUploadPaymentsValidateResponse, PaymentsUploadPaymentsExecuteResponse } from './upload-payments.model';
 import FileSaver from 'file-saver';
+import SharedModule from '../../shared/shared.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Component } from '@angular/core';
 
 class FileCache {
   constructor(
@@ -18,13 +16,18 @@ class FileCache {
     public validateCount: number,
     public validateAmount: number,
     public validateSubscription: Subscription | null,
+    public executeProgress: number,
+    public executeSuccess: number,
+    public executeSubscription: Subscription | null,
     public processedFileName: string | null,
     public processedFile: string | null,
   ) {}
 }
 
 @Component({
-  selector: 'jhi-score-country-match',
+  selector: 'jhi-payments-upload-payments',
+  standalone: true,
+  imports: [SharedModule, FormsModule, ReactiveFormsModule],
   templateUrl: './upload-payments.component.html',
   styleUrls: ['./upload-payments.component.scss'],
 })
@@ -46,7 +49,7 @@ export default class PaymentsUploadPaymentsComponent {
   }
 
   async onFileDropped(fileList: FileList) {
-    const allowedFileExtensions = new Set(['xls', 'xslx']);
+    const allowedFileExtensions = new Set(['xls', 'xlsx']);
     for (let i = 0; i < fileList.length; i++) {
       let file = fileList.item(i);
       await new Promise(f => setTimeout(f, 250));
@@ -57,24 +60,26 @@ export default class PaymentsUploadPaymentsComponent {
             this.deleteDiscardedFile(file.name);
           }
         } else if (!this.fileCaches.has(file.name)) {
-          this.fileCaches.set(file.name, new FileCache(file, 0, true, 0, 0, null, null, null));
-          this.validatePayments(file.name);
+          this.fileCaches.set(file.name, new FileCache(file, 0, true, 0, 0, null, 0, 0, null, null, null));
+          this.validate(file.name);
         }
       }
     }
   }
 
-  validatePayments(name: string): void {
+  validate(name: string): void {
     const fileCache = this.fileCaches.get(name);
     if (fileCache == null) {
       return;
     }
 
-    fileCache.validateSubscription = this.paymentsUploadPaymentsService.validate(fileCache.file).subscribe(
-      (event: any) => {
+    fileCache.validateSubscription = this.paymentsUploadPaymentsService.validate(fileCache.file).subscribe({
+      next: event => {
         switch (event.type) {
           case HttpEventType.UploadProgress:
-            fileCache.validateProgress = Math.round((100 * event.loaded) / event.total);
+            if (event.total) {
+              fileCache.validateProgress = Math.round((100 * event.loaded) / event.total);
+            }
             break;
           case HttpEventType.Response:
             const response = event.body as PaymentsUploadPaymentsValidateResponse;
@@ -87,11 +92,41 @@ export default class PaymentsUploadPaymentsComponent {
             break;
         }
       },
-      () => {
+      error: () => {
         fileCache.validateSuccess = false;
         fileCache.validateProgress = 100;
       },
-    );
+    });
+  }
+
+  execute(name: string): void {
+    const fileCache = this.fileCaches.get(name);
+    if (fileCache == null) {
+      return;
+    }
+
+    fileCache.executeSubscription = this.paymentsUploadPaymentsService.execute(fileCache.file).subscribe({
+      next: event => {
+        switch (event.type) {
+          case HttpEventType.UploadProgress:
+            if (event.total) {
+              fileCache.executeProgress = Math.round((100 * event.loaded) / event.total);
+            }
+            break;
+          case HttpEventType.Response:
+            const response = event.body as PaymentsUploadPaymentsExecuteResponse;
+            fileCache.executeProgress = 100;
+            fileCache.executeSuccess = response.success;
+            break;
+          default:
+            break;
+        }
+      },
+      error: () => {
+        fileCache.executeSuccess = 1;
+        fileCache.executeProgress = 100;
+      },
+    });
   }
 
   save(name: string): void {
@@ -107,9 +142,18 @@ export default class PaymentsUploadPaymentsComponent {
   }
 
   example(): void {
-    this.paymentsUploadPaymentsService.example().subscribe(response => {
-      const blob = new Blob([response.file], { type: 'text/plain;charset=utf-8' });
-      FileSaver.saveAs(blob, response.name);
+    this.paymentsUploadPaymentsService.example().subscribe(event => {
+      if (event.type === HttpEventType.Response) {
+        const contentDisposition = event.headers.get('content-disposition') ?? 'attachment; filename=payments.xlsx';
+        const contentDispositionArray = contentDisposition.split(';');
+        const contentDispositionFilename = contentDispositionArray.find(n => n.includes('filename='));
+        let filename = 'payments.xlsx';
+        if (contentDispositionFilename) {
+          filename = contentDispositionFilename.replace('filename=', '').trim();
+        }
+        const blob = new Blob([event.body], { type: 'application/octet-stream' });
+        FileSaver.saveAs(blob, filename);
+      }
     });
   }
 
@@ -122,6 +166,24 @@ export default class PaymentsUploadPaymentsComponent {
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+  }
+
+  formatCurrency(amount: number, decimals: number = 2) {
+    const formatter = new Intl.NumberFormat('de-DE', {
+      style: 'currency',
+      currency: 'EUR',
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+    });
+    return formatter.format(amount);
+  }
+
+  formatCount(count: number, decimals: number = 0) {
+    const formatter = new Intl.NumberFormat('de-DE', {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+    });
+    return formatter.format(count);
   }
 
   deleteFile(name: string) {

@@ -37,7 +37,7 @@ const routes: Routes = [
     title: 'login.title',
   },
   {
-    path: '',
+    path: 'payments',
     loadChildren: () => import(`./payments/payments.route`),
   },
   {

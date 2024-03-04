@@ -8,14 +8,14 @@ export class PaymentsUploadPaymentsValidateResponse {
 
 export class PaymentsUploadPaymentsExecuteResponse {
   constructor(
-    public name: string,
-    public file: string,
+    public success: number,
+    public filename: string,
   ) {}
 }
 
 export class PaymentsUploadPaymentsExampleResponse {
   constructor(
     public name: string,
-    public file: string,
+    public data: Uint8Array,
   ) {}
 }

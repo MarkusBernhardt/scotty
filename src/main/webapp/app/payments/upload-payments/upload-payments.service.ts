@@ -3,17 +3,13 @@ import { HttpClient, HttpEvent } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
-import {
-  PaymentsUploadPaymentsValidateResponse,
-  PaymentsUploadPaymentsExecuteResponse,
-  PaymentsUploadPaymentsExampleResponse,
-} from './upload-payments.model';
+import { PaymentsUploadPaymentsValidateResponse, PaymentsUploadPaymentsExecuteResponse } from './upload-payments.model';
 
 @Injectable({ providedIn: 'root' })
 export class PaymentsUploadPaymentsService {
-  protected validateUrl = this.applicationConfigService.getEndpointFor('api/upload-payments-validate');
-  protected executeUrl = this.applicationConfigService.getEndpointFor('api/upload-payments-execute');
-  protected exampleUrl = this.applicationConfigService.getEndpointFor('api/upload-payments-example');
+  protected validateUrl = this.applicationConfigService.getEndpointFor('api/payments-upload-payments/validate');
+  protected executeUrl = this.applicationConfigService.getEndpointFor('api/payments-upload-payments/execute');
+  protected exampleUrl = this.applicationConfigService.getEndpointFor('api/payments-upload-payments/example');
 
   constructor(
     private http: HttpClient,
@@ -38,9 +34,11 @@ export class PaymentsUploadPaymentsService {
     });
   }
 
-  example(): Observable<PaymentsUploadPaymentsExampleResponse> {
-    return this.http.get<PaymentsUploadPaymentsExampleResponse>(this.exampleUrl, {
-      observe: 'body',
+  example(): Observable<HttpEvent<any>> {
+    return this.http.get(this.exampleUrl, {
+      observe: 'events',
+      reportProgress: true,
+      responseType: 'blob',
     });
   }
 }
