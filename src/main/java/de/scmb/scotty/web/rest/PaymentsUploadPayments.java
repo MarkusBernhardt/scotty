@@ -1,9 +1,13 @@
 package de.scmb.scotty.web.rest;
 
 import com.emerchantpay.gateway.GenesisClient;
+import com.emerchantpay.gateway.api.TransactionResult;
 import com.emerchantpay.gateway.api.constants.Endpoints;
 import com.emerchantpay.gateway.api.constants.Environments;
+import com.emerchantpay.gateway.api.requests.financial.sdd.SDDInitRecurringSaleRequest;
+import com.emerchantpay.gateway.api.requests.financial.sdd.SDDRecurringSaleRequest;
 import com.emerchantpay.gateway.api.requests.financial.sdd.SDDSaleRequest;
+import com.emerchantpay.gateway.model.Transaction;
 import com.emerchantpay.gateway.util.Configuration;
 import de.scmb.scotty.config.ApplicationProperties;
 import de.scmb.scotty.service.dto.PaymentsUploadPaymentsExecuteResponseDTO;
@@ -11,9 +15,11 @@ import de.scmb.scotty.service.dto.PaymentsUploadPaymentsValidateResponseDTO;
 import jakarta.validation.Valid;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.poi.hpsf.GUID;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -49,14 +55,13 @@ public class PaymentsUploadPayments {
             "emerchantpay",
             "The name of the gateway this payment should be submitted to. Currently only \"emerchantpay\" " + "is supported."
         ),
-        new ColumnDescription("firstName", ColumnLevel.MANDATORY, "Max", "The customer's first name. Max 35 characters."),
-        new ColumnDescription("lastName", ColumnLevel.MANDATORY, "Mustermann", "The customer's last name. Max 35 characters."),
         new ColumnDescription(
             "iban",
             ColumnLevel.MANDATORY,
             "DE02701500000000594937",
             "The customer's ISO 13616 international bank account number."
         ),
+        new ColumnDescription("bic", ColumnLevel.MANDATORY, "SSKMDEMMXXX", "The customer's ISO 9362 business identifier code."),
         new ColumnDescription(
             "amount",
             ColumnLevel.MANDATORY,
@@ -78,18 +83,24 @@ public class PaymentsUploadPayments {
             "statements of the participating bank accounts, if supported in the used payment scheme. " +
             "Max 255 characters."
         ),
-        new ColumnDescription("addressLine1", ColumnLevel.OPTIONAL, "", "The first line of the customer’s address. Max 70 characters."),
-        new ColumnDescription("addressLine2", ColumnLevel.OPTIONAL, "", "The second line of the customer’s address. Max 70 characters."),
-        new ColumnDescription("postalCode", ColumnLevel.OPTIONAL, "", "The postal code of the customer’s address. Max 16 characters."),
-        new ColumnDescription("city", ColumnLevel.OPTIONAL, "", "The city of the customer’s address. Max 35 characters."),
+        new ColumnDescription("firstName", ColumnLevel.MANDATORY, "Max", "The customer's first name. Max 35 characters."),
+        new ColumnDescription("lastName", ColumnLevel.MANDATORY, "Mustermann", "The customer's last name. Max 35 characters."),
         new ColumnDescription(
-            "countryCode",
-            ColumnLevel.OPTIONAL,
-            "",
-            "The ISO 3166-1 alpha-2 country code of the customer’s address. Will be derived " +
-            "from the given IBAN when empty. Max 2 characters."
+            "addressLine1",
+            ColumnLevel.MANDATORY,
+            "Karlsplatz 1",
+            "The first line of the customer’s address. Max 70 characters."
         ),
-        new ColumnDescription("remoteIp", ColumnLevel.OPTIONAL, "", "IPv4 or IPv6 address of customer."),
+        new ColumnDescription("addressLine2", ColumnLevel.OPTIONAL, "", "The second line of the customer’s address. Max 70 characters."),
+        new ColumnDescription(
+            "postalCode",
+            ColumnLevel.MANDATORY,
+            "80335",
+            "The postal code of the customer’s address. Max 16 characters."
+        ),
+        new ColumnDescription("city", ColumnLevel.MANDATORY, "M\u00fcnchen", "The city of the customer’s address. Max 35 characters."),
+        new ColumnDescription("countryCode", ColumnLevel.MANDATORY, "DE", "The ISO 3166-1 alpha-2 country code of the customer’s address."),
+        new ColumnDescription("remoteIp", ColumnLevel.MANDATORY, "1.2.3.4", "IPv4 or IPv6 address of customer."),
         new ColumnDescription(
             "mandateReference",
             ColumnLevel.OPTIONAL,
@@ -98,6 +109,16 @@ public class PaymentsUploadPayments {
             "by the payment scheme.  If this field is not filled will a unique reference be " +
             "generated that meets the requirements of the payment scheme. Max 35 characters."
         ),
+        new ColumnDescription("gatewayId", ColumnLevel.RETURN, "", "The unique id defined by the chosen gateway."),
+        new ColumnDescription("status", ColumnLevel.RETURN, "", "The status of the payment."),
+        new ColumnDescription("message", ColumnLevel.RETURN, "", "The human readable status message."),
+        new ColumnDescription(
+            "timestamp",
+            ColumnLevel.RETURN,
+            "",
+            "The time when the transaction was processed in ISO 8601 combined date and time."
+        ),
+        new ColumnDescription("mode", ColumnLevel.RETURN, "", "The mode of the payment. Can be \"test\" of \"live\""),
     };
 
     @PostMapping("/validate")
@@ -110,7 +131,7 @@ public class PaymentsUploadPayments {
             int columnAmount = -1;
             for (int i = 0; i < COLUMNS.length; i++) {
                 ColumnDescription columnDescription = COLUMNS[i];
-                if (columnDescription.level == ColumnLevel.OPTIONAL) {
+                if (columnDescription.level != ColumnLevel.MANDATORY) {
                     continue;
                 }
                 boolean found = false;
@@ -179,10 +200,36 @@ public class PaymentsUploadPayments {
                 first = false;
                 continue;
             }
+            // TODO
+            // EMP testen
+            // idempotencyKey testen
         }
-        SDDSaleRequest sddSaleRequest = new SDDSaleRequest();
 
-        GenesisClient client = new GenesisClient(configuration, sddSaleRequest);
+        SDDInitRecurringSaleRequest sddInitRecurringSaleRequest = new SDDInitRecurringSaleRequest();
+        sddInitRecurringSaleRequest.setAmount(new BigDecimal(100));
+        sddInitRecurringSaleRequest.setCurrency("EUR");
+        sddInitRecurringSaleRequest.setBillingFirstname("Markus");
+        sddInitRecurringSaleRequest.setBillingLastname("Bernhardt");
+        sddInitRecurringSaleRequest.setBillingCity("Riemerling");
+        sddInitRecurringSaleRequest.setBillingZipCode("85521");
+        sddInitRecurringSaleRequest.setBillingPrimaryAddress("Waldparkstr. 47a");
+        sddInitRecurringSaleRequest.setBillingCountry("AT");
+        sddInitRecurringSaleRequest.setIban("AT022050302101023600");
+        sddInitRecurringSaleRequest.setBic("SPIHAT22XXX");
+        sddInitRecurringSaleRequest.setTransactionId(new GUID().toString());
+        sddInitRecurringSaleRequest.setUsage("Test mit EMP");
+        sddInitRecurringSaleRequest.setRemoteIp("95.130.166.180");
+        //sddInitRecurringSaleRequest.setBillingCountry("DE");
+        //sddInitRecurringSaleRequest.setIban("DE02701500000115148348");
+        //sddInitRecurringSaleRequest.setBic("SSKMDEMMXXX");
+
+        GenesisClient client = new GenesisClient(configuration, sddInitRecurringSaleRequest);
+        client.debugMode(true);
+        client.execute();
+
+        // Parse Payment result
+        TransactionResult<? extends Transaction> result = client.getTransaction().getRequest();
+        System.out.println("Transaction Id: " + result.getTransaction().getTransactionId());
 
         return ResponseEntity.ok().body(new PaymentsUploadPaymentsExecuteResponseDTO(2, ""));
     }
@@ -217,7 +264,7 @@ public class PaymentsUploadPayments {
         Row row = sheet.createRow(0);
         for (int i = 0; i < COLUMNS.length; i++) {
             ColumnDescription columnDescription = COLUMNS[i];
-            if (columnDescription.level == ColumnLevel.OPTIONAL) {
+            if (columnDescription.level != ColumnLevel.MANDATORY) {
                 continue;
             }
 
@@ -226,14 +273,14 @@ public class PaymentsUploadPayments {
             cell.setCellStyle(headerStyle);
         }
 
+        int index = 0;
         row = sheet.createRow(1);
-        for (int i = 0; i < COLUMNS.length; i++) {
-            ColumnDescription columnDescription = COLUMNS[i];
-            if (columnDescription.level == ColumnLevel.OPTIONAL) {
+        for (ColumnDescription columnDescription : COLUMNS) {
+            if (columnDescription.level != ColumnLevel.MANDATORY) {
                 continue;
             }
 
-            Cell cell = row.createCell(i);
+            Cell cell = row.createCell(index);
             if (columnDescription.example instanceof Integer) {
                 cell.setCellValue((Integer) columnDescription.example);
             } else {
@@ -241,7 +288,8 @@ public class PaymentsUploadPayments {
             }
             cell.setCellStyle(cellStyle);
 
-            sheet.autoSizeColumn(i);
+            sheet.autoSizeColumn(index);
+            index++;
         }
 
         sheet = workbook.createSheet("description");
@@ -252,7 +300,7 @@ public class PaymentsUploadPayments {
         cell.setCellStyle(headerStyle);
 
         cell = row.createCell(1);
-        cell.setCellValue("mandatory");
+        cell.setCellValue("type");
         cell.setCellStyle(headerStyle);
 
         cell = row.createCell(2);
@@ -290,6 +338,7 @@ public class PaymentsUploadPayments {
     private static enum ColumnLevel {
         MANDATORY,
         OPTIONAL,
+        RETURN,
     }
 
     private static class ColumnDescription {
