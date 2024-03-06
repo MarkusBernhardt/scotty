@@ -1,0 +1,273 @@
+<div>
+  <h2 id="page-heading" data-cy="PaymentHeading">
+    <span jhiTranslate="scottyApp.payment.home.title">Payments</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+        <fa-icon icon="sync" [spin]="isLoading"></fa-icon>
+        <span jhiTranslate="scottyApp.payment.home.refreshListLabel">Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-payment"
+        [routerLink]="['/payment/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span jhiTranslate="scottyApp.payment.home.createLabel">Create a new Payment</span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error></jhi-alert-error>
+
+  <jhi-alert></jhi-alert>
+
+  @if (payments?.length === 0) {
+    <div class="alert alert-warning" id="no-result">
+      <span jhiTranslate="scottyApp.payment.home.notFound">No Payments found</span>
+    </div>
+  }
+
+  @if (payments && payments.length > 0) {
+    <div class="table-responsive table-entities" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
+        <thead>
+          <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="navigateToWithComponentValues()">
+            <th scope="col" jhiSortBy="id">
+              <div class="d-flex">
+                <span jhiTranslate="global.field.id">ID</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="mandateId">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.payment.mandateId">Mandate Id</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="paymentId">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.payment.paymentId">Payment Id</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="gateway">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.payment.gateway">Gateway</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="iban">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.payment.iban">Iban</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="bic">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.payment.bic">Bic</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="amount">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.payment.amount">Amount</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="currencyCode">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.payment.currencyCode">Currency Code</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="softDescriptor">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.payment.softDescriptor">Soft Descriptor</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="firstName">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.payment.firstName">First Name</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="lastName">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.payment.lastName">Last Name</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="addressLine1">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.payment.addressLine1">Address Line 1</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="addressLine2">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.payment.addressLine2">Address Line 2</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="postalCode">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.payment.postalCode">Postal Code</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="city">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.payment.city">City</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="countryCode">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.payment.countryCode">Country Code</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="remoteIp">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.payment.remoteIp">Remote Ip</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="timestamp">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.payment.timestamp">Timestamp</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="status">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.payment.status">Status</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="message">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.payment.message">Message</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="gatewayId">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.payment.gatewayId">Gateway Id</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="gatewayCode">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.payment.gatewayCode">Gateway Code</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="mode">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.payment.mode">Mode</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (payment of payments; track trackId) {
+            <tr data-cy="entityTable">
+              <td>
+                <a [routerLink]="['/payment', payment.id, 'view']">{{ payment.id }}</a>
+              </td>
+              <td>{{ payment.mandateId }}</td>
+              <td>{{ payment.paymentId }}</td>
+              <td jhiTranslate="{{ 'scottyApp.Gateway.' + payment.gateway }}">{{ payment.gateway }}</td>
+              <td>{{ payment.iban }}</td>
+              <td>{{ payment.bic }}</td>
+              <td>{{ payment.amount }}</td>
+              <td>{{ payment.currencyCode }}</td>
+              <td>{{ payment.softDescriptor }}</td>
+              <td>{{ payment.firstName }}</td>
+              <td>{{ payment.lastName }}</td>
+              <td>{{ payment.addressLine1 }}</td>
+              <td>{{ payment.addressLine2 }}</td>
+              <td>{{ payment.postalCode }}</td>
+              <td>{{ payment.city }}</td>
+              <td>{{ payment.countryCode }}</td>
+              <td>{{ payment.remoteIp }}</td>
+              <td>{{ payment.timestamp | formatMediumDate }}</td>
+              <td>{{ payment.status }}</td>
+              <td>{{ payment.message }}</td>
+              <td>{{ payment.gatewayId }}</td>
+              <td>{{ payment.gatewayCode }}</td>
+              <td>{{ payment.mode }}</td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <a [routerLink]="['/payment', payment.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                    <fa-icon icon="eye"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+                  </a>
+
+                  <a [routerLink]="['/payment', payment.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                    <fa-icon icon="pencil-alt"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+                  </a>
+
+                  <button type="submit" (click)="delete(payment)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                    <fa-icon icon="times"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+  @if (payments && payments.length > 0) {
+    <div>
+      <div class="d-flex justify-content-center">
+        <jhi-item-count [params]="{ page: page, totalItems: totalItems, itemsPerPage: itemsPerPage }"></jhi-item-count>
+      </div>
+
+      <div class="d-flex justify-content-center">
+        <ngb-pagination
+          [collectionSize]="totalItems"
+          [page]="page"
+          [pageSize]="itemsPerPage"
+          [maxSize]="5"
+          [rotate]="true"
+          [boundaryLinks]="true"
+          (pageChange)="navigateToPage($event)"
+        ></ngb-pagination>
+      </div>
+    </div>
+  }
+</div>

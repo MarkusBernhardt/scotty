@@ -48,6 +48,7 @@ public class CacheConfiguration {
             createCache(cm, de.scmb.scotty.domain.User.class.getName());
             createCache(cm, de.scmb.scotty.domain.Authority.class.getName());
             createCache(cm, de.scmb.scotty.domain.User.class.getName() + ".authorities");
+            createCache(cm, de.scmb.scotty.domain.Payment.class.getName());
             // jhipster-needle-ehcache-add-entry
         };
     }
