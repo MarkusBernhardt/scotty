@@ -8,9 +8,12 @@ public class PaymentsUploadPaymentsExecuteResponseDTO {
 
     private String filename;
 
-    public PaymentsUploadPaymentsExecuteResponseDTO(int success, String filename) {
+    private String message;
+
+    public PaymentsUploadPaymentsExecuteResponseDTO(int success, String filename, String message) {
         this.success = success;
         this.filename = filename;
+        this.message = message;
     }
 
     public int getSuccess() {
@@ -29,21 +32,40 @@ public class PaymentsUploadPaymentsExecuteResponseDTO {
         this.filename = filename;
     }
 
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PaymentsUploadPaymentsExecuteResponseDTO that = (PaymentsUploadPaymentsExecuteResponseDTO) o;
-        return success == that.success && Objects.equals(filename, that.filename);
+        return success == that.success && Objects.equals(filename, that.filename) && Objects.equals(message, that.message);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(success, filename);
+        return Objects.hash(success, filename, message);
     }
 
     @Override
     public String toString() {
-        return "PaymentsUploadPaymentsExecuteResponseDTO{" + "success=" + success + ", filename='" + filename + '\'' + '}';
+        return (
+            "PaymentsUploadPaymentsExecuteResponseDTO{" +
+            "success=" +
+            success +
+            ", filename='" +
+            filename +
+            '\'' +
+            ", message='" +
+            message +
+            '\'' +
+            '}'
+        );
     }
 }

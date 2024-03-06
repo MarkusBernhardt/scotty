@@ -8,12 +8,15 @@ public class PaymentsUploadPaymentsValidateResponseDTO {
 
     private int count;
 
-    private int amount;
+    private double amount;
 
-    public PaymentsUploadPaymentsValidateResponseDTO(boolean success, int count, int amount) {
+    private String message;
+
+    public PaymentsUploadPaymentsValidateResponseDTO(boolean success, int count, double amount, String message) {
         this.success = success;
         this.count = count;
         this.amount = amount;
+        this.message = message;
     }
 
     public boolean isSuccess() {
@@ -32,12 +35,20 @@ public class PaymentsUploadPaymentsValidateResponseDTO {
         this.count = count;
     }
 
-    public int getAmount() {
+    public double getAmount() {
         return amount;
     }
 
-    public void setAmount(int amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     @Override
@@ -45,16 +56,28 @@ public class PaymentsUploadPaymentsValidateResponseDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PaymentsUploadPaymentsValidateResponseDTO that = (PaymentsUploadPaymentsValidateResponseDTO) o;
-        return success == that.success && count == that.count && amount == that.amount;
+        return success == that.success && count == that.count && amount == that.amount && Objects.equals(message, that.message);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(success, count, amount);
+        return Objects.hash(success, count, amount, message);
     }
 
     @Override
     public String toString() {
-        return "PaymentsUploadPaymentsValidateResponseDTO{" + "success=" + success + ", count=" + count + ", amount=" + amount + '}';
+        return (
+            "PaymentsUploadPaymentsValidateResponseDTO{" +
+            "success=" +
+            success +
+            ", count=" +
+            count +
+            ", amount=" +
+            amount +
+            ", message='" +
+            message +
+            '\'' +
+            '}'
+        );
     }
 }
