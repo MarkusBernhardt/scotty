@@ -1,6 +1,7 @@
 package de.scmb.scotty.web.rest;
 
 import com.emerchantpay.gateway.GenesisClient;
+import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.TransactionResult;
 import com.emerchantpay.gateway.api.constants.Endpoints;
 import com.emerchantpay.gateway.api.constants.Environments;
@@ -9,6 +10,9 @@ import com.emerchantpay.gateway.api.requests.financial.sdd.SDDRecurringSaleReque
 import com.emerchantpay.gateway.model.Transaction;
 import com.emerchantpay.gateway.util.Configuration;
 import de.scmb.scotty.config.ApplicationProperties;
+import de.scmb.scotty.domain.Payment;
+import de.scmb.scotty.domain.enumeration.Gateway;
+import de.scmb.scotty.repository.PaymentRepository;
 import de.scmb.scotty.service.dto.PaymentsUploadPaymentsExecuteResponseDTO;
 import de.scmb.scotty.service.dto.PaymentsUploadPaymentsValidateResponseDTO;
 import jakarta.validation.Valid;
@@ -16,11 +20,15 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.net.URISyntaxException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -34,8 +42,20 @@ public class PaymentsUploadPayments {
 
     private final ApplicationProperties applicationProperties;
 
-    public PaymentsUploadPayments(ApplicationProperties applicationProperties) {
+    private final PaymentRepository paymentRepository;
+
+    private final Logger log = LoggerFactory.getLogger(PaymentsUploadPayments.class);
+
+    private static final ThreadLocal<DateTimeFormatter> dateTimeFormatter = new ThreadLocal<>() {
+        @Override
+        protected DateTimeFormatter initialValue() {
+            return DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+        }
+    };
+
+    public PaymentsUploadPayments(ApplicationProperties applicationProperties, PaymentRepository paymentRepository) {
         this.applicationProperties = applicationProperties;
+        this.paymentRepository = paymentRepository;
     }
 
     private final ColumnDescription[] COLUMNS = {
@@ -140,7 +160,14 @@ public class PaymentsUploadPayments {
             "",
             ""
         ),
-        new ColumnDescription("status", ColumnLevel.response, "The status of the payment.", "", ""),
+        new ColumnDescription(
+            "status",
+            ColumnLevel.response,
+            "The status of the payment. Currently are the following states possible: \"created\", " +
+            "\"pending\", \"submitted\", \"paid\", \"chargedBack\", \"refunded\" and \"failed\"",
+            "",
+            ""
+        ),
         new ColumnDescription("message", ColumnLevel.response, "The human readable status message.", "", ""),
         new ColumnDescription("gatewayId", ColumnLevel.response, "The unique id defined by the chosen gateway.", "", ""),
         new ColumnDescription("gatewayCode", ColumnLevel.response, "The error code defined by the chosen gateway.", "", ""),
@@ -184,7 +211,7 @@ public class PaymentsUploadPayments {
                     first = false;
                     continue;
                 }
-                amount += getAmount(row, columnAmount);
+                amount += getAmountInCent(row, columnAmount) / 100d;
                 count++;
             }
             return ResponseEntity.ok().body(new PaymentsUploadPaymentsValidateResponseDTO(true, count, amount, null));
@@ -198,12 +225,23 @@ public class PaymentsUploadPayments {
         try {
             Workbook workbook = new XSSFWorkbook(file.getInputStream());
             Sheet sheet = workbook.getSheet("payments");
-            Row firstRow = sheet.getRow(0);
 
             Configuration configuration = new Configuration(Environments.STAGING, Endpoints.EMERCHANTPAY);
             configuration.setUsername(applicationProperties.getEmerchantpay().getUsername());
             configuration.setPassword(applicationProperties.getEmerchantpay().getPassword());
             configuration.setToken(applicationProperties.getEmerchantpay().getToken());
+
+            Font headerFont = workbook.createFont();
+            headerFont.setFontName("Arial");
+            headerFont.setBold(true);
+
+            CellStyle headerStyle = workbook.createCellStyle();
+            headerStyle.setFillForegroundColor(IndexedColors.LIGHT_GREEN.getIndex());
+            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            headerStyle.setFont(headerFont);
+
+            CellStyle cellStyle = workbook.createCellStyle();
+            cellStyle.setWrapText(true);
 
             Map<String, Integer> columnIndices = new HashMap<>();
             boolean first = true;
@@ -219,13 +257,11 @@ public class PaymentsUploadPayments {
                 }
 
                 switch (row.getCell(columnIndices.get("gateway")).getStringCellValue()) {
-                    case "emerchantpay":
-                        executeEmerchantpay(columnIndices, configuration, row);
-                        break;
-                    default:
-                        throw new IllegalArgumentException(
-                            String.format("Unknown gateway \"%s\"", row.getCell(columnIndices.get("gateway")).getStringCellValue())
-                        );
+                    case "emerchantpay" -> executeEmerchantpay(columnIndices, configuration, row, cellStyle);
+                    case "ccbill" -> executeCcbill(columnIndices, configuration, row, cellStyle);
+                    default -> throw new IllegalArgumentException(
+                        String.format("Unknown gateway \"%s\"", row.getCell(columnIndices.get("gateway")).getStringCellValue())
+                    );
                 }
                 // TODO
                 // idempotencyKey testen
@@ -234,6 +270,7 @@ public class PaymentsUploadPayments {
                 // Id
                 // Add columns
                 // Download file
+                // index mandate id, payment id
             }
 
             return ResponseEntity.ok().body(new PaymentsUploadPaymentsExecuteResponseDTO(3, "", null));
@@ -242,66 +279,144 @@ public class PaymentsUploadPayments {
         }
     }
 
-    private void executeEmerchantpay(Map<String, Integer> columnIndices, Configuration configuration, Row row) {
-        SDDInitRecurringSaleRequest sddInitRecurringSaleRequest = new SDDInitRecurringSaleRequest();
-        sddInitRecurringSaleRequest.setAmount(BigDecimal.valueOf(getAmount(row, columnIndices.get("amount"))));
-        sddInitRecurringSaleRequest.setCurrency(row.getCell(columnIndices.get("currencyCode")).getStringCellValue());
-        sddInitRecurringSaleRequest.setBillingFirstname(row.getCell(columnIndices.get("firstName")).getStringCellValue());
-        sddInitRecurringSaleRequest.setBillingLastname(row.getCell(columnIndices.get("lastName")).getStringCellValue());
-        sddInitRecurringSaleRequest.setBillingCity(row.getCell(columnIndices.get("city")).getStringCellValue());
-        sddInitRecurringSaleRequest.setBillingZipCode(row.getCell(columnIndices.get("postalCode")).getStringCellValue());
-        sddInitRecurringSaleRequest.setBillingPrimaryAddress(row.getCell(columnIndices.get("addressLine1")).getStringCellValue());
-        sddInitRecurringSaleRequest.setBillingCountry(row.getCell(columnIndices.get("countryCode")).getStringCellValue());
-        sddInitRecurringSaleRequest.setIban(row.getCell(columnIndices.get("iban")).getStringCellValue());
-        sddInitRecurringSaleRequest.setBic(row.getCell(columnIndices.get("bic")).getStringCellValue());
-        sddInitRecurringSaleRequest.setTransactionId(row.getCell(columnIndices.get("paymentId")).getStringCellValue() + "61");
-        sddInitRecurringSaleRequest.setUsage(row.getCell(columnIndices.get("softDescriptor")).getStringCellValue());
-        sddInitRecurringSaleRequest.setRemoteIp(row.getCell(columnIndices.get("remoteIp")).getStringCellValue());
-
-        GenesisClient client = new GenesisClient(configuration, sddInitRecurringSaleRequest);
-        client.debugMode(true);
-        client.execute();
-
-        // Parse Payment result
-        TransactionResult<? extends Transaction> result = client.getTransaction().getRequest();
-        System.out.println("Transaction Id: " + result.getTransaction().getTransactionId());
-
-        SDDRecurringSaleRequest sddRecurringSaleRequest = new SDDRecurringSaleRequest();
-        sddRecurringSaleRequest.setAmount(BigDecimal.valueOf(getAmount(row, columnIndices.get("amount")) * 2));
-        sddRecurringSaleRequest.setCurrency(row.getCell(columnIndices.get("currencyCode")).getStringCellValue());
-        sddRecurringSaleRequest.setTransactionId(row.getCell(columnIndices.get("paymentId")).getStringCellValue() + "62");
-        sddRecurringSaleRequest.setUsage(row.getCell(columnIndices.get("softDescriptor")).getStringCellValue());
-        sddRecurringSaleRequest.setRemoteIp(row.getCell(columnIndices.get("remoteIp")).getStringCellValue());
-        sddRecurringSaleRequest.setReferenceId(result.getTransaction().getUniqueId());
-
-        client = new GenesisClient(configuration, sddRecurringSaleRequest);
-        client.debugMode(true);
-        client.execute();
-
-        result = client.getTransaction().getRequest();
-        System.out.println("Transaction Id: " + result.getTransaction().getTransactionId());
-
-        sddRecurringSaleRequest = new SDDRecurringSaleRequest();
-        sddRecurringSaleRequest.setAmount(BigDecimal.valueOf(getAmount(row, columnIndices.get("amount")) * 3));
-        sddRecurringSaleRequest.setCurrency(row.getCell(columnIndices.get("currencyCode")).getStringCellValue());
-        sddRecurringSaleRequest.setTransactionId(row.getCell(columnIndices.get("paymentId")).getStringCellValue() + "63");
-        sddRecurringSaleRequest.setUsage(row.getCell(columnIndices.get("softDescriptor")).getStringCellValue());
-        sddRecurringSaleRequest.setRemoteIp(row.getCell(columnIndices.get("remoteIp")).getStringCellValue());
-        sddRecurringSaleRequest.setReferenceId(result.getTransaction().getUniqueId());
-
-        client = new GenesisClient(configuration, sddRecurringSaleRequest);
-        client.debugMode(true);
-        client.execute();
-
-        result = client.getTransaction().getRequest();
-        System.out.println("Transaction Id: " + result.getTransaction().getTransactionId());
+    private String getStringCellValue(Map<String, Integer> columnIndices, Row row, String columnName) {
+        try {
+            return row.getCell(columnIndices.get(columnName)).getStringCellValue();
+        } catch (Throwable t) {
+            return "";
+        }
     }
 
-    private double getAmount(Row row, int columnAmount) {
+    private Payment buildPayment(Map<String, Integer> columnIndices, Row row, Gateway gateway) {
+        Payment payment = new Payment();
+        payment.setAmount(getAmountInCent(row, columnIndices.get("amount")));
+        payment.setCurrencyCode(getStringCellValue(columnIndices, row, "currencyCode"));
+        payment.setFirstName(getStringCellValue(columnIndices, row, "firstName"));
+        payment.setLastName(getStringCellValue(columnIndices, row, "lastName"));
+        payment.setCity(getStringCellValue(columnIndices, row, "city"));
+        payment.setPostalCode(getStringCellValue(columnIndices, row, "postalCode"));
+        payment.setAddressLine1(getStringCellValue(columnIndices, row, "addressLine1"));
+        payment.setAddressLine2(getStringCellValue(columnIndices, row, "addressLine2"));
+        payment.setCountryCode(getStringCellValue(columnIndices, row, "countryCode"));
+        payment.setIban(getStringCellValue(columnIndices, row, "iban"));
+        payment.setBic(getStringCellValue(columnIndices, row, "bic"));
+        payment.setPaymentId(getStringCellValue(columnIndices, row, "paymentId"));
+        payment.setSoftDescriptor(getStringCellValue(columnIndices, row, "softDescriptor"));
+        payment.setRemoteIp(getStringCellValue(columnIndices, row, "remoteIp"));
+        payment.setGateway(gateway);
+        payment.setMandateId(getStringCellValue(columnIndices, row, "mandateId"));
+        return payment;
+    }
+
+    private void executeEmerchantpay(Map<String, Integer> columnIndices, Configuration configuration, Row row, CellStyle cellStyle) {
+        Payment payment = buildPayment(columnIndices, row, Gateway.EMERCHANTPAY);
+        try {
+            Payment duplicate = paymentRepository.findFirstByPaymentIdOrderByIdAsc(
+                row.getCell(columnIndices.get("paymentId")).getStringCellValue()
+            );
+            if (duplicate != null) {
+                payment.setStatus("failed");
+                payment.setMessage("Duplicate payment with id: " + duplicate.getId());
+                return;
+            }
+
+            Request request;
+            Payment init = paymentRepository.findFirstByMandateIdOrderByIdAsc(getStringCellValue(columnIndices, row, "mandateId"));
+            if (init == null) {
+                request = getSddInitRecurringSaleRequest(payment);
+            } else {
+                request = getSddRecurringSaleRequest(payment, init);
+                payment.setFirstName(init.getFirstName());
+                payment.setLastName(init.getLastName());
+                payment.setCity(init.getCity());
+                payment.setPostalCode(init.getPostalCode());
+                payment.setAddressLine1(init.getAddressLine1());
+                payment.setAddressLine2(init.getAddressLine2());
+                payment.setCountryCode(init.getCountryCode());
+                payment.setIban(init.getIban());
+                payment.setBic(init.getBic());
+            }
+
+            GenesisClient client = new GenesisClient(configuration, request);
+            client.debugMode(true);
+            client.execute();
+
+            // Parse Payment result
+            TransactionResult<? extends Transaction> result = client.getTransaction().getRequest();
+            log.debug("Transaction Id: " + result.getTransaction().getTransactionId());
+
+            payment.setMessage(result.getTransaction().getMessage());
+            payment.setGatewayId(result.getTransaction().getUniqueId());
+            if (result.getTransaction().getCode() != null) {
+                payment.setGatewayCode(result.getTransaction().getCode().toString());
+            }
+            payment.setMode(result.getTransaction().getMode());
+            payment.setStatus(mapStatusEmerchantpay(result.getTransaction().getStatus()));
+            payment.setTimestamp(dateTimeFormatter.get().parse(result.getTransaction().getTimestamp()));
+        } catch (Throwable t) {
+            payment.setStatus("failed");
+            payment.setMessage(t.getMessage());
+            payment.setTimestamp(LocalDate.now());
+        } finally {
+            paymentRepository.save(payment);
+        }
+    }
+
+    private String mapStatusEmerchantpay(String status) {
+        switch (status) {
+            case "approved":
+                return "paid";
+            case "pending_async":
+            case "pending_hold":
+            case "pending_review":
+            case "pending":
+                return "pending";
+            case "refunded":
+                return "refunded";
+            case "chargebacked":
+                return "chargedBack";
+            default:
+                return "failed";
+        }
+    }
+
+    private void executeCcbill(Map<String, Integer> columnIndices, Configuration configuration, Row row, CellStyle cellStyle) {}
+
+    private static SDDRecurringSaleRequest getSddRecurringSaleRequest(Payment payment, Payment init) {
+        SDDRecurringSaleRequest sddRecurringSaleRequest = new SDDRecurringSaleRequest();
+        sddRecurringSaleRequest.setAmount(BigDecimal.valueOf(payment.getAmount()));
+        sddRecurringSaleRequest.setCurrency(payment.getCurrencyCode());
+        sddRecurringSaleRequest.setTransactionId(payment.getPaymentId());
+        sddRecurringSaleRequest.setUsage(payment.getSoftDescriptor());
+        sddRecurringSaleRequest.setRemoteIp(payment.getRemoteIp());
+        sddRecurringSaleRequest.setReferenceId(init.getGatewayId());
+        return sddRecurringSaleRequest;
+    }
+
+    private static SDDInitRecurringSaleRequest getSddInitRecurringSaleRequest(Payment payment) {
+        SDDInitRecurringSaleRequest sddInitRecurringSaleRequest = new SDDInitRecurringSaleRequest();
+        sddInitRecurringSaleRequest.setAmount(BigDecimal.valueOf(payment.getAmount()));
+        sddInitRecurringSaleRequest.setCurrency(payment.getCurrencyCode());
+        sddInitRecurringSaleRequest.setBillingFirstname(payment.getFirstName());
+        sddInitRecurringSaleRequest.setBillingLastname(payment.getLastName());
+        sddInitRecurringSaleRequest.setBillingCity(payment.getCity());
+        sddInitRecurringSaleRequest.setBillingZipCode(payment.getPostalCode());
+        sddInitRecurringSaleRequest.setBillingPrimaryAddress(payment.getAddressLine1());
+        sddInitRecurringSaleRequest.setBillingSecondaryAddress(payment.getAddressLine2());
+        sddInitRecurringSaleRequest.setBillingCountry(payment.getCountryCode());
+        sddInitRecurringSaleRequest.setIban(payment.getIban());
+        sddInitRecurringSaleRequest.setBic(payment.getBic());
+        sddInitRecurringSaleRequest.setTransactionId(payment.getPaymentId());
+        sddInitRecurringSaleRequest.setUsage(payment.getSoftDescriptor());
+        sddInitRecurringSaleRequest.setRemoteIp(payment.getRemoteIp());
+        return sddInitRecurringSaleRequest;
+    }
+
+    private int getAmountInCent(Row row, int columnAmount) {
         Cell cell = row.getCell(columnAmount);
         return switch (cell.getCellType()) {
-            case STRING -> Double.parseDouble(cell.getStringCellValue()) / 100d;
-            case NUMERIC -> cell.getNumericCellValue() / 100d;
+            case STRING -> Integer.parseInt(cell.getStringCellValue());
+            case NUMERIC -> (int) cell.getNumericCellValue();
             default -> throw new IllegalArgumentException();
         };
     }
