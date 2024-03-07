@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 
+import dayjs from 'dayjs/esm';
+import { DATE_TIME_FORMAT } from 'app/config/input.constants';
 import { IPayment, NewPayment } from '../payment.model';
 
 /**
@@ -14,32 +16,43 @@ type PartialWithRequiredKeyOf<T extends { id: unknown }> = Partial<Omit<T, 'id'>
  */
 type PaymentFormGroupInput = IPayment | PartialWithRequiredKeyOf<NewPayment>;
 
-type PaymentFormDefaults = Pick<NewPayment, 'id'>;
+/**
+ * Type that converts some properties for forms.
+ */
+type FormValueOf<T extends IPayment | NewPayment> = Omit<T, 'timestamp'> & {
+  timestamp?: string | null;
+};
+
+type PaymentFormRawValue = FormValueOf<IPayment>;
+
+type NewPaymentFormRawValue = FormValueOf<NewPayment>;
+
+type PaymentFormDefaults = Pick<NewPayment, 'id' | 'timestamp'>;
 
 type PaymentFormGroupContent = {
-  id: FormControl<IPayment['id'] | NewPayment['id']>;
-  mandateId: FormControl<IPayment['mandateId']>;
-  paymentId: FormControl<IPayment['paymentId']>;
-  gateway: FormControl<IPayment['gateway']>;
-  iban: FormControl<IPayment['iban']>;
-  bic: FormControl<IPayment['bic']>;
-  amount: FormControl<IPayment['amount']>;
-  currencyCode: FormControl<IPayment['currencyCode']>;
-  softDescriptor: FormControl<IPayment['softDescriptor']>;
-  firstName: FormControl<IPayment['firstName']>;
-  lastName: FormControl<IPayment['lastName']>;
-  addressLine1: FormControl<IPayment['addressLine1']>;
-  addressLine2: FormControl<IPayment['addressLine2']>;
-  postalCode: FormControl<IPayment['postalCode']>;
-  city: FormControl<IPayment['city']>;
-  countryCode: FormControl<IPayment['countryCode']>;
-  remoteIp: FormControl<IPayment['remoteIp']>;
-  timestamp: FormControl<IPayment['timestamp']>;
-  status: FormControl<IPayment['status']>;
-  message: FormControl<IPayment['message']>;
-  gatewayId: FormControl<IPayment['gatewayId']>;
-  gatewayCode: FormControl<IPayment['gatewayCode']>;
-  mode: FormControl<IPayment['mode']>;
+  id: FormControl<PaymentFormRawValue['id'] | NewPayment['id']>;
+  mandateId: FormControl<PaymentFormRawValue['mandateId']>;
+  paymentId: FormControl<PaymentFormRawValue['paymentId']>;
+  gateway: FormControl<PaymentFormRawValue['gateway']>;
+  iban: FormControl<PaymentFormRawValue['iban']>;
+  bic: FormControl<PaymentFormRawValue['bic']>;
+  amount: FormControl<PaymentFormRawValue['amount']>;
+  currencyCode: FormControl<PaymentFormRawValue['currencyCode']>;
+  softDescriptor: FormControl<PaymentFormRawValue['softDescriptor']>;
+  firstName: FormControl<PaymentFormRawValue['firstName']>;
+  lastName: FormControl<PaymentFormRawValue['lastName']>;
+  addressLine1: FormControl<PaymentFormRawValue['addressLine1']>;
+  addressLine2: FormControl<PaymentFormRawValue['addressLine2']>;
+  postalCode: FormControl<PaymentFormRawValue['postalCode']>;
+  city: FormControl<PaymentFormRawValue['city']>;
+  countryCode: FormControl<PaymentFormRawValue['countryCode']>;
+  remoteIp: FormControl<PaymentFormRawValue['remoteIp']>;
+  timestamp: FormControl<PaymentFormRawValue['timestamp']>;
+  state: FormControl<PaymentFormRawValue['state']>;
+  message: FormControl<PaymentFormRawValue['message']>;
+  gatewayId: FormControl<PaymentFormRawValue['gatewayId']>;
+  mode: FormControl<PaymentFormRawValue['mode']>;
+  fileName: FormControl<PaymentFormRawValue['fileName']>;
 };
 
 export type PaymentFormGroup = FormGroup<PaymentFormGroupContent>;
@@ -47,10 +60,10 @@ export type PaymentFormGroup = FormGroup<PaymentFormGroupContent>;
 @Injectable({ providedIn: 'root' })
 export class PaymentFormService {
   createPaymentFormGroup(payment: PaymentFormGroupInput = { id: null }): PaymentFormGroup {
-    const paymentRawValue = {
+    const paymentRawValue = this.convertPaymentToPaymentRawValue({
       ...this.getFormDefaults(),
       ...payment,
-    };
+    });
     return new FormGroup<PaymentFormGroupContent>({
       id: new FormControl(
         { value: paymentRawValue.id, disabled: true },
@@ -110,7 +123,7 @@ export class PaymentFormService {
       timestamp: new FormControl(paymentRawValue.timestamp, {
         validators: [Validators.required],
       }),
-      status: new FormControl(paymentRawValue.status, {
+      state: new FormControl(paymentRawValue.state, {
         validators: [Validators.required, Validators.maxLength(35)],
       }),
       message: new FormControl(paymentRawValue.message, {
@@ -119,21 +132,21 @@ export class PaymentFormService {
       gatewayId: new FormControl(paymentRawValue.gatewayId, {
         validators: [Validators.maxLength(35)],
       }),
-      gatewayCode: new FormControl(paymentRawValue.gatewayCode, {
-        validators: [Validators.maxLength(35)],
-      }),
       mode: new FormControl(paymentRawValue.mode, {
         validators: [Validators.maxLength(35)],
+      }),
+      fileName: new FormControl(paymentRawValue.fileName, {
+        validators: [Validators.maxLength(255)],
       }),
     });
   }
 
   getPayment(form: PaymentFormGroup): IPayment | NewPayment {
-    return form.getRawValue() as IPayment | NewPayment;
+    return this.convertPaymentRawValueToPayment(form.getRawValue() as PaymentFormRawValue | NewPaymentFormRawValue);
   }
 
   resetForm(form: PaymentFormGroup, payment: PaymentFormGroupInput): void {
-    const paymentRawValue = { ...this.getFormDefaults(), ...payment };
+    const paymentRawValue = this.convertPaymentToPaymentRawValue({ ...this.getFormDefaults(), ...payment });
     form.reset(
       {
         ...paymentRawValue,
@@ -143,8 +156,27 @@ export class PaymentFormService {
   }
 
   private getFormDefaults(): PaymentFormDefaults {
+    const currentTime = dayjs();
+
     return {
       id: null,
+      timestamp: currentTime,
+    };
+  }
+
+  private convertPaymentRawValueToPayment(rawPayment: PaymentFormRawValue | NewPaymentFormRawValue): IPayment | NewPayment {
+    return {
+      ...rawPayment,
+      timestamp: dayjs(rawPayment.timestamp, DATE_TIME_FORMAT),
+    };
+  }
+
+  private convertPaymentToPaymentRawValue(
+    payment: IPayment | (Partial<NewPayment> & PaymentFormDefaults),
+  ): PaymentFormRawValue | PartialWithRequiredKeyOf<NewPaymentFormRawValue> {
+    return {
+      ...payment,
+      timestamp: payment.timestamp ? payment.timestamp.format(DATE_TIME_FORMAT) : undefined,
     };
   }
 }

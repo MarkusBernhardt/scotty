@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpEvent } from '@angular/common/http';
+import { HttpClient, HttpEvent, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
@@ -25,12 +25,15 @@ export class PaymentsUploadPaymentsService {
     });
   }
 
-  execute(file: File): Observable<HttpEvent<any>> {
+  execute(file: File, executeFileName: string): Observable<HttpEvent<any>> {
+    const headers = new HttpHeaders();
+    headers.append('X-ExecuteFileName', executeFileName);
     const formData: FormData = new FormData();
     formData.append('file', file);
     return this.http.post<PaymentsUploadPaymentsExecuteResponse>(this.executeUrl, formData, {
       observe: 'events',
       reportProgress: true,
+      headers: headers,
     });
   }
 

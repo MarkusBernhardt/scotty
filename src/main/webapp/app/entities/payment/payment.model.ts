@@ -20,11 +20,11 @@ export interface IPayment {
   countryCode?: string | null;
   remoteIp?: string | null;
   timestamp?: dayjs.Dayjs | null;
-  status?: string | null;
+  state?: string | null;
   message?: string | null;
   gatewayId?: string | null;
-  gatewayCode?: string | null;
   mode?: string | null;
+  fileName?: string | null;
 }
 
 export type NewPayment = Omit<IPayment, 'id'> & { id: null };

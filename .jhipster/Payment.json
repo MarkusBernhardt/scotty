@@ -22,7 +22,7 @@
       "fieldName": "gateway",
       "fieldType": "Gateway",
       "fieldValidateRules": ["required"],
-      "fieldValues": "EMERCHANTPAY (emerchantpay)"
+      "fieldValues": "EMERCHANTPAY (emerchantpay),CCBILL (ccbill)"
     },
     {
       "fieldName": "iban",
@@ -108,11 +108,11 @@
     },
     {
       "fieldName": "timestamp",
-      "fieldType": "LocalDate",
+      "fieldType": "Instant",
       "fieldValidateRules": ["required"]
     },
     {
-      "fieldName": "status",
+      "fieldName": "state",
       "fieldType": "String",
       "fieldValidateRules": ["required", "maxlength"],
       "fieldValidateRulesMaxlength": "35"
@@ -130,16 +130,16 @@
       "fieldValidateRulesMaxlength": "35"
     },
     {
-      "fieldName": "gatewayCode",
+      "fieldName": "mode",
       "fieldType": "String",
       "fieldValidateRules": ["maxlength"],
       "fieldValidateRulesMaxlength": "35"
     },
     {
-      "fieldName": "mode",
+      "fieldName": "fileName",
       "fieldType": "String",
       "fieldValidateRules": ["maxlength"],
-      "fieldValidateRulesMaxlength": "35"
+      "fieldValidateRulesMaxlength": "255"
     }
   ],
   "name": "Payment",

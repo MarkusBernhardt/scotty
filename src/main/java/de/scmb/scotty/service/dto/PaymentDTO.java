@@ -3,7 +3,7 @@ package de.scmb.scotty.service.dto;
 import de.scmb.scotty.domain.enumeration.Gateway;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.Instant;
 import java.util.Objects;
 
 /**
@@ -77,11 +77,11 @@ public class PaymentDTO implements Serializable {
     private String remoteIp;
 
     @NotNull
-    private LocalDate timestamp;
+    private Instant timestamp;
 
     @NotNull
     @Size(max = 35)
-    private String status;
+    private String state;
 
     @NotNull
     @Size(max = 255)
@@ -91,10 +91,10 @@ public class PaymentDTO implements Serializable {
     private String gatewayId;
 
     @Size(max = 35)
-    private String gatewayCode;
-
-    @Size(max = 35)
     private String mode;
+
+    @Size(max = 255)
+    private String fileName;
 
     public Long getId() {
         return id;
@@ -232,20 +232,20 @@ public class PaymentDTO implements Serializable {
         this.remoteIp = remoteIp;
     }
 
-    public LocalDate getTimestamp() {
+    public Instant getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(LocalDate timestamp) {
+    public void setTimestamp(Instant timestamp) {
         this.timestamp = timestamp;
     }
 
-    public String getStatus() {
-        return status;
+    public String getState() {
+        return state;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setState(String state) {
+        this.state = state;
     }
 
     public String getMessage() {
@@ -264,20 +264,20 @@ public class PaymentDTO implements Serializable {
         this.gatewayId = gatewayId;
     }
 
-    public String getGatewayCode() {
-        return gatewayCode;
-    }
-
-    public void setGatewayCode(String gatewayCode) {
-        this.gatewayCode = gatewayCode;
-    }
-
     public String getMode() {
         return mode;
     }
 
     public void setMode(String mode) {
         this.mode = mode;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     @Override
@@ -323,11 +323,11 @@ public class PaymentDTO implements Serializable {
             ", countryCode='" + getCountryCode() + "'" +
             ", remoteIp='" + getRemoteIp() + "'" +
             ", timestamp='" + getTimestamp() + "'" +
-            ", status='" + getStatus() + "'" +
+            ", state='" + getState() + "'" +
             ", message='" + getMessage() + "'" +
             ", gatewayId='" + getGatewayId() + "'" +
-            ", gatewayCode='" + getGatewayCode() + "'" +
             ", mode='" + getMode() + "'" +
+            ", fileName='" + getFileName() + "'" +
             "}";
     }
 }

@@ -12,8 +12,8 @@ import de.scmb.scotty.repository.PaymentRepository;
 import de.scmb.scotty.service.dto.PaymentDTO;
 import de.scmb.scotty.service.mapper.PaymentMapper;
 import jakarta.persistence.EntityManager;
-import java.time.LocalDate;
-import java.time.ZoneId;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
@@ -41,7 +41,7 @@ class PaymentResourceIT {
     private static final String UPDATED_PAYMENT_ID = "BBBBBBBBBB";
 
     private static final Gateway DEFAULT_GATEWAY = Gateway.EMERCHANTPAY;
-    private static final Gateway UPDATED_GATEWAY = Gateway.EMERCHANTPAY;
+    private static final Gateway UPDATED_GATEWAY = Gateway.CCBILL;
 
     private static final String DEFAULT_IBAN = "AAAAAAAAAAAAAAAAAAAAAA";
     private static final String UPDATED_IBAN = "BBBBBBBBBBBBBBBBBBBBBB";
@@ -82,11 +82,11 @@ class PaymentResourceIT {
     private static final String DEFAULT_REMOTE_IP = "AAAAAAAAAA";
     private static final String UPDATED_REMOTE_IP = "BBBBBBBBBB";
 
-    private static final LocalDate DEFAULT_TIMESTAMP = LocalDate.ofEpochDay(0L);
-    private static final LocalDate UPDATED_TIMESTAMP = LocalDate.now(ZoneId.systemDefault());
+    private static final Instant DEFAULT_TIMESTAMP = Instant.ofEpochMilli(0L);
+    private static final Instant UPDATED_TIMESTAMP = Instant.now().truncatedTo(ChronoUnit.MILLIS);
 
-    private static final String DEFAULT_STATUS = "AAAAAAAAAA";
-    private static final String UPDATED_STATUS = "BBBBBBBBBB";
+    private static final String DEFAULT_STATE = "AAAAAAAAAA";
+    private static final String UPDATED_STATE = "BBBBBBBBBB";
 
     private static final String DEFAULT_MESSAGE = "AAAAAAAAAA";
     private static final String UPDATED_MESSAGE = "BBBBBBBBBB";
@@ -94,11 +94,11 @@ class PaymentResourceIT {
     private static final String DEFAULT_GATEWAY_ID = "AAAAAAAAAA";
     private static final String UPDATED_GATEWAY_ID = "BBBBBBBBBB";
 
-    private static final String DEFAULT_GATEWAY_CODE = "AAAAAAAAAA";
-    private static final String UPDATED_GATEWAY_CODE = "BBBBBBBBBB";
-
     private static final String DEFAULT_MODE = "AAAAAAAAAA";
     private static final String UPDATED_MODE = "BBBBBBBBBB";
+
+    private static final String DEFAULT_FILE_NAME = "AAAAAAAAAA";
+    private static final String UPDATED_FILE_NAME = "BBBBBBBBBB";
 
     private static final String ENTITY_API_URL = "/api/payments";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -145,11 +145,11 @@ class PaymentResourceIT {
             .countryCode(DEFAULT_COUNTRY_CODE)
             .remoteIp(DEFAULT_REMOTE_IP)
             .timestamp(DEFAULT_TIMESTAMP)
-            .status(DEFAULT_STATUS)
+            .state(DEFAULT_STATE)
             .message(DEFAULT_MESSAGE)
             .gatewayId(DEFAULT_GATEWAY_ID)
-            .gatewayCode(DEFAULT_GATEWAY_CODE)
-            .mode(DEFAULT_MODE);
+            .mode(DEFAULT_MODE)
+            .fileName(DEFAULT_FILE_NAME);
         return payment;
     }
 
@@ -178,11 +178,11 @@ class PaymentResourceIT {
             .countryCode(UPDATED_COUNTRY_CODE)
             .remoteIp(UPDATED_REMOTE_IP)
             .timestamp(UPDATED_TIMESTAMP)
-            .status(UPDATED_STATUS)
+            .state(UPDATED_STATE)
             .message(UPDATED_MESSAGE)
             .gatewayId(UPDATED_GATEWAY_ID)
-            .gatewayCode(UPDATED_GATEWAY_CODE)
-            .mode(UPDATED_MODE);
+            .mode(UPDATED_MODE)
+            .fileName(UPDATED_FILE_NAME);
         return payment;
     }
 
@@ -222,11 +222,11 @@ class PaymentResourceIT {
         assertThat(testPayment.getCountryCode()).isEqualTo(DEFAULT_COUNTRY_CODE);
         assertThat(testPayment.getRemoteIp()).isEqualTo(DEFAULT_REMOTE_IP);
         assertThat(testPayment.getTimestamp()).isEqualTo(DEFAULT_TIMESTAMP);
-        assertThat(testPayment.getStatus()).isEqualTo(DEFAULT_STATUS);
+        assertThat(testPayment.getState()).isEqualTo(DEFAULT_STATE);
         assertThat(testPayment.getMessage()).isEqualTo(DEFAULT_MESSAGE);
         assertThat(testPayment.getGatewayId()).isEqualTo(DEFAULT_GATEWAY_ID);
-        assertThat(testPayment.getGatewayCode()).isEqualTo(DEFAULT_GATEWAY_CODE);
         assertThat(testPayment.getMode()).isEqualTo(DEFAULT_MODE);
+        assertThat(testPayment.getFileName()).isEqualTo(DEFAULT_FILE_NAME);
     }
 
     @Test
@@ -538,10 +538,10 @@ class PaymentResourceIT {
 
     @Test
     @Transactional
-    void checkStatusIsRequired() throws Exception {
+    void checkStateIsRequired() throws Exception {
         int databaseSizeBeforeTest = paymentRepository.findAll().size();
         // set the field null
-        payment.setStatus(null);
+        payment.setState(null);
 
         // Create the Payment, which fails.
         PaymentDTO paymentDTO = paymentMapper.toDto(payment);
@@ -601,11 +601,11 @@ class PaymentResourceIT {
             .andExpect(jsonPath("$.[*].countryCode").value(hasItem(DEFAULT_COUNTRY_CODE)))
             .andExpect(jsonPath("$.[*].remoteIp").value(hasItem(DEFAULT_REMOTE_IP)))
             .andExpect(jsonPath("$.[*].timestamp").value(hasItem(DEFAULT_TIMESTAMP.toString())))
-            .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS)))
+            .andExpect(jsonPath("$.[*].state").value(hasItem(DEFAULT_STATE)))
             .andExpect(jsonPath("$.[*].message").value(hasItem(DEFAULT_MESSAGE)))
             .andExpect(jsonPath("$.[*].gatewayId").value(hasItem(DEFAULT_GATEWAY_ID)))
-            .andExpect(jsonPath("$.[*].gatewayCode").value(hasItem(DEFAULT_GATEWAY_CODE)))
-            .andExpect(jsonPath("$.[*].mode").value(hasItem(DEFAULT_MODE)));
+            .andExpect(jsonPath("$.[*].mode").value(hasItem(DEFAULT_MODE)))
+            .andExpect(jsonPath("$.[*].fileName").value(hasItem(DEFAULT_FILE_NAME)));
     }
 
     @Test
@@ -637,11 +637,11 @@ class PaymentResourceIT {
             .andExpect(jsonPath("$.countryCode").value(DEFAULT_COUNTRY_CODE))
             .andExpect(jsonPath("$.remoteIp").value(DEFAULT_REMOTE_IP))
             .andExpect(jsonPath("$.timestamp").value(DEFAULT_TIMESTAMP.toString()))
-            .andExpect(jsonPath("$.status").value(DEFAULT_STATUS))
+            .andExpect(jsonPath("$.state").value(DEFAULT_STATE))
             .andExpect(jsonPath("$.message").value(DEFAULT_MESSAGE))
             .andExpect(jsonPath("$.gatewayId").value(DEFAULT_GATEWAY_ID))
-            .andExpect(jsonPath("$.gatewayCode").value(DEFAULT_GATEWAY_CODE))
-            .andExpect(jsonPath("$.mode").value(DEFAULT_MODE));
+            .andExpect(jsonPath("$.mode").value(DEFAULT_MODE))
+            .andExpect(jsonPath("$.fileName").value(DEFAULT_FILE_NAME));
     }
 
     @Test
@@ -681,11 +681,11 @@ class PaymentResourceIT {
             .countryCode(UPDATED_COUNTRY_CODE)
             .remoteIp(UPDATED_REMOTE_IP)
             .timestamp(UPDATED_TIMESTAMP)
-            .status(UPDATED_STATUS)
+            .state(UPDATED_STATE)
             .message(UPDATED_MESSAGE)
             .gatewayId(UPDATED_GATEWAY_ID)
-            .gatewayCode(UPDATED_GATEWAY_CODE)
-            .mode(UPDATED_MODE);
+            .mode(UPDATED_MODE)
+            .fileName(UPDATED_FILE_NAME);
         PaymentDTO paymentDTO = paymentMapper.toDto(updatedPayment);
 
         restPaymentMockMvc
@@ -717,11 +717,11 @@ class PaymentResourceIT {
         assertThat(testPayment.getCountryCode()).isEqualTo(UPDATED_COUNTRY_CODE);
         assertThat(testPayment.getRemoteIp()).isEqualTo(UPDATED_REMOTE_IP);
         assertThat(testPayment.getTimestamp()).isEqualTo(UPDATED_TIMESTAMP);
-        assertThat(testPayment.getStatus()).isEqualTo(UPDATED_STATUS);
+        assertThat(testPayment.getState()).isEqualTo(UPDATED_STATE);
         assertThat(testPayment.getMessage()).isEqualTo(UPDATED_MESSAGE);
         assertThat(testPayment.getGatewayId()).isEqualTo(UPDATED_GATEWAY_ID);
-        assertThat(testPayment.getGatewayCode()).isEqualTo(UPDATED_GATEWAY_CODE);
         assertThat(testPayment.getMode()).isEqualTo(UPDATED_MODE);
+        assertThat(testPayment.getFileName()).isEqualTo(UPDATED_FILE_NAME);
     }
 
     @Test
@@ -802,17 +802,17 @@ class PaymentResourceIT {
         partialUpdatedPayment.setId(payment.getId());
 
         partialUpdatedPayment
-            .mandateId(UPDATED_MANDATE_ID)
+            .paymentId(UPDATED_PAYMENT_ID)
             .gateway(UPDATED_GATEWAY)
-            .iban(UPDATED_IBAN)
             .bic(UPDATED_BIC)
+            .amount(UPDATED_AMOUNT)
             .softDescriptor(UPDATED_SOFT_DESCRIPTOR)
             .firstName(UPDATED_FIRST_NAME)
+            .addressLine1(UPDATED_ADDRESS_LINE_1)
             .city(UPDATED_CITY)
             .countryCode(UPDATED_COUNTRY_CODE)
-            .remoteIp(UPDATED_REMOTE_IP)
-            .timestamp(UPDATED_TIMESTAMP)
-            .status(UPDATED_STATUS);
+            .state(UPDATED_STATE)
+            .fileName(UPDATED_FILE_NAME);
 
         restPaymentMockMvc
             .perform(
@@ -826,28 +826,28 @@ class PaymentResourceIT {
         List<Payment> paymentList = paymentRepository.findAll();
         assertThat(paymentList).hasSize(databaseSizeBeforeUpdate);
         Payment testPayment = paymentList.get(paymentList.size() - 1);
-        assertThat(testPayment.getMandateId()).isEqualTo(UPDATED_MANDATE_ID);
-        assertThat(testPayment.getPaymentId()).isEqualTo(DEFAULT_PAYMENT_ID);
+        assertThat(testPayment.getMandateId()).isEqualTo(DEFAULT_MANDATE_ID);
+        assertThat(testPayment.getPaymentId()).isEqualTo(UPDATED_PAYMENT_ID);
         assertThat(testPayment.getGateway()).isEqualTo(UPDATED_GATEWAY);
-        assertThat(testPayment.getIban()).isEqualTo(UPDATED_IBAN);
+        assertThat(testPayment.getIban()).isEqualTo(DEFAULT_IBAN);
         assertThat(testPayment.getBic()).isEqualTo(UPDATED_BIC);
-        assertThat(testPayment.getAmount()).isEqualTo(DEFAULT_AMOUNT);
+        assertThat(testPayment.getAmount()).isEqualTo(UPDATED_AMOUNT);
         assertThat(testPayment.getCurrencyCode()).isEqualTo(DEFAULT_CURRENCY_CODE);
         assertThat(testPayment.getSoftDescriptor()).isEqualTo(UPDATED_SOFT_DESCRIPTOR);
         assertThat(testPayment.getFirstName()).isEqualTo(UPDATED_FIRST_NAME);
         assertThat(testPayment.getLastName()).isEqualTo(DEFAULT_LAST_NAME);
-        assertThat(testPayment.getAddressLine1()).isEqualTo(DEFAULT_ADDRESS_LINE_1);
+        assertThat(testPayment.getAddressLine1()).isEqualTo(UPDATED_ADDRESS_LINE_1);
         assertThat(testPayment.getAddressLine2()).isEqualTo(DEFAULT_ADDRESS_LINE_2);
         assertThat(testPayment.getPostalCode()).isEqualTo(DEFAULT_POSTAL_CODE);
         assertThat(testPayment.getCity()).isEqualTo(UPDATED_CITY);
         assertThat(testPayment.getCountryCode()).isEqualTo(UPDATED_COUNTRY_CODE);
-        assertThat(testPayment.getRemoteIp()).isEqualTo(UPDATED_REMOTE_IP);
-        assertThat(testPayment.getTimestamp()).isEqualTo(UPDATED_TIMESTAMP);
-        assertThat(testPayment.getStatus()).isEqualTo(UPDATED_STATUS);
+        assertThat(testPayment.getRemoteIp()).isEqualTo(DEFAULT_REMOTE_IP);
+        assertThat(testPayment.getTimestamp()).isEqualTo(DEFAULT_TIMESTAMP);
+        assertThat(testPayment.getState()).isEqualTo(UPDATED_STATE);
         assertThat(testPayment.getMessage()).isEqualTo(DEFAULT_MESSAGE);
         assertThat(testPayment.getGatewayId()).isEqualTo(DEFAULT_GATEWAY_ID);
-        assertThat(testPayment.getGatewayCode()).isEqualTo(DEFAULT_GATEWAY_CODE);
         assertThat(testPayment.getMode()).isEqualTo(DEFAULT_MODE);
+        assertThat(testPayment.getFileName()).isEqualTo(UPDATED_FILE_NAME);
     }
 
     @Test
@@ -880,11 +880,11 @@ class PaymentResourceIT {
             .countryCode(UPDATED_COUNTRY_CODE)
             .remoteIp(UPDATED_REMOTE_IP)
             .timestamp(UPDATED_TIMESTAMP)
-            .status(UPDATED_STATUS)
+            .state(UPDATED_STATE)
             .message(UPDATED_MESSAGE)
             .gatewayId(UPDATED_GATEWAY_ID)
-            .gatewayCode(UPDATED_GATEWAY_CODE)
-            .mode(UPDATED_MODE);
+            .mode(UPDATED_MODE)
+            .fileName(UPDATED_FILE_NAME);
 
         restPaymentMockMvc
             .perform(
@@ -915,11 +915,11 @@ class PaymentResourceIT {
         assertThat(testPayment.getCountryCode()).isEqualTo(UPDATED_COUNTRY_CODE);
         assertThat(testPayment.getRemoteIp()).isEqualTo(UPDATED_REMOTE_IP);
         assertThat(testPayment.getTimestamp()).isEqualTo(UPDATED_TIMESTAMP);
-        assertThat(testPayment.getStatus()).isEqualTo(UPDATED_STATUS);
+        assertThat(testPayment.getState()).isEqualTo(UPDATED_STATE);
         assertThat(testPayment.getMessage()).isEqualTo(UPDATED_MESSAGE);
         assertThat(testPayment.getGatewayId()).isEqualTo(UPDATED_GATEWAY_ID);
-        assertThat(testPayment.getGatewayCode()).isEqualTo(UPDATED_GATEWAY_CODE);
         assertThat(testPayment.getMode()).isEqualTo(UPDATED_MODE);
+        assertThat(testPayment.getFileName()).isEqualTo(UPDATED_FILE_NAME);
     }
 
     @Test

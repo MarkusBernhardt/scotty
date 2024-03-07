@@ -29,11 +29,11 @@ public class PaymentTestSamples {
             .city("city1")
             .countryCode("countryCode1")
             .remoteIp("remoteIp1")
-            .status("status1")
+            .state("state1")
             .message("message1")
             .gatewayId("gatewayId1")
-            .gatewayCode("gatewayCode1")
-            .mode("mode1");
+            .mode("mode1")
+            .fileName("fileName1");
     }
 
     public static Payment getPaymentSample2() {
@@ -54,11 +54,11 @@ public class PaymentTestSamples {
             .city("city2")
             .countryCode("countryCode2")
             .remoteIp("remoteIp2")
-            .status("status2")
+            .state("state2")
             .message("message2")
             .gatewayId("gatewayId2")
-            .gatewayCode("gatewayCode2")
-            .mode("mode2");
+            .mode("mode2")
+            .fileName("fileName2");
     }
 
     public static Payment getPaymentRandomSampleGenerator() {
@@ -79,10 +79,10 @@ public class PaymentTestSamples {
             .city(UUID.randomUUID().toString())
             .countryCode(UUID.randomUUID().toString())
             .remoteIp(UUID.randomUUID().toString())
-            .status(UUID.randomUUID().toString())
+            .state(UUID.randomUUID().toString())
             .message(UUID.randomUUID().toString())
             .gatewayId(UUID.randomUUID().toString())
-            .gatewayCode(UUID.randomUUID().toString())
-            .mode(UUID.randomUUID().toString());
+            .mode(UUID.randomUUID().toString())
+            .fileName(UUID.randomUUID().toString());
     }
 }

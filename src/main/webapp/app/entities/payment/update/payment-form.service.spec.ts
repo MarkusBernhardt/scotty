@@ -37,11 +37,11 @@ describe('Payment Form Service', () => {
             countryCode: expect.any(Object),
             remoteIp: expect.any(Object),
             timestamp: expect.any(Object),
-            status: expect.any(Object),
+            state: expect.any(Object),
             message: expect.any(Object),
             gatewayId: expect.any(Object),
-            gatewayCode: expect.any(Object),
             mode: expect.any(Object),
+            fileName: expect.any(Object),
           }),
         );
       });
@@ -69,11 +69,11 @@ describe('Payment Form Service', () => {
             countryCode: expect.any(Object),
             remoteIp: expect.any(Object),
             timestamp: expect.any(Object),
-            status: expect.any(Object),
+            state: expect.any(Object),
             message: expect.any(Object),
             gatewayId: expect.any(Object),
-            gatewayCode: expect.any(Object),
             mode: expect.any(Object),
+            fileName: expect.any(Object),
           }),
         );
       });

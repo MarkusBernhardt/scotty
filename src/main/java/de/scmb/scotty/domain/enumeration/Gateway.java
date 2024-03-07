@@ -4,7 +4,8 @@ package de.scmb.scotty.domain.enumeration;
  * The Gateway enumeration.
  */
 public enum Gateway {
-    EMERCHANTPAY("emerchantpay");
+    EMERCHANTPAY("emerchantpay"),
+    CCBILL("ccbill");
 
     private final String value;
 

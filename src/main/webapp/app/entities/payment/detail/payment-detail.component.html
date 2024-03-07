@@ -81,11 +81,11 @@
           </dd>
           <dt><span jhiTranslate="scottyApp.payment.timestamp">Timestamp</span></dt>
           <dd>
-            <span>{{ payment.timestamp | formatMediumDate }}</span>
+            <span>{{ payment.timestamp | formatMediumDatetime }}</span>
           </dd>
-          <dt><span jhiTranslate="scottyApp.payment.status">Status</span></dt>
+          <dt><span jhiTranslate="scottyApp.payment.state">State</span></dt>
           <dd>
-            <span>{{ payment.status }}</span>
+            <span>{{ payment.state }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.payment.message">Message</span></dt>
           <dd>
@@ -95,13 +95,13 @@
           <dd>
             <span>{{ payment.gatewayId }}</span>
           </dd>
-          <dt><span jhiTranslate="scottyApp.payment.gatewayCode">Gateway Code</span></dt>
-          <dd>
-            <span>{{ payment.gatewayCode }}</span>
-          </dd>
           <dt><span jhiTranslate="scottyApp.payment.mode">Mode</span></dt>
           <dd>
             <span>{{ payment.mode }}</span>
+          </dd>
+          <dt><span jhiTranslate="scottyApp.payment.fileName">File Name</span></dt>
+          <dd>
+            <span>{{ payment.fileName }}</span>
           </dd>
         </dl>
 

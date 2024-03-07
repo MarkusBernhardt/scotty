@@ -35,11 +35,11 @@
       "countryCode": "Country Code",
       "remoteIp": "Remote Ip",
       "timestamp": "Timestamp",
-      "status": "Status",
+      "state": "State",
       "message": "Message",
       "gatewayId": "Gateway Id",
-      "gatewayCode": "Gateway Code",
-      "mode": "Mode"
+      "mode": "Mode",
+      "fileName": "File Name"
     }
   }
 }

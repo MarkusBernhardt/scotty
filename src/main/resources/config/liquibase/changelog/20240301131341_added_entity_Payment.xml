@@ -62,10 +62,10 @@
             <column name="remote_ip" type="varchar(39)">
                 <constraints nullable="false" />
             </column>
-            <column name="timestamp" type="date">
+            <column name="timestamp" type="${datetimeType}">
                 <constraints nullable="false" />
             </column>
-            <column name="status" type="varchar(35)">
+            <column name="state" type="varchar(35)">
                 <constraints nullable="false" />
             </column>
             <column name="message" type="varchar(255)">
@@ -74,14 +74,24 @@
             <column name="gateway_id" type="varchar(35)">
                 <constraints nullable="true" />
             </column>
-            <column name="gateway_code" type="varchar(35)">
+            <column name="mode" type="varchar(35)">
                 <constraints nullable="true" />
             </column>
-            <column name="mode" type="varchar(35)">
+            <column name="file_name" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
+        <dropDefaultValue tableName="payment" columnName="timestamp" columnDataType="${datetimeType}"/>
+        <createIndex indexName="IX_PAYMENT_MANDATE_ID" tableName="payment" unique="false">
+            <column name="mandate_id"/>
+        </createIndex>
+        <createIndex indexName="IX_PAYMENT_PAYMENT_ID" tableName="payment" unique="true">
+            <column name="payment_id"/>
+        </createIndex>
+        <createIndex indexName="IX_PAYMENT_FILE_NAME" tableName="payment" unique="false">
+            <column name="file_name"/>
+        </createIndex>
     </changeSet>
 
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
@@ -118,11 +128,11 @@
             <column name="country_code" type="string"/>
             <column name="remote_ip" type="string"/>
             <column name="timestamp" type="date"/>
-            <column name="status" type="string"/>
+            <column name="state" type="string"/>
             <column name="message" type="string"/>
             <column name="gateway_id" type="string"/>
-            <column name="gateway_code" type="string"/>
             <column name="mode" type="string"/>
+            <column name="file_name" type="string"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
     </changeSet>

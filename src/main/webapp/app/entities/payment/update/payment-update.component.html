@@ -356,37 +356,41 @@
 
         <div class="mb-3">
           <label class="form-label" jhiTranslate="scottyApp.payment.timestamp" for="field_timestamp">Timestamp</label>
-          <div class="input-group">
+          <div class="d-flex">
             <input
               id="field_timestamp"
               data-cy="timestamp"
-              type="text"
+              type="datetime-local"
               class="form-control"
               name="timestamp"
-              ngbDatepicker
-              #timestampDp="ngbDatepicker"
               formControlName="timestamp"
+              placeholder="YYYY-MM-DD HH:mm"
             />
-            <button type="button" class="btn btn-secondary" (click)="timestampDp.toggle()"><fa-icon icon="calendar-alt"></fa-icon></button>
           </div>
           @if (editForm.get('timestamp')!.invalid && (editForm.get('timestamp')!.dirty || editForm.get('timestamp')!.touched)) {
             <div>
               @if (editForm.get('timestamp')?.errors?.required) {
                 <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
               }
+              <small
+                class="form-text text-danger"
+                [hidden]="!editForm.get('timestamp')?.errors?.datetimelocal"
+                jhiTranslate="entity.validation.datetimelocal"
+                >This field should be a date and time.</small
+              >
             </div>
           }
         </div>
 
         <div class="mb-3">
-          <label class="form-label" jhiTranslate="scottyApp.payment.status" for="field_status">Status</label>
-          <input type="text" class="form-control" name="status" id="field_status" data-cy="status" formControlName="status" />
-          @if (editForm.get('status')!.invalid && (editForm.get('status')!.dirty || editForm.get('status')!.touched)) {
+          <label class="form-label" jhiTranslate="scottyApp.payment.state" for="field_state">State</label>
+          <input type="text" class="form-control" name="state" id="field_state" data-cy="state" formControlName="state" />
+          @if (editForm.get('state')!.invalid && (editForm.get('state')!.dirty || editForm.get('state')!.touched)) {
             <div>
-              @if (editForm.get('status')?.errors?.required) {
+              @if (editForm.get('state')?.errors?.required) {
                 <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
               }
-              @if (editForm.get('status')?.errors?.maxlength) {
+              @if (editForm.get('state')?.errors?.maxlength) {
                 <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: 35 }"
                   >This field cannot be longer than 35 characters.</small
                 >
@@ -427,18 +431,11 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" jhiTranslate="scottyApp.payment.gatewayCode" for="field_gatewayCode">Gateway Code</label>
-          <input
-            type="text"
-            class="form-control"
-            name="gatewayCode"
-            id="field_gatewayCode"
-            data-cy="gatewayCode"
-            formControlName="gatewayCode"
-          />
-          @if (editForm.get('gatewayCode')!.invalid && (editForm.get('gatewayCode')!.dirty || editForm.get('gatewayCode')!.touched)) {
+          <label class="form-label" jhiTranslate="scottyApp.payment.mode" for="field_mode">Mode</label>
+          <input type="text" class="form-control" name="mode" id="field_mode" data-cy="mode" formControlName="mode" />
+          @if (editForm.get('mode')!.invalid && (editForm.get('mode')!.dirty || editForm.get('mode')!.touched)) {
             <div>
-              @if (editForm.get('gatewayCode')?.errors?.maxlength) {
+              @if (editForm.get('mode')?.errors?.maxlength) {
                 <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: 35 }"
                   >This field cannot be longer than 35 characters.</small
                 >
@@ -448,13 +445,13 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" jhiTranslate="scottyApp.payment.mode" for="field_mode">Mode</label>
-          <input type="text" class="form-control" name="mode" id="field_mode" data-cy="mode" formControlName="mode" />
-          @if (editForm.get('mode')!.invalid && (editForm.get('mode')!.dirty || editForm.get('mode')!.touched)) {
+          <label class="form-label" jhiTranslate="scottyApp.payment.fileName" for="field_fileName">File Name</label>
+          <input type="text" class="form-control" name="fileName" id="field_fileName" data-cy="fileName" formControlName="fileName" />
+          @if (editForm.get('fileName')!.invalid && (editForm.get('fileName')!.dirty || editForm.get('fileName')!.touched)) {
             <div>
-              @if (editForm.get('mode')?.errors?.maxlength) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: 35 }"
-                  >This field cannot be longer than 35 characters.</small
+              @if (editForm.get('fileName')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: 255 }"
+                  >This field cannot be longer than 255 characters.</small
                 >
               }
             </div>

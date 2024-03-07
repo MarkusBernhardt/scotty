@@ -20,8 +20,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.net.URISyntaxException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.poi.ss.usermodel.*;
@@ -45,13 +44,6 @@ public class PaymentsUploadPayments {
     private final PaymentRepository paymentRepository;
 
     private final Logger log = LoggerFactory.getLogger(PaymentsUploadPayments.class);
-
-    private static final ThreadLocal<DateTimeFormatter> dateTimeFormatter = new ThreadLocal<>() {
-        @Override
-        protected DateTimeFormatter initialValue() {
-            return DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
-        }
-    };
 
     public PaymentsUploadPayments(ApplicationProperties applicationProperties, PaymentRepository paymentRepository) {
         this.applicationProperties = applicationProperties;
@@ -89,7 +81,7 @@ public class PaymentsUploadPayments {
             "DE91100000001234400020",
             ""
         ),
-        new ColumnDescription("bic", ColumnLevel.mandatoryOnInit, "The customer's ISO 9362 business identifier code.", "SSKMDEMMXXX", ""),
+        new ColumnDescription("bic", ColumnLevel.mandatoryOnInit, "The customer's ISO 9362 business identifier code.", "MARKDEF1100", ""),
         new ColumnDescription(
             "amount",
             ColumnLevel.mandatory,
@@ -161,16 +153,15 @@ public class PaymentsUploadPayments {
             ""
         ),
         new ColumnDescription(
-            "status",
+            "state",
             ColumnLevel.response,
-            "The status of the payment. Currently are the following states possible: \"created\", " +
+            "The state of the payment. Currently are the following states possible: \"created\", " +
             "\"pending\", \"submitted\", \"paid\", \"chargedBack\", \"refunded\" and \"failed\"",
             "",
             ""
         ),
-        new ColumnDescription("message", ColumnLevel.response, "The human readable status message.", "", ""),
+        new ColumnDescription("message", ColumnLevel.response, "The human readable message.", "", ""),
         new ColumnDescription("gatewayId", ColumnLevel.response, "The unique id defined by the chosen gateway.", "", ""),
-        new ColumnDescription("gatewayCode", ColumnLevel.response, "The error code defined by the chosen gateway.", "", ""),
         new ColumnDescription("mode", ColumnLevel.response, "The mode of the payment. Can be \"test\" of \"live\"", "", ""),
     };
 
@@ -211,7 +202,7 @@ public class PaymentsUploadPayments {
                     first = false;
                     continue;
                 }
-                amount += getAmountInCent(row, columnAmount) / 100d;
+                amount += getAmountInCent(row, columnAmount);
                 count++;
             }
             return ResponseEntity.ok().body(new PaymentsUploadPaymentsValidateResponseDTO(true, count, amount, null));
@@ -264,18 +255,16 @@ public class PaymentsUploadPayments {
                     );
                 }
                 // TODO
-                // idempotencyKey testen
                 // Show message on client
                 // Progressbar
                 // Id
-                // Add columns
                 // Download file
                 // index mandate id, payment id
             }
 
-            return ResponseEntity.ok().body(new PaymentsUploadPaymentsExecuteResponseDTO(3, "", null));
+            return ResponseEntity.ok().body(new PaymentsUploadPaymentsExecuteResponseDTO(3, null));
         } catch (Throwable t) {
-            return ResponseEntity.ok().body(new PaymentsUploadPaymentsExecuteResponseDTO(1, "", t.getMessage()));
+            return ResponseEntity.ok().body(new PaymentsUploadPaymentsExecuteResponseDTO(1, t.getMessage()));
         }
     }
 
@@ -311,15 +300,6 @@ public class PaymentsUploadPayments {
     private void executeEmerchantpay(Map<String, Integer> columnIndices, Configuration configuration, Row row, CellStyle cellStyle) {
         Payment payment = buildPayment(columnIndices, row, Gateway.EMERCHANTPAY);
         try {
-            Payment duplicate = paymentRepository.findFirstByPaymentIdOrderByIdAsc(
-                row.getCell(columnIndices.get("paymentId")).getStringCellValue()
-            );
-            if (duplicate != null) {
-                payment.setStatus("failed");
-                payment.setMessage("Duplicate payment with id: " + duplicate.getId());
-                return;
-            }
-
             Request request;
             Payment init = paymentRepository.findFirstByMandateIdOrderByIdAsc(getStringCellValue(columnIndices, row, "mandateId"));
             if (init == null) {
@@ -337,6 +317,16 @@ public class PaymentsUploadPayments {
                 payment.setBic(init.getBic());
             }
 
+            Payment duplicate = paymentRepository.findFirstByPaymentIdOrderByIdAsc(
+                row.getCell(columnIndices.get("paymentId")).getStringCellValue()
+            );
+            if (duplicate != null) {
+                payment.setState("failed");
+                payment.setMessage("Duplicate payment with id: " + duplicate.getId());
+                payment.setTimestamp(Instant.now());
+                return;
+            }
+
             GenesisClient client = new GenesisClient(configuration, request);
             client.debugMode(true);
             client.execute();
@@ -347,26 +337,24 @@ public class PaymentsUploadPayments {
 
             payment.setMessage(result.getTransaction().getMessage());
             payment.setGatewayId(result.getTransaction().getUniqueId());
-            if (result.getTransaction().getCode() != null) {
-                payment.setGatewayCode(result.getTransaction().getCode().toString());
-            }
             payment.setMode(result.getTransaction().getMode());
-            payment.setStatus(mapStatusEmerchantpay(result.getTransaction().getStatus()));
-            payment.setTimestamp(dateTimeFormatter.get().parse(result.getTransaction().getTimestamp()));
+            payment.setState(mapStateEmerchantpay(result.getTransaction().getStatus()));
+            payment.setTimestamp(Instant.parse(result.getTransaction().getTimestamp()));
         } catch (Throwable t) {
-            payment.setStatus("failed");
+            payment.setState("failed");
             payment.setMessage(t.getMessage());
-            payment.setTimestamp(LocalDate.now());
+            payment.setTimestamp(Instant.now());
         } finally {
             paymentRepository.save(payment);
         }
     }
 
-    private String mapStatusEmerchantpay(String status) {
-        switch (status) {
+    private String mapStateEmerchantpay(String state) {
+        switch (state) {
             case "approved":
                 return "paid";
             case "pending_async":
+                return "submitted";
             case "pending_hold":
             case "pending_review":
             case "pending":
@@ -384,7 +372,7 @@ public class PaymentsUploadPayments {
 
     private static SDDRecurringSaleRequest getSddRecurringSaleRequest(Payment payment, Payment init) {
         SDDRecurringSaleRequest sddRecurringSaleRequest = new SDDRecurringSaleRequest();
-        sddRecurringSaleRequest.setAmount(BigDecimal.valueOf(payment.getAmount()));
+        sddRecurringSaleRequest.setAmount(BigDecimal.valueOf(payment.getAmount() / 100d));
         sddRecurringSaleRequest.setCurrency(payment.getCurrencyCode());
         sddRecurringSaleRequest.setTransactionId(payment.getPaymentId());
         sddRecurringSaleRequest.setUsage(payment.getSoftDescriptor());
@@ -395,7 +383,7 @@ public class PaymentsUploadPayments {
 
     private static SDDInitRecurringSaleRequest getSddInitRecurringSaleRequest(Payment payment) {
         SDDInitRecurringSaleRequest sddInitRecurringSaleRequest = new SDDInitRecurringSaleRequest();
-        sddInitRecurringSaleRequest.setAmount(BigDecimal.valueOf(payment.getAmount()));
+        sddInitRecurringSaleRequest.setAmount(BigDecimal.valueOf(payment.getAmount() / 100d));
         sddInitRecurringSaleRequest.setCurrency(payment.getCurrencyCode());
         sddInitRecurringSaleRequest.setBillingFirstname(payment.getFirstName());
         sddInitRecurringSaleRequest.setBillingLastname(payment.getLastName());

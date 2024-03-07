@@ -161,9 +161,9 @@
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="status">
+            <th scope="col" jhiSortBy="state">
               <div class="d-flex">
-                <span jhiTranslate="scottyApp.payment.status">Status</span>
+                <span jhiTranslate="scottyApp.payment.state">State</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
@@ -182,16 +182,16 @@
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="gatewayCode">
+            <th scope="col" jhiSortBy="mode">
               <div class="d-flex">
-                <span jhiTranslate="scottyApp.payment.gatewayCode">Gateway Code</span>
+                <span jhiTranslate="scottyApp.payment.mode">Mode</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="mode">
+            <th scope="col" jhiSortBy="fileName">
               <div class="d-flex">
-                <span jhiTranslate="scottyApp.payment.mode">Mode</span>
+                <span jhiTranslate="scottyApp.payment.fileName">File Name</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
@@ -221,12 +221,12 @@
               <td>{{ payment.city }}</td>
               <td>{{ payment.countryCode }}</td>
               <td>{{ payment.remoteIp }}</td>
-              <td>{{ payment.timestamp | formatMediumDate }}</td>
-              <td>{{ payment.status }}</td>
+              <td>{{ payment.timestamp | formatMediumDatetime }}</td>
+              <td>{{ payment.state }}</td>
               <td>{{ payment.message }}</td>
               <td>{{ payment.gatewayId }}</td>
-              <td>{{ payment.gatewayCode }}</td>
               <td>{{ payment.mode }}</td>
+              <td>{{ payment.fileName }}</td>
               <td class="text-end">
                 <div class="btn-group">
                   <a [routerLink]="['/payment', payment.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">

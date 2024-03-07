@@ -2,7 +2,8 @@
   "scottyApp": {
     "Gateway": {
       "null": "",
-      "EMERCHANTPAY": "emerchantpay"
+      "EMERCHANTPAY": "emerchantpay",
+      "CCBILL": "ccbill"
     }
   }
 }

@@ -7,6 +7,7 @@ import FileSaver from 'file-saver';
 import SharedModule from '../../shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Component } from '@angular/core';
+import { formatDate } from '@angular/common';
 
 class FileCache {
   constructor(
@@ -19,8 +20,7 @@ class FileCache {
     public executeProgress: number,
     public executeSuccess: number,
     public executeSubscription: Subscription | null,
-    public processedFileName: string | null,
-    public processedFile: string | null,
+    public executeFileName: string | null,
   ) {}
 }
 
@@ -60,7 +60,7 @@ export default class PaymentsUploadPaymentsComponent {
             this.deleteDiscardedFile(file.name);
           }
         } else if (!this.fileCaches.has(file.name)) {
-          this.fileCaches.set(file.name, new FileCache(file, 0, true, 0, 0, null, 0, 0, null, null, null));
+          this.fileCaches.set(file.name, new FileCache(file, 0, true, 0, 0, null, 0, 0, null, null));
           this.validate(file.name);
         }
       }
@@ -105,7 +105,13 @@ export default class PaymentsUploadPaymentsComponent {
       return;
     }
 
-    fileCache.executeSubscription = this.paymentsUploadPaymentsService.execute(fileCache.file).subscribe({
+    fileCache.executeFileName =
+      fileCache.file.name.substring(0, fileCache.file.name.lastIndexOf('.')) +
+      '-' +
+      formatDate(Date.now(), 'yyyyMMdd-hhmmss', 'en-US') +
+      '.xlsx';
+
+    fileCache.executeSubscription = this.paymentsUploadPaymentsService.execute(fileCache.file, fileCache.executeFileName).subscribe({
       next: event => {
         switch (event.type) {
           case HttpEventType.UploadProgress:
@@ -127,6 +133,19 @@ export default class PaymentsUploadPaymentsComponent {
         fileCache.executeProgress = 100;
       },
     });
+
+    (async () => {
+      await new Promise(f => setTimeout(f, 1000));
+      fileCache.executeProgress = 10;
+      await new Promise(f => setTimeout(f, 1000));
+      fileCache.executeProgress = 20;
+      await new Promise(f => setTimeout(f, 1000));
+      fileCache.executeProgress = 30;
+      await new Promise(f => setTimeout(f, 1000));
+      fileCache.executeProgress = 40;
+      await new Promise(f => setTimeout(f, 1000));
+      fileCache.executeProgress = 50;
+    })();
   }
 
   save(name: string): void {
@@ -135,10 +154,12 @@ export default class PaymentsUploadPaymentsComponent {
       return;
     }
 
+    /*
     if (fileCache.processedFileName && fileCache.processedFile) {
       const blob = new Blob([fileCache.processedFile], { type: 'text/plain;charset=utf-8' });
       FileSaver.saveAs(blob, fileCache.processedFileName);
     }
+    */
   }
 
   example(): void {

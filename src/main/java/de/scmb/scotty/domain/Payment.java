@@ -4,7 +4,7 @@ import de.scmb.scotty.domain.enumeration.Gateway;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.Instant;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -106,12 +106,12 @@ public class Payment implements Serializable {
 
     @NotNull
     @Column(name = "timestamp", nullable = false)
-    private LocalDate timestamp;
+    private Instant timestamp;
 
     @NotNull
     @Size(max = 35)
-    @Column(name = "status", length = 35, nullable = false)
-    private String status;
+    @Column(name = "state", length = 35, nullable = false)
+    private String state;
 
     @NotNull
     @Size(max = 255)
@@ -123,12 +123,12 @@ public class Payment implements Serializable {
     private String gatewayId;
 
     @Size(max = 35)
-    @Column(name = "gateway_code", length = 35)
-    private String gatewayCode;
-
-    @Size(max = 35)
     @Column(name = "mode", length = 35)
     private String mode;
+
+    @Size(max = 255)
+    @Column(name = "file_name", length = 255)
+    private String fileName;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -353,30 +353,30 @@ public class Payment implements Serializable {
         this.remoteIp = remoteIp;
     }
 
-    public LocalDate getTimestamp() {
+    public Instant getTimestamp() {
         return this.timestamp;
     }
 
-    public Payment timestamp(LocalDate timestamp) {
+    public Payment timestamp(Instant timestamp) {
         this.setTimestamp(timestamp);
         return this;
     }
 
-    public void setTimestamp(LocalDate timestamp) {
+    public void setTimestamp(Instant timestamp) {
         this.timestamp = timestamp;
     }
 
-    public String getStatus() {
-        return this.status;
+    public String getState() {
+        return this.state;
     }
 
-    public Payment status(String status) {
-        this.setStatus(status);
+    public Payment state(String state) {
+        this.setState(state);
         return this;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setState(String state) {
+        this.state = state;
     }
 
     public String getMessage() {
@@ -405,19 +405,6 @@ public class Payment implements Serializable {
         this.gatewayId = gatewayId;
     }
 
-    public String getGatewayCode() {
-        return this.gatewayCode;
-    }
-
-    public Payment gatewayCode(String gatewayCode) {
-        this.setGatewayCode(gatewayCode);
-        return this;
-    }
-
-    public void setGatewayCode(String gatewayCode) {
-        this.gatewayCode = gatewayCode;
-    }
-
     public String getMode() {
         return this.mode;
     }
@@ -429,6 +416,19 @@ public class Payment implements Serializable {
 
     public void setMode(String mode) {
         this.mode = mode;
+    }
+
+    public String getFileName() {
+        return this.fileName;
+    }
+
+    public Payment fileName(String fileName) {
+        this.setFileName(fileName);
+        return this;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
@@ -472,11 +472,11 @@ public class Payment implements Serializable {
             ", countryCode='" + getCountryCode() + "'" +
             ", remoteIp='" + getRemoteIp() + "'" +
             ", timestamp='" + getTimestamp() + "'" +
-            ", status='" + getStatus() + "'" +
+            ", state='" + getState() + "'" +
             ", message='" + getMessage() + "'" +
             ", gatewayId='" + getGatewayId() + "'" +
-            ", gatewayCode='" + getGatewayCode() + "'" +
             ", mode='" + getMode() + "'" +
+            ", fileName='" + getFileName() + "'" +
             "}";
     }
 }
