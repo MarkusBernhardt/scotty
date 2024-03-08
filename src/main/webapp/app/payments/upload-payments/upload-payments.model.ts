@@ -13,9 +13,9 @@ export class PaymentsUploadPaymentsExecuteResponse {
   ) {}
 }
 
-export class PaymentsUploadPaymentsExampleResponse {
+export class PaymentsUploadPaymentsProgressResponse {
   constructor(
-    public name: string,
-    public data: Uint8Array,
+    public success: number,
+    public count: number,
   ) {}
 }

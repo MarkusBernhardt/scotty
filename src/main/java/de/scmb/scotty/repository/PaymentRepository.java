@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
     Payment findFirstByPaymentIdOrderByIdAsc(String paymentId);
 
-    Payment findFirstByMandateIdAndGatewayIdNotNullOrderByIdAsc(String mandateId);
+    Payment findFirstByMandateIdAndGatewayIdNotNullAndGatewayIdNotOrderByIdAsc(String mandateId, String gatewayId);
 
     List<Payment> findAllByFileName(String fileName);
 }

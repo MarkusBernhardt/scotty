@@ -132,13 +132,7 @@ public class PaymentsUploadPayments {
             "80335",
             ""
         ),
-        new ColumnDescription(
-            "city",
-            ColumnLevel.mandatoryOnInit,
-            "The city of the customer’s address. Max 35 characters.",
-            "M\u00fcnchen",
-            ""
-        ),
+        new ColumnDescription("city", ColumnLevel.mandatoryOnInit, "The city of the customer’s address. Max 35 characters.", "München", ""),
         new ColumnDescription(
             "countryCode",
             ColumnLevel.mandatoryOnInit,
@@ -205,7 +199,7 @@ public class PaymentsUploadPayments {
                     first = false;
                     continue;
                 }
-                amount += getAmountInCent(row, columnAmount);
+                amount += getIntCellValue(row, columnAmount);
                 count++;
             }
             return ResponseEntity.ok().body(new PaymentsUploadPaymentsValidateResponseDTO(true, count, amount, null));
@@ -217,7 +211,7 @@ public class PaymentsUploadPayments {
     @PostMapping("/execute")
     public ResponseEntity<PaymentsUploadPaymentsExecuteResponseDTO> execute(
         @Valid @RequestPart MultipartFile file,
-        @Valid @RequestPart String executeFileName
+        @Valid @RequestPart String fileName
     ) throws IOException {
         try {
             Workbook workbook = new XSSFWorkbook(file.getInputStream());
@@ -246,6 +240,8 @@ public class PaymentsUploadPayments {
             cellStyle.setWrapText(true);
 
             Map<String, Integer> columnIndices = new HashMap<>();
+            int count = 0;
+            int countFailed = 0;
             boolean first = true;
             for (Row row : sheet) {
                 if (first) {
@@ -258,21 +254,32 @@ public class PaymentsUploadPayments {
                     continue;
                 }
 
+                count++;
                 switch (row.getCell(columnIndices.get("gateway")).getStringCellValue()) {
-                    case "emerchantpay" -> executeEmerchantpay(columnIndices, configuration, row, cellStyle, executeFileName);
-                    case "ccbill" -> executeCcbill(columnIndices, configuration, row, cellStyle, executeFileName);
-                    default -> throw new IllegalArgumentException(
-                        String.format("Unknown gateway \"%s\"", row.getCell(columnIndices.get("gateway")).getStringCellValue())
-                    );
+                    case "emerchantpay" -> {
+                        if (executeEmerchantpay(columnIndices, configuration, row, fileName)) countFailed++;
+                    }
+                    case "ccbill" -> {
+                        if (executeCcbill()) countFailed++;
+                    }
+                    default -> {
+                        if (executeUnknown(columnIndices, row, fileName)) countFailed++;
+                    }
                 }
                 // TODO
                 // Show message on client
                 // Progressbar
                 // Download file
-                // scotty id
             }
 
-            return ResponseEntity.ok().body(new PaymentsUploadPaymentsExecuteResponseDTO(3, null));
+            int success = 2;
+            if (countFailed == 0) {
+                success = 3;
+            } else if (countFailed == count) {
+                success = 1;
+            }
+
+            return ResponseEntity.ok().body(new PaymentsUploadPaymentsExecuteResponseDTO(success, null));
         } catch (Throwable t) {
             return ResponseEntity.ok().body(new PaymentsUploadPaymentsExecuteResponseDTO(1, t.getMessage()));
         }
@@ -298,48 +305,36 @@ public class PaymentsUploadPayments {
         return ResponseEntity.ok().body(new PaymentsUploadPaymentsProgressResponseDTO(success, count));
     }
 
-    private String getStringCellValue(Map<String, Integer> columnIndices, Row row, String columnName) {
-        try {
-            return row.getCell(columnIndices.get(columnName)).getStringCellValue();
-        } catch (Throwable t) {
-            return "";
-        }
-    }
-
     private Payment buildPayment(Map<String, Integer> columnIndices, Row row, Gateway gateway, String executeFileName) {
         Payment payment = new Payment();
-        payment.setAmount(getAmountInCent(row, columnIndices.get("amount")));
-        payment.setCurrencyCode(getStringCellValue(columnIndices, row, "currencyCode"));
-        payment.setFirstName(getStringCellValue(columnIndices, row, "firstName"));
-        payment.setLastName(getStringCellValue(columnIndices, row, "lastName"));
-        payment.setCity(getStringCellValue(columnIndices, row, "city"));
-        payment.setPostalCode(getStringCellValue(columnIndices, row, "postalCode"));
-        payment.setAddressLine1(getStringCellValue(columnIndices, row, "addressLine1"));
-        payment.setAddressLine2(getStringCellValue(columnIndices, row, "addressLine2"));
-        payment.setCountryCode(getStringCellValue(columnIndices, row, "countryCode"));
-        payment.setIban(getStringCellValue(columnIndices, row, "iban"));
-        payment.setBic(getStringCellValue(columnIndices, row, "bic"));
-        payment.setPaymentId(getStringCellValue(columnIndices, row, "paymentId"));
-        payment.setSoftDescriptor(getStringCellValue(columnIndices, row, "softDescriptor"));
-        payment.setRemoteIp(getStringCellValue(columnIndices, row, "remoteIp"));
+        payment.setAmount(getIntCellValue(row, columnIndices.get("amount")));
+        payment.setCurrencyCode(cutRight(getStringCellValue(columnIndices, row, "currencyCode"), 3));
+        payment.setFirstName(cutRight(getStringCellValue(columnIndices, row, "firstName"), 35));
+        payment.setLastName(cutRight(getStringCellValue(columnIndices, row, "lastName"), 35));
+        payment.setCity(cutRight(getStringCellValue(columnIndices, row, "city"), 35));
+        payment.setPostalCode(cutRight(getStringCellValue(columnIndices, row, "postalCode"), 16));
+        payment.setAddressLine1(cutRight(getStringCellValue(columnIndices, row, "addressLine1"), 70));
+        payment.setAddressLine2(cutRight(getStringCellValue(columnIndices, row, "addressLine2"), 70));
+        payment.setCountryCode(cutRight(getStringCellValue(columnIndices, row, "countryCode"), 2));
+        payment.setIban(cutRight(getStringCellValue(columnIndices, row, "iban"), 34));
+        payment.setBic(cutRight(getStringCellValue(columnIndices, row, "bic"), 11));
+        payment.setPaymentId(cutRight(getStringCellValue(columnIndices, row, "paymentId"), 35));
+        payment.setSoftDescriptor(cutRight(getStringCellValue(columnIndices, row, "softDescriptor"), 140));
+        payment.setRemoteIp(cutRight(getStringCellValue(columnIndices, row, "remoteIp"), 39));
         payment.setGateway(gateway);
-        payment.setMandateId(getStringCellValue(columnIndices, row, "mandateId"));
+        payment.setMandateId(cutRight(getStringCellValue(columnIndices, row, "mandateId"), 35));
         payment.setFileName(executeFileName);
         return payment;
     }
 
-    private void executeEmerchantpay(
-        Map<String, Integer> columnIndices,
-        Configuration configuration,
-        Row row,
-        CellStyle cellStyle,
-        String executeFileName
-    ) {
+    private boolean executeEmerchantpay(Map<String, Integer> columnIndices, Configuration configuration, Row row, String executeFileName) {
         Payment payment = buildPayment(columnIndices, row, Gateway.EMERCHANTPAY, executeFileName);
+        payment.setFileName(cutRight(executeFileName, 255));
         try {
             Request request;
-            Payment init = paymentRepository.findFirstByMandateIdAndGatewayIdNotNullOrderByIdAsc(
-                getStringCellValue(columnIndices, row, "mandateId")
+            Payment init = paymentRepository.findFirstByMandateIdAndGatewayIdNotNullAndGatewayIdNotOrderByIdAsc(
+                getStringCellValue(columnIndices, row, "mandateId"),
+                ""
             );
             if (init == null) {
                 request = getSddInitRecurringSaleRequest(payment);
@@ -356,14 +351,14 @@ public class PaymentsUploadPayments {
                 payment.setBic(init.getBic());
             }
 
-            Payment duplicate = paymentRepository.findFirstByPaymentIdOrderByIdAsc(
-                row.getCell(columnIndices.get("paymentId")).getStringCellValue()
-            );
+            Payment duplicate = paymentRepository.findFirstByPaymentIdOrderByIdAsc(getStringCellValue(columnIndices, row, "paymentId"));
             if (duplicate != null) {
                 payment.setState("failed");
-                payment.setMessage("Duplicate payment with id: " + duplicate.getId());
+                payment.setMessage(cutRight("Duplicate payment with id: " + duplicate.getId(), 255));
                 payment.setTimestamp(Instant.now());
-                return;
+                payment.setGatewayId("");
+                payment.setMode("");
+                return true;
             }
 
             GenesisClient client = new GenesisClient(configuration, request);
@@ -374,105 +369,52 @@ public class PaymentsUploadPayments {
             TransactionResult<? extends Transaction> result = client.getTransaction().getRequest();
             log.debug("Transaction Id: " + result.getTransaction().getTransactionId());
 
-            payment.setMessage(result.getTransaction().getMessage());
-            payment.setGatewayId(result.getTransaction().getUniqueId());
-            payment.setMode(result.getTransaction().getMode());
-            payment.setState(mapStateEmerchantpay(result.getTransaction().getStatus()));
+            payment.setMessage(cutRight(result.getTransaction().getMessage(), 255));
+            payment.setGatewayId(cutRight(result.getTransaction().getUniqueId(), 35));
+            payment.setMode(cutRight(result.getTransaction().getMode(), 35));
+            payment.setState(cutRight(mapStateEmerchantpay(result.getTransaction().getStatus()), 35));
             payment.setTimestamp(Instant.parse(result.getTransaction().getTimestamp()));
         } catch (Throwable t) {
             payment.setState("failed");
             payment.setMessage(t.getMessage());
             payment.setTimestamp(Instant.now());
+            payment.setGatewayId("");
+            payment.setMode("");
+            return true;
         } finally {
             paymentRepository.save(payment);
         }
+        return false;
     }
 
     private String mapStateEmerchantpay(String state) {
-        switch (state) {
-            case "approved":
-                return "paid";
-            case "pending_async":
-                return "submitted";
-            case "pending_hold":
-            case "pending_review":
-            case "pending":
-                return "pending";
-            case "refunded":
-                return "refunded";
-            case "chargebacked":
-                return "chargedBack";
-            default:
-                return "failed";
-        }
+        return switch (state) {
+            case "approved" -> "paid";
+            case "pending_async" -> "submitted";
+            case "pending_hold", "pending_review", "pending" -> "pending";
+            case "refunded" -> "refunded";
+            case "chargebacked" -> "chargedBack";
+            default -> "failed";
+        };
     }
 
-    private void executeCcbill(
-        Map<String, Integer> columnIndices,
-        Configuration configuration,
-        Row row,
-        CellStyle cellStyle,
-        String executeFileName
-    ) {}
+    private boolean executeCcbill() {
+        return true;
+    }
 
-    private void executeUnknown(
-        Map<String, Integer> columnIndices,
-        Configuration configuration,
-        Row row,
-        CellStyle cellStyle,
-        String executeFileName
-    ) {
-        Payment payment = buildPayment(columnIndices, row, Gateway.EMERCHANTPAY, executeFileName);
+    private boolean executeUnknown(Map<String, Integer> columnIndices, Row row, String executeFileName) {
+        Payment payment = buildPayment(columnIndices, row, Gateway.UNKNOWN, executeFileName);
+        payment.setFileName(executeFileName);
         try {
-            Request request;
-            Payment init = paymentRepository.findFirstByMandateIdAndGatewayIdNotNullOrderByIdAsc(
-                getStringCellValue(columnIndices, row, "mandateId")
-            );
-            if (init == null) {
-                request = getSddInitRecurringSaleRequest(payment);
-            } else {
-                request = getSddRecurringSaleRequest(payment, init);
-                payment.setFirstName(init.getFirstName());
-                payment.setLastName(init.getLastName());
-                payment.setCity(init.getCity());
-                payment.setPostalCode(init.getPostalCode());
-                payment.setAddressLine1(init.getAddressLine1());
-                payment.setAddressLine2(init.getAddressLine2());
-                payment.setCountryCode(init.getCountryCode());
-                payment.setIban(init.getIban());
-                payment.setBic(init.getBic());
-            }
-
-            Payment duplicate = paymentRepository.findFirstByPaymentIdOrderByIdAsc(
-                row.getCell(columnIndices.get("paymentId")).getStringCellValue()
-            );
-            if (duplicate != null) {
-                payment.setState("failed");
-                payment.setMessage("Duplicate payment with id: " + duplicate.getId());
-                payment.setTimestamp(Instant.now());
-                return;
-            }
-
-            GenesisClient client = new GenesisClient(configuration, request);
-            client.debugMode(true);
-            client.execute();
-
-            // Parse Payment result
-            TransactionResult<? extends Transaction> result = client.getTransaction().getRequest();
-            log.debug("Transaction Id: " + result.getTransaction().getTransactionId());
-
-            payment.setMessage(result.getTransaction().getMessage());
-            payment.setGatewayId(result.getTransaction().getUniqueId());
-            payment.setMode(result.getTransaction().getMode());
-            payment.setState(mapStateEmerchantpay(result.getTransaction().getStatus()));
-            payment.setTimestamp(Instant.parse(result.getTransaction().getTimestamp()));
-        } catch (Throwable t) {
             payment.setState("failed");
-            payment.setMessage(t.getMessage());
+            payment.setMessage(cutRight("Unknown gateway: " + row.getCell(columnIndices.get("gateway")).getStringCellValue(), 255));
             payment.setTimestamp(Instant.now());
+            payment.setGatewayId("");
+            payment.setMode("");
         } finally {
             paymentRepository.save(payment);
         }
+        return true;
     }
 
     private static SDDRecurringSaleRequest getSddRecurringSaleRequest(Payment payment, Payment init) {
@@ -503,15 +445,6 @@ public class PaymentsUploadPayments {
         sddInitRecurringSaleRequest.setUsage(payment.getSoftDescriptor());
         sddInitRecurringSaleRequest.setRemoteIp(payment.getRemoteIp());
         return sddInitRecurringSaleRequest;
-    }
-
-    private int getAmountInCent(Row row, int columnAmount) {
-        Cell cell = row.getCell(columnAmount);
-        return switch (cell.getCellType()) {
-            case STRING -> Integer.parseInt(cell.getStringCellValue());
-            case NUMERIC -> (int) cell.getNumericCellValue();
-            default -> throw new IllegalArgumentException();
-        };
     }
 
     @GetMapping(value = "/example")
@@ -599,7 +532,7 @@ public class PaymentsUploadPayments {
         }
 
         index = 0;
-        for (ColumnDescription columnDescription : COLUMNS) {
+        for (ColumnDescription ignored : COLUMNS) {
             sheet.autoSizeColumn(index);
             index++;
         }
@@ -645,6 +578,44 @@ public class PaymentsUploadPayments {
 
         workbook.write(outputStream);
         workbook.close();
+    }
+
+    private String cutRight(String value, int length) {
+        if (value == null) {
+            return "";
+        }
+
+        value = value.trim();
+        if (value.length() > length) {
+            value = value.substring(0, length);
+        }
+        return value;
+    }
+
+    private int getIntCellValue(Row row, int columnInddex) {
+        try {
+            Cell cell = row.getCell(columnInddex);
+            return switch (cell.getCellType()) {
+                case STRING -> Integer.parseInt(cell.getStringCellValue());
+                case NUMERIC -> (int) cell.getNumericCellValue();
+                default -> throw new IllegalArgumentException();
+            };
+        } catch (Throwable t) {
+            return 0;
+        }
+    }
+
+    private String getStringCellValue(Map<String, Integer> columnIndices, Row row, String columnName) {
+        try {
+            Cell cell = row.getCell(columnIndices.get(columnName));
+            return switch (cell.getCellType()) {
+                case STRING -> cell.getStringCellValue();
+                case NUMERIC -> Integer.toString((int) cell.getNumericCellValue());
+                default -> throw new IllegalArgumentException();
+            };
+        } catch (Throwable t) {
+            return "";
+        }
     }
 
     private static enum ColumnLevel {

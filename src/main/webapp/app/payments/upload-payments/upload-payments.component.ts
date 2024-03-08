@@ -20,7 +20,7 @@ class FileCache {
     public executeProgress: number,
     public executeSuccess: number,
     public executeSubscription: Subscription | null,
-    public executeFileName: string | null,
+    public executeFileName: string,
   ) {}
 }
 
@@ -60,7 +60,7 @@ export default class PaymentsUploadPaymentsComponent {
             this.deleteDiscardedFile(file.name);
           }
         } else if (!this.fileCaches.has(file.name)) {
-          this.fileCaches.set(file.name, new FileCache(file, 0, true, 0, 0, null, 0, 0, null, null));
+          this.fileCaches.set(file.name, new FileCache(file, 0, true, 0, 0, null, 0, 0, null, ''));
           this.validate(file.name);
         }
       }
@@ -112,7 +112,7 @@ export default class PaymentsUploadPaymentsComponent {
         switch (event.type) {
           case HttpEventType.UploadProgress:
             if (event.total) {
-              fileCache.executeProgress = Math.round((100 * event.loaded) / event.total);
+              fileCache.executeProgress = Math.round((10 * event.loaded) / event.total);
             }
             break;
           case HttpEventType.Response:
@@ -131,16 +131,15 @@ export default class PaymentsUploadPaymentsComponent {
     });
 
     (async () => {
-      await new Promise(f => setTimeout(f, 1000));
-      fileCache.executeProgress = 10;
-      await new Promise(f => setTimeout(f, 1000));
-      fileCache.executeProgress = 20;
-      await new Promise(f => setTimeout(f, 1000));
-      fileCache.executeProgress = 30;
-      await new Promise(f => setTimeout(f, 1000));
-      fileCache.executeProgress = 40;
-      await new Promise(f => setTimeout(f, 1000));
-      fileCache.executeProgress = 50;
+      while (!fileCache.executeSubscription?.closed) {
+        this.paymentsUploadPaymentsService.progress(fileCache.executeFileName).subscribe({
+          next: response => {
+            fileCache.executeSuccess = response.success;
+            fileCache.executeProgress = Math.round(10 + (90 * response.count) / fileCache.validateCount);
+          },
+        });
+        await new Promise(f => setTimeout(f, 1000));
+      }
     })();
   }
 
