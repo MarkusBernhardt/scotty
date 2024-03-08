@@ -289,7 +289,7 @@ public class PaymentsUploadPayments {
     public ResponseEntity<PaymentsUploadPaymentsProgressResponseDTO> progress(@RequestParam(value = "fileName") String fileName)
         throws URISyntaxException, IOException {
         int countFailed = 0;
-        List<Payment> payments = paymentRepository.findAllByFileName(fileName);
+        List<Payment> payments = paymentRepository.findAllByFileNameOrderByIdAsc(fileName);
         for (Payment payment : payments) {
             if (payment.getState().equals("failed")) {
                 countFailed++;
@@ -447,6 +447,166 @@ public class PaymentsUploadPayments {
         return sddInitRecurringSaleRequest;
     }
 
+    @GetMapping(value = "/save")
+    public ResponseEntity<StreamingResponseBody> save(@RequestParam(value = "fileName") String fileName)
+        throws URISyntaxException, IOException {
+        fileName = "payments-20240308-071530.xlsx";
+        String finalFileName = fileName;
+        StreamingResponseBody stream = outputStream -> {
+            writeToStream(outputStream, finalFileName);
+        };
+        return ResponseEntity
+            .ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
+            .contentType(MediaType.APPLICATION_OCTET_STREAM)
+            .body(stream);
+    }
+
+    private void writeToStream(OutputStream outputStream, String fileName) throws IOException {
+        try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+            XSSFFont headerFont = workbook.createFont();
+            headerFont.setFontName("Arial");
+            headerFont.setBold(true);
+
+            CellStyle headerStyle = workbook.createCellStyle();
+            headerStyle.setFillForegroundColor(IndexedColors.LIGHT_GREEN.getIndex());
+            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            headerStyle.setFont(headerFont);
+
+            CellStyle cellStyle = workbook.createCellStyle();
+            cellStyle.setWrapText(true);
+
+            Sheet sheet = workbook.createSheet("payments");
+
+            int index = 0;
+            Row row = sheet.createRow(0);
+            Map<String, Integer> columnIndices = new HashMap<>();
+            for (ColumnDescription columnDescription : COLUMNS) {
+                Cell cell = row.createCell(index);
+                cell.setCellValue(columnDescription.name);
+                cell.setCellStyle(headerStyle);
+                columnIndices.put(columnDescription.name, index);
+                index++;
+            }
+
+            index = 1;
+            List<Payment> payments = paymentRepository.findAllByFileNameOrderByIdAsc(fileName);
+            for (Payment payment : payments) {
+                row = sheet.createRow(index);
+
+                Cell cell = row.createCell(columnIndices.get("mandateId"));
+                try {
+                    cell.setCellValue(Integer.parseInt(payment.getMandateId()));
+                } catch (Throwable t) {
+                    cell.setCellValue(payment.getMandateId());
+                }
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("paymentId"));
+                try {
+                    cell.setCellValue(Integer.parseInt(payment.getPaymentId()));
+                } catch (Throwable t) {
+                    cell.setCellValue(payment.getPaymentId());
+                }
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("gateway"));
+                cell.setCellValue(payment.getGateway().toString());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("iban"));
+                cell.setCellValue(payment.getIban());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("bic"));
+                cell.setCellValue(payment.getBic());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("amount"));
+                cell.setCellValue(payment.getAmount());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("currencyCode"));
+                cell.setCellValue(payment.getCurrencyCode());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("softDescriptor"));
+                cell.setCellValue(payment.getSoftDescriptor());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("firstName"));
+                cell.setCellValue(payment.getFirstName());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("lastName"));
+                cell.setCellValue(payment.getLastName());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("addressLine1"));
+                cell.setCellValue(payment.getAddressLine1());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("addressLine2"));
+                cell.setCellValue(payment.getAddressLine2());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("postalCode"));
+                try {
+                    cell.setCellValue(Integer.parseInt(payment.getPostalCode()));
+                } catch (Throwable t) {
+                    cell.setCellValue(payment.getPostalCode());
+                }
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("city"));
+                cell.setCellValue(payment.getCity());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("countryCode"));
+                cell.setCellValue(payment.getCountryCode());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("remoteIp"));
+                cell.setCellValue(payment.getRemoteIp());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("scottyId"));
+                cell.setCellValue(payment.getId());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("state"));
+                cell.setCellValue(payment.getState());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("timestamp"));
+                cell.setCellValue(payment.getTimestamp().toString());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("gatewayId"));
+                cell.setCellValue(payment.getGatewayId());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("message"));
+                cell.setCellValue(payment.getMessage());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("mode"));
+                cell.setCellValue(payment.getMode());
+                cell.setCellStyle(cellStyle);
+
+                index++;
+            }
+
+            index = 0;
+            for (ColumnDescription columnDescription : COLUMNS) {
+                sheet.autoSizeColumn(index);
+                index++;
+            }
+
+            workbook.write(outputStream);
+        }
+    }
+
     @GetMapping(value = "/example")
     public ResponseEntity<StreamingResponseBody> example() throws URISyntaxException, IOException {
         StreamingResponseBody stream = this::writeExampleToStream;
@@ -458,126 +618,125 @@ public class PaymentsUploadPayments {
     }
 
     private void writeExampleToStream(OutputStream outputStream) throws IOException {
-        XSSFWorkbook workbook = new XSSFWorkbook();
+        try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+            XSSFFont headerFont = workbook.createFont();
+            headerFont.setFontName("Arial");
+            headerFont.setBold(true);
 
-        XSSFFont headerFont = workbook.createFont();
-        headerFont.setFontName("Arial");
-        headerFont.setBold(true);
+            CellStyle headerStyle = workbook.createCellStyle();
+            headerStyle.setFillForegroundColor(IndexedColors.LIGHT_GREEN.getIndex());
+            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            headerStyle.setFont(headerFont);
 
-        CellStyle headerStyle = workbook.createCellStyle();
-        headerStyle.setFillForegroundColor(IndexedColors.LIGHT_GREEN.getIndex());
-        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        headerStyle.setFont(headerFont);
+            CellStyle cellStyle = workbook.createCellStyle();
+            cellStyle.setWrapText(true);
 
-        CellStyle cellStyle = workbook.createCellStyle();
-        cellStyle.setWrapText(true);
+            Sheet sheet = workbook.createSheet("payments");
 
-        Sheet sheet = workbook.createSheet("payments");
+            int index = 0;
+            Row row = sheet.createRow(0);
+            for (ColumnDescription columnDescription : COLUMNS) {
+                if (columnDescription.level != ColumnLevel.mandatory && columnDescription.level != ColumnLevel.mandatoryOnInit) {
+                    continue;
+                }
 
-        int index = 0;
-        Row row = sheet.createRow(0);
-        for (ColumnDescription columnDescription : COLUMNS) {
-            if (columnDescription.level != ColumnLevel.mandatory && columnDescription.level != ColumnLevel.mandatoryOnInit) {
-                continue;
+                Cell cell = row.createCell(index);
+                cell.setCellValue(columnDescription.name);
+                cell.setCellStyle(headerStyle);
+                index++;
             }
 
-            Cell cell = row.createCell(index);
-            cell.setCellValue(columnDescription.name);
+            for (int i = 0; i < 10; i++) {
+                index = 0;
+                row = sheet.createRow(i + 1);
+                for (ColumnDescription columnDescription : COLUMNS) {
+                    if (columnDescription.level != ColumnLevel.mandatory && columnDescription.level != ColumnLevel.mandatoryOnInit) {
+                        continue;
+                    }
+
+                    Cell cell = row.createCell(index);
+                    if (columnDescription.name.equals("mandateId") || columnDescription.name.equals("paymentId")) {
+                        cell.setCellValue(UUID.randomUUID().toString().replace("-", ""));
+                    } else if (columnDescription.example[0] instanceof Integer) {
+                        cell.setCellValue((Integer) columnDescription.example[0]);
+                    } else {
+                        cell.setCellValue(columnDescription.example[0].toString());
+                    }
+                    cell.setCellStyle(cellStyle);
+
+                    index++;
+                }
+            }
+
+            for (int i = 0; i < 10; i++) {
+                index = 0;
+                row = sheet.createRow(i + 11);
+                for (ColumnDescription columnDescription : COLUMNS) {
+                    if (columnDescription.level != ColumnLevel.mandatory && columnDescription.level != ColumnLevel.mandatoryOnInit) {
+                        continue;
+                    }
+
+                    Cell cell = row.createCell(index);
+                    if (columnDescription.name.equals("mandateId") || columnDescription.name.equals("paymentId")) {
+                        cell.setCellValue(sheet.getRow(i + 1).getCell(index).getStringCellValue());
+                    } else if (columnDescription.example[1] instanceof Integer) {
+                        cell.setCellValue((Integer) columnDescription.example[1]);
+                    } else {
+                        cell.setCellValue(columnDescription.example[1].toString());
+                    }
+                    cell.setCellStyle(cellStyle);
+
+                    index++;
+                }
+            }
+
+            index = 0;
+            for (ColumnDescription ignored : COLUMNS) {
+                sheet.autoSizeColumn(index);
+                index++;
+            }
+
+            sheet = workbook.createSheet("description");
+
+            row = sheet.createRow(0);
+            Cell cell = row.createCell(0);
+            cell.setCellValue("name");
             cell.setCellStyle(headerStyle);
-            index++;
-        }
-
-        for (int i = 0; i < 10; i++) {
-            index = 0;
-            row = sheet.createRow(i + 1);
-            for (ColumnDescription columnDescription : COLUMNS) {
-                if (columnDescription.level != ColumnLevel.mandatory && columnDescription.level != ColumnLevel.mandatoryOnInit) {
-                    continue;
-                }
-
-                Cell cell = row.createCell(index);
-                if (columnDescription.name.equals("mandateId") || columnDescription.name.equals("paymentId")) {
-                    cell.setCellValue(UUID.randomUUID().toString().replace("-", ""));
-                } else if (columnDescription.example[0] instanceof Integer) {
-                    cell.setCellValue((Integer) columnDescription.example[0]);
-                } else {
-                    cell.setCellValue(columnDescription.example[0].toString());
-                }
-                cell.setCellStyle(cellStyle);
-
-                index++;
-            }
-        }
-
-        for (int i = 0; i < 10; i++) {
-            index = 0;
-            row = sheet.createRow(i + 11);
-            for (ColumnDescription columnDescription : COLUMNS) {
-                if (columnDescription.level != ColumnLevel.mandatory && columnDescription.level != ColumnLevel.mandatoryOnInit) {
-                    continue;
-                }
-
-                Cell cell = row.createCell(index);
-                if (columnDescription.name.equals("mandateId") || columnDescription.name.equals("paymentId")) {
-                    cell.setCellValue(sheet.getRow(i + 1).getCell(index).getStringCellValue());
-                } else if (columnDescription.example[1] instanceof Integer) {
-                    cell.setCellValue((Integer) columnDescription.example[1]);
-                } else {
-                    cell.setCellValue(columnDescription.example[1].toString());
-                }
-                cell.setCellStyle(cellStyle);
-
-                index++;
-            }
-        }
-
-        index = 0;
-        for (ColumnDescription ignored : COLUMNS) {
-            sheet.autoSizeColumn(index);
-            index++;
-        }
-
-        sheet = workbook.createSheet("description");
-
-        row = sheet.createRow(0);
-        Cell cell = row.createCell(0);
-        cell.setCellValue("name");
-        cell.setCellStyle(headerStyle);
-
-        cell = row.createCell(1);
-        cell.setCellValue("type");
-        cell.setCellStyle(headerStyle);
-
-        cell = row.createCell(2);
-        cell.setCellValue("description");
-        cell.setCellStyle(headerStyle);
-
-        sheet.autoSizeColumn(0);
-        sheet.autoSizeColumn(1);
-        sheet.setColumnWidth(2, 40000);
-
-        for (int i = 0; i < COLUMNS.length; i++) {
-            ColumnDescription columnDescription = COLUMNS[i];
-
-            row = sheet.createRow(i + 1);
-            cell = row.createCell(0);
-            cell.setCellValue(columnDescription.name);
-            cell.setCellStyle(cellStyle);
 
             cell = row.createCell(1);
-            cell.setCellValue(columnDescription.level.toString());
-            cell.setCellStyle(cellStyle);
+            cell.setCellValue("type");
+            cell.setCellStyle(headerStyle);
 
             cell = row.createCell(2);
-            cell.setCellValue(columnDescription.description);
-            cell.setCellStyle(cellStyle);
-        }
-        sheet.autoSizeColumn(0);
-        sheet.autoSizeColumn(1);
-        sheet.setColumnWidth(2, 20000);
+            cell.setCellValue("description");
+            cell.setCellStyle(headerStyle);
 
-        workbook.write(outputStream);
-        workbook.close();
+            sheet.autoSizeColumn(0);
+            sheet.autoSizeColumn(1);
+            sheet.setColumnWidth(2, 40000);
+
+            for (int i = 0; i < COLUMNS.length; i++) {
+                ColumnDescription columnDescription = COLUMNS[i];
+
+                row = sheet.createRow(i + 1);
+                cell = row.createCell(0);
+                cell.setCellValue(columnDescription.name);
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(1);
+                cell.setCellValue(columnDescription.level.toString());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(2);
+                cell.setCellValue(columnDescription.description);
+                cell.setCellStyle(cellStyle);
+            }
+            sheet.autoSizeColumn(0);
+            sheet.autoSizeColumn(1);
+            sheet.setColumnWidth(2, 20000);
+
+            workbook.write(outputStream);
+        }
     }
 
     private String cutRight(String value, int length) {

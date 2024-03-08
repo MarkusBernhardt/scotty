@@ -149,12 +149,23 @@ export default class PaymentsUploadPaymentsComponent {
       return;
     }
 
-    /*
-    if (fileCache.processedFileName && fileCache.processedFile) {
-      const blob = new Blob([fileCache.processedFile], { type: 'text/plain;charset=utf-8' });
-      FileSaver.saveAs(blob, fileCache.processedFileName);
+    if (fileCache.executeProgress != 100) {
+      return;
     }
-    */
+
+    this.paymentsUploadPaymentsService.save(fileCache.executeFileName).subscribe(event => {
+      if (event.type === HttpEventType.Response) {
+        const contentDisposition = event.headers.get('content-disposition') ?? 'attachment; ' + fileCache.executeFileName;
+        const contentDispositionArray = contentDisposition.split(';');
+        const contentDispositionFilename = contentDispositionArray.find(n => n.includes('filename='));
+        let filename = fileCache.executeFileName;
+        if (contentDispositionFilename) {
+          filename = contentDispositionFilename.replace('filename=', '').trim();
+        }
+        const blob = new Blob([event.body], { type: 'application/octet-stream' });
+        FileSaver.saveAs(blob, filename);
+      }
+    });
   }
 
   example(): void {

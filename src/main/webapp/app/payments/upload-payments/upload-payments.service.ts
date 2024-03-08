@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpEvent, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpEvent, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
@@ -14,6 +14,7 @@ export class PaymentsUploadPaymentsService {
   protected exampleUrl = this.applicationConfigService.getEndpointFor('api/payments-upload-payments/example');
   protected executeUrl = this.applicationConfigService.getEndpointFor('api/payments-upload-payments/execute');
   protected progressUrl = this.applicationConfigService.getEndpointFor('api/payments-upload-payments/progress');
+  protected saveUrl = this.applicationConfigService.getEndpointFor('api/payments-upload-payments/save');
   protected validateUrl = this.applicationConfigService.getEndpointFor('api/payments-upload-payments/validate');
 
   constructor(
@@ -43,6 +44,15 @@ export class PaymentsUploadPaymentsService {
   progress(fileName: string): Observable<PaymentsUploadPaymentsProgressResponse> {
     return this.http.get<PaymentsUploadPaymentsProgressResponse>(this.progressUrl, {
       observe: 'body',
+      params: new HttpParams().set('fileName', fileName),
+    });
+  }
+
+  save(fileName: string): Observable<HttpEvent<any>> {
+    return this.http.get(this.saveUrl, {
+      observe: 'events',
+      reportProgress: true,
+      responseType: 'blob',
       params: new HttpParams().set('fileName', fileName),
     });
   }

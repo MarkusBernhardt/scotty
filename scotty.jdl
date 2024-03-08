@@ -3,7 +3,7 @@ entity Payment {
 	mandateId String required maxlength(35),
     paymentId String required maxlength(35),
     gateway Gateway required,
-    iban String required minlength(22) maxlength(34),
+    iban String required minlength(16) maxlength(34),
     bic String required minlength(8) maxlength(11),
     amount Integer required min(0),
     currencyCode String required minlength(3) maxlength(3),

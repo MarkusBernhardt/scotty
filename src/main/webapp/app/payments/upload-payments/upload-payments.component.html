@@ -76,9 +76,9 @@
               icon="cloud-arrow-down"
               size="2x"
               [ngClass]="{
-                'fa-icon-error': value.executeSuccess === 1,
-                'fa-icon-warn': value.executeSuccess === 2 && value.validateProgress == 100,
-                'fa-icon-success': value.executeSuccess === 3 && value.validateProgress == 100
+                'fa-icon-error': value.executeSuccess === 1 && value.executeProgress === 100,
+                'fa-icon-warn': value.executeSuccess === 2 && value.executeProgress === 100,
+                'fa-icon-success': value.executeSuccess === 3 && value.executeProgress === 100
               }"
             ></fa-icon>
           </div>

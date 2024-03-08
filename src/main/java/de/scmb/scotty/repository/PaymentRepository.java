@@ -15,5 +15,5 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     Payment findFirstByMandateIdAndGatewayIdNotNullAndGatewayIdNotOrderByIdAsc(String mandateId, String gatewayId);
 
-    List<Payment> findAllByFileName(String fileName);
+    List<Payment> findAllByFileNameOrderByIdAsc(String fileName);
 }
