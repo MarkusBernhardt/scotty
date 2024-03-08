@@ -22,7 +22,7 @@
       "fieldName": "gateway",
       "fieldType": "Gateway",
       "fieldValidateRules": ["required"],
-      "fieldValues": "EMERCHANTPAY (emerchantpay),CCBILL (ccbill)"
+      "fieldValues": "EMERCHANTPAY (emerchantpay),CCBILL (ccbill),UNKNOWN (unknown)"
     },
     {
       "fieldName": "iban",

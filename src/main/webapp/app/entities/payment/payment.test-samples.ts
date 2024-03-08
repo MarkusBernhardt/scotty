@@ -6,7 +6,7 @@ export const sampleWithRequiredData: IPayment = {
   id: 14887,
   mandateId: 'localize zany',
   paymentId: 'remind majestically instead',
-  gateway: 'EMERCHANTPAY',
+  gateway: 'CCBILL',
   iban: 'GB88IUIT09037606510540',
   bic: 'ZGNIHMDG',
   amount: 6186,
@@ -77,7 +77,7 @@ export const sampleWithFullData: IPayment = {
 export const sampleWithNewData: NewPayment = {
   mandateId: 'why',
   paymentId: 'qua meh',
-  gateway: 'CCBILL',
+  gateway: 'UNKNOWN',
   iban: 'TR641798167500172725416114',
   bic: 'SAHGCNQXXXX',
   amount: 6940,

@@ -3,7 +3,8 @@
     "Gateway": {
       "null": "",
       "EMERCHANTPAY": "emerchantpay",
-      "CCBILL": "ccbill"
+      "CCBILL": "ccbill",
+      "UNKNOWN": "unknown"
     }
   }
 }

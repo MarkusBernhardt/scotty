@@ -27,7 +27,7 @@ entity Payment {
 enum Gateway {
     EMERCHANTPAY(emerchantpay),
     CCBILL(ccbill),
-    UNKNOWN(unknown),
+    UNKNOWN(unknown)
 }
 
 paginate all with pagination
