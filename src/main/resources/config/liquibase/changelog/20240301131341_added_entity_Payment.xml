@@ -86,7 +86,7 @@
         <createIndex indexName="IX_PAYMENT_MANDATE_ID" tableName="payment" unique="false">
             <column name="mandate_id"/>
         </createIndex>
-        <createIndex indexName="IX_PAYMENT_PAYMENT_ID" tableName="payment" unique="true">
+        <createIndex indexName="IX_PAYMENT_PAYMENT_ID" tableName="payment" unique="false">
             <column name="payment_id"/>
         </createIndex>
         <createIndex indexName="IX_PAYMENT_FILE_NAME" tableName="payment" unique="false">

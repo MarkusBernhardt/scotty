@@ -28,6 +28,8 @@ public class ApplicationProperties {
 
         private String token;
 
+        private String environment;
+
         public Emerchantpay() {}
 
         public String getUsername() {
@@ -52,6 +54,14 @@ public class ApplicationProperties {
 
         public void setToken(String token) {
             this.token = token;
+        }
+
+        public String getEnvironment() {
+            return environment;
+        }
+
+        public void setEnvironment(String environment) {
+            this.environment = environment;
         }
     }
 }

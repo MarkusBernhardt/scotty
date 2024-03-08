@@ -105,11 +105,7 @@ export default class PaymentsUploadPaymentsComponent {
       return;
     }
 
-    fileCache.executeFileName =
-      fileCache.file.name.substring(0, fileCache.file.name.lastIndexOf('.')) +
-      '-' +
-      formatDate(Date.now(), 'yyyyMMdd-hhmmss', 'en-US') +
-      '.xlsx';
+    fileCache.executeFileName = 'payments-' + formatDate(Date.now(), 'yyyyMMdd-hhmmss', 'en-US') + '.xlsx';
 
     fileCache.executeSubscription = this.paymentsUploadPaymentsService.execute(fileCache.file, fileCache.executeFileName).subscribe({
       next: event => {
