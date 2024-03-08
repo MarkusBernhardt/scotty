@@ -41,7 +41,7 @@ public class Payment implements Serializable {
     private Gateway gateway;
 
     @NotNull
-    @Size(min = 22, max = 34)
+    @Size(min = 16, max = 34)
     @Column(name = "iban", length = 34, nullable = false)
     private String iban;
 

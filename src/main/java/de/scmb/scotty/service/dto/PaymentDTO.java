@@ -26,7 +26,7 @@ public class PaymentDTO implements Serializable {
     private Gateway gateway;
 
     @NotNull
-    @Size(min = 22, max = 34)
+    @Size(min = 16, max = 34)
     private String iban;
 
     @NotNull

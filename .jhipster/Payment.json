@@ -29,7 +29,7 @@
       "fieldType": "String",
       "fieldValidateRules": ["required", "minlength", "maxlength"],
       "fieldValidateRulesMaxlength": "34",
-      "fieldValidateRulesMinlength": "22"
+      "fieldValidateRulesMinlength": "16"
     },
     {
       "fieldName": "bic",
@@ -142,6 +142,7 @@
       "fieldValidateRulesMaxlength": "255"
     }
   ],
+  "jpaMetamodelFiltering": true,
   "name": "Payment",
   "pagination": "pagination",
   "relationships": [],

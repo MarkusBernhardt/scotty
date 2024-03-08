@@ -82,7 +82,7 @@ export class PaymentFormService {
         validators: [Validators.required],
       }),
       iban: new FormControl(paymentRawValue.iban, {
-        validators: [Validators.required, Validators.minLength(22), Validators.maxLength(34)],
+        validators: [Validators.required, Validators.minLength(16), Validators.maxLength(34)],
       }),
       bic: new FormControl(paymentRawValue.bic, {
         validators: [Validators.required, Validators.minLength(8), Validators.maxLength(11)],

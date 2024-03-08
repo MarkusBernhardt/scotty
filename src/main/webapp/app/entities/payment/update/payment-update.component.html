@@ -75,8 +75,8 @@
                 <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
               }
               @if (editForm.get('iban')?.errors?.minlength) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.minlength" [translateValues]="{ min: 22 }"
-                  >This field is required to be at least 22 characters.</small
+                <small class="form-text text-danger" jhiTranslate="entity.validation.minlength" [translateValues]="{ min: 16 }"
+                  >This field is required to be at least 16 characters.</small
                 >
               }
               @if (editForm.get('iban')?.errors?.maxlength) {

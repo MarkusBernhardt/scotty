@@ -30,6 +30,7 @@ enum Gateway {
     UNKNOWN(unknown)
 }
 
+filter all
 paginate all with pagination
 dto all with mapstruct
 service all with serviceImpl

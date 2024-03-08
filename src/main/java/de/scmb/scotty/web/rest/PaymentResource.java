@@ -1,7 +1,9 @@
 package de.scmb.scotty.web.rest;
 
 import de.scmb.scotty.repository.PaymentRepository;
+import de.scmb.scotty.service.PaymentQueryService;
 import de.scmb.scotty.service.PaymentService;
+import de.scmb.scotty.service.criteria.PaymentCriteria;
 import de.scmb.scotty.service.dto.PaymentDTO;
 import de.scmb.scotty.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -42,9 +44,12 @@ public class PaymentResource {
 
     private final PaymentRepository paymentRepository;
 
-    public PaymentResource(PaymentService paymentService, PaymentRepository paymentRepository) {
+    private final PaymentQueryService paymentQueryService;
+
+    public PaymentResource(PaymentService paymentService, PaymentRepository paymentRepository, PaymentQueryService paymentQueryService) {
         this.paymentService = paymentService;
         this.paymentRepository = paymentRepository;
+        this.paymentQueryService = paymentQueryService;
     }
 
     /**
@@ -141,14 +146,31 @@ public class PaymentResource {
      * {@code GET  /payments} : get all the payments.
      *
      * @param pageable the pagination information.
+     * @param criteria the criteria which the requested entities should match.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of payments in body.
      */
     @GetMapping("")
-    public ResponseEntity<List<PaymentDTO>> getAllPayments(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
-        log.debug("REST request to get a page of Payments");
-        Page<PaymentDTO> page = paymentService.findAll(pageable);
+    public ResponseEntity<List<PaymentDTO>> getAllPayments(
+        PaymentCriteria criteria,
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable
+    ) {
+        log.debug("REST request to get Payments by criteria: {}", criteria);
+
+        Page<PaymentDTO> page = paymentQueryService.findByCriteria(criteria, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    /**
+     * {@code GET  /payments/count} : count all the payments.
+     *
+     * @param criteria the criteria which the requested entities should match.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
+     */
+    @GetMapping("/count")
+    public ResponseEntity<Long> countPayments(PaymentCriteria criteria) {
+        log.debug("REST request to count Payments by criteria: {}", criteria);
+        return ResponseEntity.ok().body(paymentQueryService.countByCriteria(criteria));
     }
 
     /**
