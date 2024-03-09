@@ -30,6 +30,8 @@ public class ApplicationProperties {
 
         private String environment;
 
+        private String notificationUrl;
+
         public Emerchantpay() {}
 
         public String getUsername() {
@@ -62,6 +64,14 @@ public class ApplicationProperties {
 
         public void setEnvironment(String environment) {
             this.environment = environment;
+        }
+
+        public String getNotificationUrl() {
+            return notificationUrl;
+        }
+
+        public void setNotificationUrl(String notificationUrl) {
+            this.notificationUrl = notificationUrl;
         }
     }
 }

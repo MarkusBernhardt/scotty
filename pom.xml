@@ -30,9 +30,11 @@
         <run.addResources>false</run.addResources>
         <jhipster-dependencies.version>8.1.0</jhipster-dependencies.version>
         <spring-boot.version>3.2.0</spring-boot.version>
+        <apache-poi.version>5.2.2</apache-poi.version>
         <archunit-junit5.version>1.2.1</archunit-junit5.version>
         <checkstyle.version>10.12.5</checkstyle.version>
         <checksum-maven-plugin.version>1.11</checksum-maven-plugin.version>
+        <emerchantpay-genesis.version>1.17.7</emerchantpay-genesis.version>
         <frontend-maven-plugin.version>1.15.0</frontend-maven-plugin.version>
         <git-commit-id-maven-plugin.version>7.0.0</git-commit-id-maven-plugin.version>
         <h2.version>2.2.224</h2.version>
@@ -75,8 +77,6 @@
         <sonar-maven-plugin.version>3.10.0.2594</sonar-maven-plugin.version>
         <spotless-maven-plugin.version>2.41.1</spotless-maven-plugin.version>
         <validation-api.version>3.0.2</validation-api.version>
-        <apache-poi.version>5.2.2</apache-poi.version>
-        <emerchantpay-genesis.version>1.17.7</emerchantpay-genesis.version>
     </properties>
 
     <dependencyManagement>
@@ -89,6 +89,11 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
+                <groupId>com.emerchantpay.gateway</groupId>
+                <artifactId>genesis-java</artifactId>
+                <version>${emerchantpay-genesis.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.poi</groupId>
                 <artifactId>poi</artifactId>
                 <version>${apache-poi.version}</version>
@@ -97,11 +102,6 @@
                 <groupId>org.apache.poi</groupId>
                 <artifactId>poi-ooxml</artifactId>
                 <version>${apache-poi.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.emerchantpay.gateway</groupId>
-                <artifactId>genesis-java</artifactId>
-                <version>${emerchantpay-genesis.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -182,6 +182,10 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.emerchantpay.gateway</groupId>
+            <artifactId>genesis-java</artifactId>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
@@ -294,10 +298,6 @@
             <groupId>org.testcontainers</groupId>
             <artifactId>postgresql</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.emerchantpay.gateway</groupId>
-            <artifactId>genesis-java</artifactId>
         </dependency>
     </dependencies>
 

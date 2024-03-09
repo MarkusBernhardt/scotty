@@ -20,7 +20,7 @@
     "entities": ["Payment"],
     "feignClient": false,
     "gradleEnterpriseHost": null,
-    "herokuAppName": "scotty-1234",
+    "herokuAppName": "beam-me-up-scotty-85521471",
     "herokuDeployType": "git",
     "herokuJavaVersion": "21",
     "jhipsterVersion": "8.1.0",

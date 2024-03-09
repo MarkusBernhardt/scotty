@@ -20,7 +20,10 @@ import jakarta.validation.Valid;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
@@ -417,7 +420,8 @@ public class PaymentsUploadPayments {
         return true;
     }
 
-    private static SDDRecurringSaleRequest getSddRecurringSaleRequest(Payment payment, Payment init) {
+    private SDDRecurringSaleRequest getSddRecurringSaleRequest(Payment payment, Payment init)
+        throws URISyntaxException, MalformedURLException {
         SDDRecurringSaleRequest sddRecurringSaleRequest = new SDDRecurringSaleRequest();
         sddRecurringSaleRequest.setAmount(BigDecimal.valueOf(payment.getAmount() / 100d));
         sddRecurringSaleRequest.setCurrency(payment.getCurrencyCode());
@@ -425,10 +429,20 @@ public class PaymentsUploadPayments {
         sddRecurringSaleRequest.setUsage(payment.getSoftDescriptor());
         sddRecurringSaleRequest.setRemoteIp(payment.getRemoteIp());
         sddRecurringSaleRequest.setReferenceId(init.getGatewayId());
+
+        if (applicationProperties.getEmerchantpay().getNotificationUrl() != null) {
+            sddRecurringSaleRequest
+                .getNotificationAttrParamsMap()
+                .put("notification_url", applicationProperties.getEmerchantpay().getNotificationUrl());
+            sddRecurringSaleRequest
+                .getNotificationAttrRequestBuilder()
+                .addElement("notification_url", new URI(applicationProperties.getEmerchantpay().getNotificationUrl()).toURL());
+        }
+
         return sddRecurringSaleRequest;
     }
 
-    private static SDDInitRecurringSaleRequest getSddInitRecurringSaleRequest(Payment payment) {
+    private SDDInitRecurringSaleRequest getSddInitRecurringSaleRequest(Payment payment) throws URISyntaxException, MalformedURLException {
         SDDInitRecurringSaleRequest sddInitRecurringSaleRequest = new SDDInitRecurringSaleRequest();
         sddInitRecurringSaleRequest.setAmount(BigDecimal.valueOf(payment.getAmount() / 100d));
         sddInitRecurringSaleRequest.setCurrency(payment.getCurrencyCode());
@@ -444,6 +458,16 @@ public class PaymentsUploadPayments {
         sddInitRecurringSaleRequest.setTransactionId(payment.getPaymentId());
         sddInitRecurringSaleRequest.setUsage(payment.getSoftDescriptor());
         sddInitRecurringSaleRequest.setRemoteIp(payment.getRemoteIp());
+
+        if (applicationProperties.getEmerchantpay().getNotificationUrl() != null) {
+            sddInitRecurringSaleRequest
+                .getNotificationAttrParamsMap()
+                .put("notification_url", applicationProperties.getEmerchantpay().getNotificationUrl());
+            sddInitRecurringSaleRequest
+                .getNotificationAttrRequestBuilder()
+                .addElement("notification_url", new URI(applicationProperties.getEmerchantpay().getNotificationUrl()).toURL());
+        }
+
         return sddInitRecurringSaleRequest;
     }
 
