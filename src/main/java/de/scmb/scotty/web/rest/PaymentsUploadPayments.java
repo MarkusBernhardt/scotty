@@ -1,5 +1,7 @@
 package de.scmb.scotty.web.rest;
 
+import static de.scmb.scotty.service.ExcelService.COLUMNS;
+
 import com.emerchantpay.gateway.GenesisClient;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.TransactionResult;
@@ -13,23 +15,21 @@ import de.scmb.scotty.config.ApplicationProperties;
 import de.scmb.scotty.domain.Payment;
 import de.scmb.scotty.domain.enumeration.Gateway;
 import de.scmb.scotty.repository.PaymentRepository;
+import de.scmb.scotty.service.ExcelService;
+import de.scmb.scotty.service.ExcelService.ColumnDescription;
+import de.scmb.scotty.service.ExcelService.ColumnLevel;
 import de.scmb.scotty.service.dto.PaymentsUploadPaymentsExecuteResponseDTO;
 import de.scmb.scotty.service.dto.PaymentsUploadPaymentsProgressResponseDTO;
 import de.scmb.scotty.service.dto.PaymentsUploadPaymentsValidateResponseDTO;
 import jakarta.validation.Valid;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.math.BigDecimal;
-import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,123 +46,21 @@ public class PaymentsUploadPayments {
 
     private final ApplicationProperties applicationProperties;
 
+    private final ExcelService excelService;
+
     private final PaymentRepository paymentRepository;
 
     private final Logger log = LoggerFactory.getLogger(PaymentsUploadPayments.class);
 
-    public PaymentsUploadPayments(ApplicationProperties applicationProperties, PaymentRepository paymentRepository) {
+    public PaymentsUploadPayments(
+        ApplicationProperties applicationProperties,
+        ExcelService excelService,
+        PaymentRepository paymentRepository
+    ) {
         this.applicationProperties = applicationProperties;
+        this.excelService = excelService;
         this.paymentRepository = paymentRepository;
     }
-
-    private final ColumnDescription[] COLUMNS = {
-        new ColumnDescription(
-            "mandateId",
-            ColumnLevel.mandatory,
-            "The unique id of the mandate of this payment. Max 35 characters.",
-            "",
-            ""
-        ),
-        new ColumnDescription(
-            "paymentId",
-            ColumnLevel.mandatory,
-            "The unique id of this payment creation. It is checked whether a payment with the " +
-            "specified id already exists, and the creation fails, if a duplicate payment is found. " +
-            "The Id of the conflicting payment can then be found in the error message. Max 35 characters.",
-            "",
-            ""
-        ),
-        new ColumnDescription(
-            "gateway",
-            ColumnLevel.mandatory,
-            "The name of the gateway this payment should be submitted to. Currently only \"emerchantpay\" " + "is supported.",
-            "emerchantpay",
-            "emerchantpay"
-        ),
-        new ColumnDescription(
-            "iban",
-            ColumnLevel.mandatoryOnInit,
-            "The customer's ISO 13616 international bank account number.",
-            "DE91100000001234400020",
-            ""
-        ),
-        new ColumnDescription("bic", ColumnLevel.mandatoryOnInit, "The customer's ISO 9362 business identifier code.", "MARKDEF1100", ""),
-        new ColumnDescription(
-            "amount",
-            ColumnLevel.mandatory,
-            "The amount to be collected from the customer's bank account. Specified in the smallest " +
-            "subunit of the used currency, e.g. cents for EUR.",
-            111,
-            123
-        ),
-        new ColumnDescription(
-            "currencyCode",
-            ColumnLevel.mandatory,
-            "The ISO 4217 currency code. Currently only \"EUR\" is supported.",
-            "EUR",
-            "EUR"
-        ),
-        new ColumnDescription(
-            "softDescriptor",
-            ColumnLevel.mandatory,
-            "The soft descriptor for this payment. The text entered here will be printed on the bank " +
-            "statements of the participating bank accounts, if supported in the used payment scheme. " +
-            "Max 140 characters.",
-            "Thank you for shopping at testmerchant. Your mandate is 00000001.",
-            "Thank you for shopping at testmerchant. Your mandate is 00000001."
-        ),
-        new ColumnDescription("firstName", ColumnLevel.mandatoryOnInit, "The customer's first name. Max 35 characters.", "Max", ""),
-        new ColumnDescription("lastName", ColumnLevel.mandatoryOnInit, "The customer's last name. Max 35 characters.", "Mustermann", ""),
-        new ColumnDescription(
-            "addressLine1",
-            ColumnLevel.mandatoryOnInit,
-            "The first line of the customer’s address. Max 70 characters.",
-            "Karlsplatz 1",
-            ""
-        ),
-        new ColumnDescription(
-            "addressLine2",
-            ColumnLevel.optionalOnInit,
-            "The second line of the customer’s address. Max 70 characters.",
-            "",
-            ""
-        ),
-        new ColumnDescription(
-            "postalCode",
-            ColumnLevel.mandatoryOnInit,
-            "The postal code of the customer’s address. Max 16 characters.",
-            "80335",
-            ""
-        ),
-        new ColumnDescription("city", ColumnLevel.mandatoryOnInit, "The city of the customer’s address. Max 35 characters.", "München", ""),
-        new ColumnDescription(
-            "countryCode",
-            ColumnLevel.mandatoryOnInit,
-            "The ISO 3166-1 alpha-2 country code of the customer’s address.",
-            "DE",
-            ""
-        ),
-        new ColumnDescription("remoteIp", ColumnLevel.mandatory, "IPv4 or IPv6 address of customer.", "1.2.3.4", "1.2.3.4"),
-        new ColumnDescription("scottyId", ColumnLevel.response, "The unique id defined by the Scotty.", "", ""),
-        new ColumnDescription(
-            "timestamp",
-            ColumnLevel.response,
-            "The time when the transaction was processed in ISO 8601 combined date and time.",
-            "",
-            ""
-        ),
-        new ColumnDescription(
-            "state",
-            ColumnLevel.response,
-            "The state of the payment. Currently are the following states possible: \"created\", " +
-            "\"pending\", \"submitted\", \"paid\", \"chargedBack\", \"refunded\" and \"failed\"",
-            "",
-            ""
-        ),
-        new ColumnDescription("message", ColumnLevel.response, "The human readable message.", "", ""),
-        new ColumnDescription("gatewayId", ColumnLevel.response, "The unique id defined by the chosen gateway.", "", ""),
-        new ColumnDescription("mode", ColumnLevel.response, "The mode of the payment. Can be \"test\" of \"live\"", "", ""),
-    };
 
     @PostMapping("/validate")
     public ResponseEntity<PaymentsUploadPaymentsValidateResponseDTO> validate(@Valid @RequestPart MultipartFile file) throws IOException {
@@ -419,8 +317,7 @@ public class PaymentsUploadPayments {
         return true;
     }
 
-    private SDDRecurringSaleRequest getSddRecurringSaleRequest(Payment payment, Payment init)
-        throws URISyntaxException, MalformedURLException {
+    private SDDRecurringSaleRequest getSddRecurringSaleRequest(Payment payment, Payment init) {
         SDDRecurringSaleRequest sddRecurringSaleRequest = new SDDRecurringSaleRequest();
         sddRecurringSaleRequest.setAmount(BigDecimal.valueOf(payment.getAmount() / 100d));
         sddRecurringSaleRequest.setCurrency(payment.getCurrencyCode());
@@ -429,19 +326,10 @@ public class PaymentsUploadPayments {
         sddRecurringSaleRequest.setRemoteIp(payment.getRemoteIp());
         sddRecurringSaleRequest.setReferenceId(init.getGatewayId());
 
-        if (applicationProperties.getEmerchantpay().getNotificationUrl() != null) {
-            sddRecurringSaleRequest
-                .getNotificationAttrParamsMap()
-                .put("notification_url", applicationProperties.getEmerchantpay().getNotificationUrl());
-            sddRecurringSaleRequest
-                .getNotificationAttrRequestBuilder()
-                .addElement("notification_url", new URI(applicationProperties.getEmerchantpay().getNotificationUrl()).toURL());
-        }
-
         return sddRecurringSaleRequest;
     }
 
-    private SDDInitRecurringSaleRequest getSddInitRecurringSaleRequest(Payment payment) throws URISyntaxException, MalformedURLException {
+    private SDDInitRecurringSaleRequest getSddInitRecurringSaleRequest(Payment payment) {
         SDDInitRecurringSaleRequest sddInitRecurringSaleRequest = new SDDInitRecurringSaleRequest();
         sddInitRecurringSaleRequest.setAmount(BigDecimal.valueOf(payment.getAmount() / 100d));
         sddInitRecurringSaleRequest.setCurrency(payment.getCurrencyCode());
@@ -458,26 +346,13 @@ public class PaymentsUploadPayments {
         sddInitRecurringSaleRequest.setUsage(payment.getSoftDescriptor());
         sddInitRecurringSaleRequest.setRemoteIp(payment.getRemoteIp());
 
-        if (applicationProperties.getEmerchantpay().getNotificationUrl() != null) {
-            sddInitRecurringSaleRequest
-                .getNotificationAttrParamsMap()
-                .put("notification_url", applicationProperties.getEmerchantpay().getNotificationUrl());
-            sddInitRecurringSaleRequest
-                .getNotificationAttrRequestBuilder()
-                .addElement("notification_url", new URI(applicationProperties.getEmerchantpay().getNotificationUrl()).toURL());
-        }
-
         return sddInitRecurringSaleRequest;
     }
 
     @GetMapping(value = "/save")
     public ResponseEntity<StreamingResponseBody> save(@RequestParam(value = "fileName") String fileName)
         throws URISyntaxException, IOException {
-        fileName = "payments-20240308-071530.xlsx";
-        String finalFileName = fileName;
-        StreamingResponseBody stream = outputStream -> {
-            writeToStream(outputStream, finalFileName);
-        };
+        StreamingResponseBody stream = outputStream -> excelService.writePaymentsToStream(outputStream, fileName);
         return ResponseEntity
             .ok()
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
@@ -485,281 +360,14 @@ public class PaymentsUploadPayments {
             .body(stream);
     }
 
-    private void writeToStream(OutputStream outputStream, String fileName) throws IOException {
-        try (XSSFWorkbook workbook = new XSSFWorkbook()) {
-            XSSFFont headerFont = workbook.createFont();
-            headerFont.setFontName("Arial");
-            headerFont.setBold(true);
-
-            CellStyle headerStyle = workbook.createCellStyle();
-            headerStyle.setFillForegroundColor(IndexedColors.LIGHT_GREEN.getIndex());
-            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-            headerStyle.setFont(headerFont);
-
-            CellStyle cellStyle = workbook.createCellStyle();
-            cellStyle.setWrapText(true);
-
-            Sheet sheet = workbook.createSheet("payments");
-
-            int index = 0;
-            Row row = sheet.createRow(0);
-            Map<String, Integer> columnIndices = new HashMap<>();
-            for (ColumnDescription columnDescription : COLUMNS) {
-                Cell cell = row.createCell(index);
-                cell.setCellValue(columnDescription.name);
-                cell.setCellStyle(headerStyle);
-                columnIndices.put(columnDescription.name, index);
-                index++;
-            }
-
-            index = 1;
-            List<Payment> payments = paymentRepository.findAllByFileNameOrderByIdAsc(fileName);
-            for (Payment payment : payments) {
-                row = sheet.createRow(index);
-
-                Cell cell = row.createCell(columnIndices.get("mandateId"));
-                try {
-                    cell.setCellValue(Integer.parseInt(payment.getMandateId()));
-                } catch (Throwable t) {
-                    cell.setCellValue(payment.getMandateId());
-                }
-                cell.setCellStyle(cellStyle);
-
-                cell = row.createCell(columnIndices.get("paymentId"));
-                try {
-                    cell.setCellValue(Integer.parseInt(payment.getPaymentId()));
-                } catch (Throwable t) {
-                    cell.setCellValue(payment.getPaymentId());
-                }
-                cell.setCellStyle(cellStyle);
-
-                cell = row.createCell(columnIndices.get("gateway"));
-                cell.setCellValue(payment.getGateway().toString());
-                cell.setCellStyle(cellStyle);
-
-                cell = row.createCell(columnIndices.get("iban"));
-                cell.setCellValue(payment.getIban());
-                cell.setCellStyle(cellStyle);
-
-                cell = row.createCell(columnIndices.get("bic"));
-                cell.setCellValue(payment.getBic());
-                cell.setCellStyle(cellStyle);
-
-                cell = row.createCell(columnIndices.get("amount"));
-                cell.setCellValue(payment.getAmount());
-                cell.setCellStyle(cellStyle);
-
-                cell = row.createCell(columnIndices.get("currencyCode"));
-                cell.setCellValue(payment.getCurrencyCode());
-                cell.setCellStyle(cellStyle);
-
-                cell = row.createCell(columnIndices.get("softDescriptor"));
-                cell.setCellValue(payment.getSoftDescriptor());
-                cell.setCellStyle(cellStyle);
-
-                cell = row.createCell(columnIndices.get("firstName"));
-                cell.setCellValue(payment.getFirstName());
-                cell.setCellStyle(cellStyle);
-
-                cell = row.createCell(columnIndices.get("lastName"));
-                cell.setCellValue(payment.getLastName());
-                cell.setCellStyle(cellStyle);
-
-                cell = row.createCell(columnIndices.get("addressLine1"));
-                cell.setCellValue(payment.getAddressLine1());
-                cell.setCellStyle(cellStyle);
-
-                cell = row.createCell(columnIndices.get("addressLine2"));
-                cell.setCellValue(payment.getAddressLine2());
-                cell.setCellStyle(cellStyle);
-
-                cell = row.createCell(columnIndices.get("postalCode"));
-                try {
-                    cell.setCellValue(Integer.parseInt(payment.getPostalCode()));
-                } catch (Throwable t) {
-                    cell.setCellValue(payment.getPostalCode());
-                }
-                cell.setCellStyle(cellStyle);
-
-                cell = row.createCell(columnIndices.get("city"));
-                cell.setCellValue(payment.getCity());
-                cell.setCellStyle(cellStyle);
-
-                cell = row.createCell(columnIndices.get("countryCode"));
-                cell.setCellValue(payment.getCountryCode());
-                cell.setCellStyle(cellStyle);
-
-                cell = row.createCell(columnIndices.get("remoteIp"));
-                cell.setCellValue(payment.getRemoteIp());
-                cell.setCellStyle(cellStyle);
-
-                cell = row.createCell(columnIndices.get("scottyId"));
-                cell.setCellValue(payment.getId());
-                cell.setCellStyle(cellStyle);
-
-                cell = row.createCell(columnIndices.get("state"));
-                cell.setCellValue(payment.getState());
-                cell.setCellStyle(cellStyle);
-
-                cell = row.createCell(columnIndices.get("timestamp"));
-                cell.setCellValue(payment.getTimestamp().toString());
-                cell.setCellStyle(cellStyle);
-
-                cell = row.createCell(columnIndices.get("gatewayId"));
-                cell.setCellValue(payment.getGatewayId());
-                cell.setCellStyle(cellStyle);
-
-                cell = row.createCell(columnIndices.get("message"));
-                cell.setCellValue(payment.getMessage());
-                cell.setCellStyle(cellStyle);
-
-                cell = row.createCell(columnIndices.get("mode"));
-                cell.setCellValue(payment.getMode());
-                cell.setCellStyle(cellStyle);
-
-                index++;
-            }
-
-            index = 0;
-            for (ColumnDescription columnDescription : COLUMNS) {
-                sheet.autoSizeColumn(index);
-                index++;
-            }
-
-            workbook.write(outputStream);
-        }
-    }
-
     @GetMapping(value = "/example")
     public ResponseEntity<StreamingResponseBody> example() throws URISyntaxException, IOException {
-        StreamingResponseBody stream = this::writeExampleToStream;
+        StreamingResponseBody stream = excelService::writeExampleToStream;
         return ResponseEntity
             .ok()
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=payments.xlsx")
             .contentType(MediaType.APPLICATION_OCTET_STREAM)
             .body(stream);
-    }
-
-    private void writeExampleToStream(OutputStream outputStream) throws IOException {
-        try (XSSFWorkbook workbook = new XSSFWorkbook()) {
-            XSSFFont headerFont = workbook.createFont();
-            headerFont.setFontName("Arial");
-            headerFont.setBold(true);
-
-            CellStyle headerStyle = workbook.createCellStyle();
-            headerStyle.setFillForegroundColor(IndexedColors.LIGHT_GREEN.getIndex());
-            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-            headerStyle.setFont(headerFont);
-
-            CellStyle cellStyle = workbook.createCellStyle();
-            cellStyle.setWrapText(true);
-
-            Sheet sheet = workbook.createSheet("payments");
-
-            int index = 0;
-            Row row = sheet.createRow(0);
-            for (ColumnDescription columnDescription : COLUMNS) {
-                if (columnDescription.level != ColumnLevel.mandatory && columnDescription.level != ColumnLevel.mandatoryOnInit) {
-                    continue;
-                }
-
-                Cell cell = row.createCell(index);
-                cell.setCellValue(columnDescription.name);
-                cell.setCellStyle(headerStyle);
-                index++;
-            }
-
-            for (int i = 0; i < 10; i++) {
-                index = 0;
-                row = sheet.createRow(i + 1);
-                for (ColumnDescription columnDescription : COLUMNS) {
-                    if (columnDescription.level != ColumnLevel.mandatory && columnDescription.level != ColumnLevel.mandatoryOnInit) {
-                        continue;
-                    }
-
-                    Cell cell = row.createCell(index);
-                    if (columnDescription.name.equals("mandateId") || columnDescription.name.equals("paymentId")) {
-                        cell.setCellValue(UUID.randomUUID().toString().replace("-", ""));
-                    } else if (columnDescription.example[0] instanceof Integer) {
-                        cell.setCellValue((Integer) columnDescription.example[0]);
-                    } else {
-                        cell.setCellValue(columnDescription.example[0].toString());
-                    }
-                    cell.setCellStyle(cellStyle);
-
-                    index++;
-                }
-            }
-
-            for (int i = 0; i < 10; i++) {
-                index = 0;
-                row = sheet.createRow(i + 11);
-                for (ColumnDescription columnDescription : COLUMNS) {
-                    if (columnDescription.level != ColumnLevel.mandatory && columnDescription.level != ColumnLevel.mandatoryOnInit) {
-                        continue;
-                    }
-
-                    Cell cell = row.createCell(index);
-                    if (columnDescription.name.equals("mandateId") || columnDescription.name.equals("paymentId")) {
-                        cell.setCellValue(sheet.getRow(i + 1).getCell(index).getStringCellValue());
-                    } else if (columnDescription.example[1] instanceof Integer) {
-                        cell.setCellValue((Integer) columnDescription.example[1]);
-                    } else {
-                        cell.setCellValue(columnDescription.example[1].toString());
-                    }
-                    cell.setCellStyle(cellStyle);
-
-                    index++;
-                }
-            }
-
-            index = 0;
-            for (ColumnDescription ignored : COLUMNS) {
-                sheet.autoSizeColumn(index);
-                index++;
-            }
-
-            sheet = workbook.createSheet("description");
-
-            row = sheet.createRow(0);
-            Cell cell = row.createCell(0);
-            cell.setCellValue("name");
-            cell.setCellStyle(headerStyle);
-
-            cell = row.createCell(1);
-            cell.setCellValue("type");
-            cell.setCellStyle(headerStyle);
-
-            cell = row.createCell(2);
-            cell.setCellValue("description");
-            cell.setCellStyle(headerStyle);
-
-            sheet.autoSizeColumn(0);
-            sheet.autoSizeColumn(1);
-            sheet.setColumnWidth(2, 40000);
-
-            for (int i = 0; i < COLUMNS.length; i++) {
-                ColumnDescription columnDescription = COLUMNS[i];
-
-                row = sheet.createRow(i + 1);
-                cell = row.createCell(0);
-                cell.setCellValue(columnDescription.name);
-                cell.setCellStyle(cellStyle);
-
-                cell = row.createCell(1);
-                cell.setCellValue(columnDescription.level.toString());
-                cell.setCellStyle(cellStyle);
-
-                cell = row.createCell(2);
-                cell.setCellValue(columnDescription.description);
-                cell.setCellStyle(cellStyle);
-            }
-            sheet.autoSizeColumn(0);
-            sheet.autoSizeColumn(1);
-            sheet.setColumnWidth(2, 20000);
-
-            workbook.write(outputStream);
-        }
     }
 
     private String cutRight(String value, int length) {
@@ -797,32 +405,6 @@ public class PaymentsUploadPayments {
             };
         } catch (Throwable t) {
             return "";
-        }
-    }
-
-    private static enum ColumnLevel {
-        mandatory,
-        optional,
-        mandatoryOnInit,
-        optionalOnInit,
-        response,
-    }
-
-    private static class ColumnDescription {
-
-        public String name;
-
-        public ColumnLevel level;
-
-        public Object[] example;
-
-        public String description;
-
-        public ColumnDescription(String name, ColumnLevel level, String description, Object... example) {
-            this.name = name;
-            this.level = level;
-            this.description = description;
-            this.example = example;
         }
     }
 }

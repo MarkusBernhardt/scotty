@@ -54,6 +54,18 @@
                   <span jhiTranslate="global.menu.payments.uploadPayments">Upload Payments</span>
                 </a>
               </li>
+              <li>
+                <a
+                  class="dropdown-item"
+                  routerLink="/payments/download-payments"
+                  routerLinkActive="active"
+                  [routerLinkActiveOptions]="{ exact: true }"
+                  (click)="collapseNavbar()"
+                >
+                  <fa-icon icon="cloud-arrow-down" [fixedWidth]="true"></fa-icon>
+                  <span jhiTranslate="global.menu.payments.downloadPayments">Upload Payments</span>
+                </a>
+              </li>
             </ul>
           </li>
         }

@@ -1,0 +1,83 @@
+<div>
+  <h2 id="page-heading" data-cy="PaymentHeading">
+    <span jhiTranslate="payments.downloadPayments.title">Download Payments</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+        <fa-icon icon="sync" [spin]="isLoading"></fa-icon>
+        <span jhiTranslate="payments.downloadPayments.refreshListLabel">Refresh list</span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error></jhi-alert-error>
+
+  <jhi-alert></jhi-alert>
+
+  <jhi-filter [filters]="filters"></jhi-filter>
+
+  @if (downloadPaymentRecords?.length === 0) {
+    <div class="alert alert-warning" id="no-result">
+      <span jhiTranslate="payments.downloadPayments.notFound">No Payments found</span>
+    </div>
+  }
+
+  @if (downloadPaymentRecords && downloadPaymentRecords.length > 0) {
+    <div class="table-responsive table-entities" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
+        <thead>
+          <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="navigateToWithComponentValues()">
+            <th scope="col" jhiSortBy="fileName">
+              <div class="d-flex">
+                <span jhiTranslate="payments.downloadPayments.fileName">File Name</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col">
+              <div class="text-end">
+                <span jhiTranslate="payments.downloadPayments.count">Count</span>
+              </div>
+            </th>
+            <th scope="col">
+              <div class="text-end">
+                <span jhiTranslate="payments.downloadPayments.amount">Amount</span>
+              </div>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (downloadPaymentRecord of downloadPaymentRecords; track trackId) {
+            <tr data-cy="entityTable">
+              <td class="col-3">
+                <a (click)="save(downloadPaymentRecord.fileName)">{{ downloadPaymentRecord.fileName }}</a>
+              </td>
+              <td class="col-2 text-end">{{ formatCount(downloadPaymentRecord.count) }}</td>
+              <td class="col-2 text-end">{{ formatCurrency(downloadPaymentRecord.amount / 100) }}</td>
+              <td></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+  @if (downloadPaymentRecords && downloadPaymentRecords.length > 0) {
+    <div>
+      <div class="d-flex justify-content-center">
+        <jhi-item-count [params]="{ page: page, totalItems: totalItems, itemsPerPage: itemsPerPage }"></jhi-item-count>
+      </div>
+
+      <div class="d-flex justify-content-center">
+        <ngb-pagination
+          [collectionSize]="totalItems"
+          [page]="page"
+          [pageSize]="itemsPerPage"
+          [maxSize]="5"
+          [rotate]="true"
+          [boundaryLinks]="true"
+          (pageChange)="navigateToPage($event)"
+        ></ngb-pagination>
+      </div>
+    </div>
+  }
+</div>

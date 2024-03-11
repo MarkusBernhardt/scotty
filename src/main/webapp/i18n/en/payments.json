@@ -1,7 +1,14 @@
 {
   "payments": {
     "uploadPayments": {
-      "title": "Upload Payments"
+      "title": "Upload Payment Files"
+    },
+    "downloadPayments": {
+      "title": "Download Payment Files",
+      "fileName": "File Name",
+      "count": "Payments Count",
+      "amount": "Payments Amount",
+      "refreshListLabel": "Refresh list"
     }
   }
 }
