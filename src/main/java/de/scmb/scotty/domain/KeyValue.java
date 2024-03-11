@@ -25,12 +25,12 @@ public class KeyValue implements Serializable {
 
     @NotNull
     @Size(max = 255)
-    @Column(name = "key", length = 255, nullable = false)
-    private String key;
+    @Column(name = "kv_key", length = 255, nullable = false)
+    private String kvKey;
 
     @Size(max = 255)
-    @Column(name = "value", length = 255)
-    private String value;
+    @Column(name = "kv_value", length = 255)
+    private String kvValue;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -47,30 +47,30 @@ public class KeyValue implements Serializable {
         this.id = id;
     }
 
-    public String getKey() {
-        return this.key;
+    public String getKvKey() {
+        return this.kvKey;
     }
 
-    public KeyValue key(String key) {
-        this.setKey(key);
+    public KeyValue kvKey(String kvKey) {
+        this.setKvKey(kvKey);
         return this;
     }
 
-    public void setKey(String key) {
-        this.key = key;
+    public void setKvKey(String kvKey) {
+        this.kvKey = kvKey;
     }
 
-    public String getValue() {
-        return this.value;
+    public String getKvValue() {
+        return this.kvValue;
     }
 
-    public KeyValue value(String value) {
-        this.setValue(value);
+    public KeyValue kvValue(String kvValue) {
+        this.setKvValue(kvValue);
         return this;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setKvValue(String kvValue) {
+        this.kvValue = kvValue;
     }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
@@ -97,8 +97,8 @@ public class KeyValue implements Serializable {
     public String toString() {
         return "KeyValue{" +
             "id=" + getId() +
-            ", key='" + getKey() + "'" +
-            ", value='" + getValue() + "'" +
+            ", kvKey='" + getKvKey() + "'" +
+            ", kvValue='" + getKvValue() + "'" +
             "}";
     }
 }

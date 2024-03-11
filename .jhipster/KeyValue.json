@@ -7,13 +7,13 @@
   "entityTableName": "key_value",
   "fields": [
     {
-      "fieldName": "key",
+      "fieldName": "kvKey",
       "fieldType": "String",
       "fieldValidateRules": ["required", "maxlength"],
       "fieldValidateRulesMaxlength": "255"
     },
     {
-      "fieldName": "value",
+      "fieldName": "kvValue",
       "fieldType": "String",
       "fieldValidateRules": ["maxlength"],
       "fieldValidateRulesMaxlength": "255"

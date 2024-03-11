@@ -1,6 +1,8 @@
 package de.scmb.scotty.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.support.CronExpression;
 
 /**
  * Properties specific to Scotty.
@@ -31,6 +33,8 @@ public class ApplicationProperties {
         private String environment;
 
         private String notificationUrl;
+
+        private CronExpression reconciliationSchedule;
 
         public Emerchantpay() {}
 
@@ -72,6 +76,14 @@ public class ApplicationProperties {
 
         public void setNotificationUrl(String notificationUrl) {
             this.notificationUrl = notificationUrl;
+        }
+
+        public CronExpression getReconciliationSchedule() {
+            return reconciliationSchedule;
+        }
+
+        public void setReconciliationSchedule(String reconciliationSchedule) {
+            this.reconciliationSchedule = CronExpression.parse(reconciliationSchedule);
         }
     }
 }

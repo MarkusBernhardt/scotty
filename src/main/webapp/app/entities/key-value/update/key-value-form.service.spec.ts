@@ -20,8 +20,8 @@ describe('KeyValue Form Service', () => {
         expect(formGroup.controls).toEqual(
           expect.objectContaining({
             id: expect.any(Object),
-            key: expect.any(Object),
-            value: expect.any(Object),
+            kvKey: expect.any(Object),
+            kvValue: expect.any(Object),
           }),
         );
       });
@@ -32,8 +32,8 @@ describe('KeyValue Form Service', () => {
         expect(formGroup.controls).toEqual(
           expect.objectContaining({
             id: expect.any(Object),
-            key: expect.any(Object),
-            value: expect.any(Object),
+            kvKey: expect.any(Object),
+            kvValue: expect.any(Object),
           }),
         );
       });

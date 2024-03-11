@@ -31,11 +31,11 @@ import org.springframework.transaction.annotation.Transactional;
 @WithMockUser
 class KeyValueResourceIT {
 
-    private static final String DEFAULT_KEY = "AAAAAAAAAA";
-    private static final String UPDATED_KEY = "BBBBBBBBBB";
+    private static final String DEFAULT_KV_KEY = "AAAAAAAAAA";
+    private static final String UPDATED_KV_KEY = "BBBBBBBBBB";
 
-    private static final String DEFAULT_VALUE = "AAAAAAAAAA";
-    private static final String UPDATED_VALUE = "BBBBBBBBBB";
+    private static final String DEFAULT_KV_VALUE = "AAAAAAAAAA";
+    private static final String UPDATED_KV_VALUE = "BBBBBBBBBB";
 
     private static final String ENTITY_API_URL = "/api/key-values";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -64,7 +64,7 @@ class KeyValueResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static KeyValue createEntity(EntityManager em) {
-        KeyValue keyValue = new KeyValue().key(DEFAULT_KEY).value(DEFAULT_VALUE);
+        KeyValue keyValue = new KeyValue().kvKey(DEFAULT_KV_KEY).kvValue(DEFAULT_KV_VALUE);
         return keyValue;
     }
 
@@ -75,7 +75,7 @@ class KeyValueResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static KeyValue createUpdatedEntity(EntityManager em) {
-        KeyValue keyValue = new KeyValue().key(UPDATED_KEY).value(UPDATED_VALUE);
+        KeyValue keyValue = new KeyValue().kvKey(UPDATED_KV_KEY).kvValue(UPDATED_KV_VALUE);
         return keyValue;
     }
 
@@ -98,8 +98,8 @@ class KeyValueResourceIT {
         List<KeyValue> keyValueList = keyValueRepository.findAll();
         assertThat(keyValueList).hasSize(databaseSizeBeforeCreate + 1);
         KeyValue testKeyValue = keyValueList.get(keyValueList.size() - 1);
-        assertThat(testKeyValue.getKey()).isEqualTo(DEFAULT_KEY);
-        assertThat(testKeyValue.getValue()).isEqualTo(DEFAULT_VALUE);
+        assertThat(testKeyValue.getKvKey()).isEqualTo(DEFAULT_KV_KEY);
+        assertThat(testKeyValue.getKvValue()).isEqualTo(DEFAULT_KV_VALUE);
     }
 
     @Test
@@ -123,10 +123,10 @@ class KeyValueResourceIT {
 
     @Test
     @Transactional
-    void checkKeyIsRequired() throws Exception {
+    void checkKvKeyIsRequired() throws Exception {
         int databaseSizeBeforeTest = keyValueRepository.findAll().size();
         // set the field null
-        keyValue.setKey(null);
+        keyValue.setKvKey(null);
 
         // Create the KeyValue, which fails.
         KeyValueDTO keyValueDTO = keyValueMapper.toDto(keyValue);
@@ -151,8 +151,8 @@ class KeyValueResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(keyValue.getId().intValue())))
-            .andExpect(jsonPath("$.[*].key").value(hasItem(DEFAULT_KEY)))
-            .andExpect(jsonPath("$.[*].value").value(hasItem(DEFAULT_VALUE)));
+            .andExpect(jsonPath("$.[*].kvKey").value(hasItem(DEFAULT_KV_KEY)))
+            .andExpect(jsonPath("$.[*].kvValue").value(hasItem(DEFAULT_KV_VALUE)));
     }
 
     @Test
@@ -167,8 +167,8 @@ class KeyValueResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(keyValue.getId().intValue()))
-            .andExpect(jsonPath("$.key").value(DEFAULT_KEY))
-            .andExpect(jsonPath("$.value").value(DEFAULT_VALUE));
+            .andExpect(jsonPath("$.kvKey").value(DEFAULT_KV_KEY))
+            .andExpect(jsonPath("$.kvValue").value(DEFAULT_KV_VALUE));
     }
 
     @Test
@@ -191,132 +191,132 @@ class KeyValueResourceIT {
 
     @Test
     @Transactional
-    void getAllKeyValuesByKeyIsEqualToSomething() throws Exception {
+    void getAllKeyValuesByKvKeyIsEqualToSomething() throws Exception {
         // Initialize the database
         keyValueRepository.saveAndFlush(keyValue);
 
-        // Get all the keyValueList where key equals to DEFAULT_KEY
-        defaultKeyValueShouldBeFound("key.equals=" + DEFAULT_KEY);
+        // Get all the keyValueList where kvKey equals to DEFAULT_KV_KEY
+        defaultKeyValueShouldBeFound("kvKey.equals=" + DEFAULT_KV_KEY);
 
-        // Get all the keyValueList where key equals to UPDATED_KEY
-        defaultKeyValueShouldNotBeFound("key.equals=" + UPDATED_KEY);
+        // Get all the keyValueList where kvKey equals to UPDATED_KV_KEY
+        defaultKeyValueShouldNotBeFound("kvKey.equals=" + UPDATED_KV_KEY);
     }
 
     @Test
     @Transactional
-    void getAllKeyValuesByKeyIsInShouldWork() throws Exception {
+    void getAllKeyValuesByKvKeyIsInShouldWork() throws Exception {
         // Initialize the database
         keyValueRepository.saveAndFlush(keyValue);
 
-        // Get all the keyValueList where key in DEFAULT_KEY or UPDATED_KEY
-        defaultKeyValueShouldBeFound("key.in=" + DEFAULT_KEY + "," + UPDATED_KEY);
+        // Get all the keyValueList where kvKey in DEFAULT_KV_KEY or UPDATED_KV_KEY
+        defaultKeyValueShouldBeFound("kvKey.in=" + DEFAULT_KV_KEY + "," + UPDATED_KV_KEY);
 
-        // Get all the keyValueList where key equals to UPDATED_KEY
-        defaultKeyValueShouldNotBeFound("key.in=" + UPDATED_KEY);
+        // Get all the keyValueList where kvKey equals to UPDATED_KV_KEY
+        defaultKeyValueShouldNotBeFound("kvKey.in=" + UPDATED_KV_KEY);
     }
 
     @Test
     @Transactional
-    void getAllKeyValuesByKeyIsNullOrNotNull() throws Exception {
+    void getAllKeyValuesByKvKeyIsNullOrNotNull() throws Exception {
         // Initialize the database
         keyValueRepository.saveAndFlush(keyValue);
 
-        // Get all the keyValueList where key is not null
-        defaultKeyValueShouldBeFound("key.specified=true");
+        // Get all the keyValueList where kvKey is not null
+        defaultKeyValueShouldBeFound("kvKey.specified=true");
 
-        // Get all the keyValueList where key is null
-        defaultKeyValueShouldNotBeFound("key.specified=false");
+        // Get all the keyValueList where kvKey is null
+        defaultKeyValueShouldNotBeFound("kvKey.specified=false");
     }
 
     @Test
     @Transactional
-    void getAllKeyValuesByKeyContainsSomething() throws Exception {
+    void getAllKeyValuesByKvKeyContainsSomething() throws Exception {
         // Initialize the database
         keyValueRepository.saveAndFlush(keyValue);
 
-        // Get all the keyValueList where key contains DEFAULT_KEY
-        defaultKeyValueShouldBeFound("key.contains=" + DEFAULT_KEY);
+        // Get all the keyValueList where kvKey contains DEFAULT_KV_KEY
+        defaultKeyValueShouldBeFound("kvKey.contains=" + DEFAULT_KV_KEY);
 
-        // Get all the keyValueList where key contains UPDATED_KEY
-        defaultKeyValueShouldNotBeFound("key.contains=" + UPDATED_KEY);
+        // Get all the keyValueList where kvKey contains UPDATED_KV_KEY
+        defaultKeyValueShouldNotBeFound("kvKey.contains=" + UPDATED_KV_KEY);
     }
 
     @Test
     @Transactional
-    void getAllKeyValuesByKeyNotContainsSomething() throws Exception {
+    void getAllKeyValuesByKvKeyNotContainsSomething() throws Exception {
         // Initialize the database
         keyValueRepository.saveAndFlush(keyValue);
 
-        // Get all the keyValueList where key does not contain DEFAULT_KEY
-        defaultKeyValueShouldNotBeFound("key.doesNotContain=" + DEFAULT_KEY);
+        // Get all the keyValueList where kvKey does not contain DEFAULT_KV_KEY
+        defaultKeyValueShouldNotBeFound("kvKey.doesNotContain=" + DEFAULT_KV_KEY);
 
-        // Get all the keyValueList where key does not contain UPDATED_KEY
-        defaultKeyValueShouldBeFound("key.doesNotContain=" + UPDATED_KEY);
+        // Get all the keyValueList where kvKey does not contain UPDATED_KV_KEY
+        defaultKeyValueShouldBeFound("kvKey.doesNotContain=" + UPDATED_KV_KEY);
     }
 
     @Test
     @Transactional
-    void getAllKeyValuesByValueIsEqualToSomething() throws Exception {
+    void getAllKeyValuesByKvValueIsEqualToSomething() throws Exception {
         // Initialize the database
         keyValueRepository.saveAndFlush(keyValue);
 
-        // Get all the keyValueList where value equals to DEFAULT_VALUE
-        defaultKeyValueShouldBeFound("value.equals=" + DEFAULT_VALUE);
+        // Get all the keyValueList where kvValue equals to DEFAULT_KV_VALUE
+        defaultKeyValueShouldBeFound("kvValue.equals=" + DEFAULT_KV_VALUE);
 
-        // Get all the keyValueList where value equals to UPDATED_VALUE
-        defaultKeyValueShouldNotBeFound("value.equals=" + UPDATED_VALUE);
+        // Get all the keyValueList where kvValue equals to UPDATED_KV_VALUE
+        defaultKeyValueShouldNotBeFound("kvValue.equals=" + UPDATED_KV_VALUE);
     }
 
     @Test
     @Transactional
-    void getAllKeyValuesByValueIsInShouldWork() throws Exception {
+    void getAllKeyValuesByKvValueIsInShouldWork() throws Exception {
         // Initialize the database
         keyValueRepository.saveAndFlush(keyValue);
 
-        // Get all the keyValueList where value in DEFAULT_VALUE or UPDATED_VALUE
-        defaultKeyValueShouldBeFound("value.in=" + DEFAULT_VALUE + "," + UPDATED_VALUE);
+        // Get all the keyValueList where kvValue in DEFAULT_KV_VALUE or UPDATED_KV_VALUE
+        defaultKeyValueShouldBeFound("kvValue.in=" + DEFAULT_KV_VALUE + "," + UPDATED_KV_VALUE);
 
-        // Get all the keyValueList where value equals to UPDATED_VALUE
-        defaultKeyValueShouldNotBeFound("value.in=" + UPDATED_VALUE);
+        // Get all the keyValueList where kvValue equals to UPDATED_KV_VALUE
+        defaultKeyValueShouldNotBeFound("kvValue.in=" + UPDATED_KV_VALUE);
     }
 
     @Test
     @Transactional
-    void getAllKeyValuesByValueIsNullOrNotNull() throws Exception {
+    void getAllKeyValuesByKvValueIsNullOrNotNull() throws Exception {
         // Initialize the database
         keyValueRepository.saveAndFlush(keyValue);
 
-        // Get all the keyValueList where value is not null
-        defaultKeyValueShouldBeFound("value.specified=true");
+        // Get all the keyValueList where kvValue is not null
+        defaultKeyValueShouldBeFound("kvValue.specified=true");
 
-        // Get all the keyValueList where value is null
-        defaultKeyValueShouldNotBeFound("value.specified=false");
+        // Get all the keyValueList where kvValue is null
+        defaultKeyValueShouldNotBeFound("kvValue.specified=false");
     }
 
     @Test
     @Transactional
-    void getAllKeyValuesByValueContainsSomething() throws Exception {
+    void getAllKeyValuesByKvValueContainsSomething() throws Exception {
         // Initialize the database
         keyValueRepository.saveAndFlush(keyValue);
 
-        // Get all the keyValueList where value contains DEFAULT_VALUE
-        defaultKeyValueShouldBeFound("value.contains=" + DEFAULT_VALUE);
+        // Get all the keyValueList where kvValue contains DEFAULT_KV_VALUE
+        defaultKeyValueShouldBeFound("kvValue.contains=" + DEFAULT_KV_VALUE);
 
-        // Get all the keyValueList where value contains UPDATED_VALUE
-        defaultKeyValueShouldNotBeFound("value.contains=" + UPDATED_VALUE);
+        // Get all the keyValueList where kvValue contains UPDATED_KV_VALUE
+        defaultKeyValueShouldNotBeFound("kvValue.contains=" + UPDATED_KV_VALUE);
     }
 
     @Test
     @Transactional
-    void getAllKeyValuesByValueNotContainsSomething() throws Exception {
+    void getAllKeyValuesByKvValueNotContainsSomething() throws Exception {
         // Initialize the database
         keyValueRepository.saveAndFlush(keyValue);
 
-        // Get all the keyValueList where value does not contain DEFAULT_VALUE
-        defaultKeyValueShouldNotBeFound("value.doesNotContain=" + DEFAULT_VALUE);
+        // Get all the keyValueList where kvValue does not contain DEFAULT_KV_VALUE
+        defaultKeyValueShouldNotBeFound("kvValue.doesNotContain=" + DEFAULT_KV_VALUE);
 
-        // Get all the keyValueList where value does not contain UPDATED_VALUE
-        defaultKeyValueShouldBeFound("value.doesNotContain=" + UPDATED_VALUE);
+        // Get all the keyValueList where kvValue does not contain UPDATED_KV_VALUE
+        defaultKeyValueShouldBeFound("kvValue.doesNotContain=" + UPDATED_KV_VALUE);
     }
 
     /**
@@ -328,8 +328,8 @@ class KeyValueResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(keyValue.getId().intValue())))
-            .andExpect(jsonPath("$.[*].key").value(hasItem(DEFAULT_KEY)))
-            .andExpect(jsonPath("$.[*].value").value(hasItem(DEFAULT_VALUE)));
+            .andExpect(jsonPath("$.[*].kvKey").value(hasItem(DEFAULT_KV_KEY)))
+            .andExpect(jsonPath("$.[*].kvValue").value(hasItem(DEFAULT_KV_VALUE)));
 
         // Check, that the count call also returns 1
         restKeyValueMockMvc
@@ -377,7 +377,7 @@ class KeyValueResourceIT {
         KeyValue updatedKeyValue = keyValueRepository.findById(keyValue.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedKeyValue are not directly saved in db
         em.detach(updatedKeyValue);
-        updatedKeyValue.key(UPDATED_KEY).value(UPDATED_VALUE);
+        updatedKeyValue.kvKey(UPDATED_KV_KEY).kvValue(UPDATED_KV_VALUE);
         KeyValueDTO keyValueDTO = keyValueMapper.toDto(updatedKeyValue);
 
         restKeyValueMockMvc
@@ -392,8 +392,8 @@ class KeyValueResourceIT {
         List<KeyValue> keyValueList = keyValueRepository.findAll();
         assertThat(keyValueList).hasSize(databaseSizeBeforeUpdate);
         KeyValue testKeyValue = keyValueList.get(keyValueList.size() - 1);
-        assertThat(testKeyValue.getKey()).isEqualTo(UPDATED_KEY);
-        assertThat(testKeyValue.getValue()).isEqualTo(UPDATED_VALUE);
+        assertThat(testKeyValue.getKvKey()).isEqualTo(UPDATED_KV_KEY);
+        assertThat(testKeyValue.getKvValue()).isEqualTo(UPDATED_KV_VALUE);
     }
 
     @Test
@@ -473,7 +473,7 @@ class KeyValueResourceIT {
         KeyValue partialUpdatedKeyValue = new KeyValue();
         partialUpdatedKeyValue.setId(keyValue.getId());
 
-        partialUpdatedKeyValue.key(UPDATED_KEY);
+        partialUpdatedKeyValue.kvKey(UPDATED_KV_KEY);
 
         restKeyValueMockMvc
             .perform(
@@ -487,8 +487,8 @@ class KeyValueResourceIT {
         List<KeyValue> keyValueList = keyValueRepository.findAll();
         assertThat(keyValueList).hasSize(databaseSizeBeforeUpdate);
         KeyValue testKeyValue = keyValueList.get(keyValueList.size() - 1);
-        assertThat(testKeyValue.getKey()).isEqualTo(UPDATED_KEY);
-        assertThat(testKeyValue.getValue()).isEqualTo(DEFAULT_VALUE);
+        assertThat(testKeyValue.getKvKey()).isEqualTo(UPDATED_KV_KEY);
+        assertThat(testKeyValue.getKvValue()).isEqualTo(DEFAULT_KV_VALUE);
     }
 
     @Test
@@ -503,7 +503,7 @@ class KeyValueResourceIT {
         KeyValue partialUpdatedKeyValue = new KeyValue();
         partialUpdatedKeyValue.setId(keyValue.getId());
 
-        partialUpdatedKeyValue.key(UPDATED_KEY).value(UPDATED_VALUE);
+        partialUpdatedKeyValue.kvKey(UPDATED_KV_KEY).kvValue(UPDATED_KV_VALUE);
 
         restKeyValueMockMvc
             .perform(
@@ -517,8 +517,8 @@ class KeyValueResourceIT {
         List<KeyValue> keyValueList = keyValueRepository.findAll();
         assertThat(keyValueList).hasSize(databaseSizeBeforeUpdate);
         KeyValue testKeyValue = keyValueList.get(keyValueList.size() - 1);
-        assertThat(testKeyValue.getKey()).isEqualTo(UPDATED_KEY);
-        assertThat(testKeyValue.getValue()).isEqualTo(UPDATED_VALUE);
+        assertThat(testKeyValue.getKvKey()).isEqualTo(UPDATED_KV_KEY);
+        assertThat(testKeyValue.getKvValue()).isEqualTo(UPDATED_KV_VALUE);
     }
 
     @Test

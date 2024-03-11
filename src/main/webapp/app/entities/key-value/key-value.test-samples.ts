@@ -2,23 +2,23 @@ import { IKeyValue, NewKeyValue } from './key-value.model';
 
 export const sampleWithRequiredData: IKeyValue = {
   id: 4798,
-  key: 'juvenile',
+  kvKey: 'juvenile',
 };
 
 export const sampleWithPartialData: IKeyValue = {
   id: 10949,
-  key: 'vivaciously',
-  value: 'sea agitate',
+  kvKey: 'vivaciously',
+  kvValue: 'sea agitate',
 };
 
 export const sampleWithFullData: IKeyValue = {
   id: 25461,
-  key: 'midst concerning heartwood',
-  value: 'wherever',
+  kvKey: 'midst concerning heartwood',
+  kvValue: 'wherever',
 };
 
 export const sampleWithNewData: NewKeyValue = {
-  key: 'podcast',
+  kvKey: 'podcast',
   id: null,
 };
 

@@ -89,11 +89,11 @@ public class KeyValueQueryService extends QueryService<KeyValue> {
             if (criteria.getId() != null) {
                 specification = specification.and(buildRangeSpecification(criteria.getId(), KeyValue_.id));
             }
-            if (criteria.getKey() != null) {
-                specification = specification.and(buildStringSpecification(criteria.getKey(), KeyValue_.key));
+            if (criteria.getKvKey() != null) {
+                specification = specification.and(buildStringSpecification(criteria.getKvKey(), KeyValue_.kvKey));
             }
-            if (criteria.getValue() != null) {
-                specification = specification.and(buildStringSpecification(criteria.getValue(), KeyValue_.value));
+            if (criteria.getKvValue() != null) {
+                specification = specification.and(buildStringSpecification(criteria.getKvValue(), KeyValue_.kvValue));
             }
         }
         return specification;

@@ -14,10 +14,10 @@ public class KeyValueDTO implements Serializable {
 
     @NotNull
     @Size(max = 255)
-    private String key;
+    private String kvKey;
 
     @Size(max = 255)
-    private String value;
+    private String kvValue;
 
     public Long getId() {
         return id;
@@ -27,20 +27,20 @@ public class KeyValueDTO implements Serializable {
         this.id = id;
     }
 
-    public String getKey() {
-        return key;
+    public String getKvKey() {
+        return kvKey;
     }
 
-    public void setKey(String key) {
-        this.key = key;
+    public void setKvKey(String kvKey) {
+        this.kvKey = kvKey;
     }
 
-    public String getValue() {
-        return value;
+    public String getKvValue() {
+        return kvValue;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setKvValue(String kvValue) {
+        this.kvValue = kvValue;
     }
 
     @Override
@@ -69,8 +69,8 @@ public class KeyValueDTO implements Serializable {
     public String toString() {
         return "KeyValueDTO{" +
             "id=" + getId() +
-            ", key='" + getKey() + "'" +
-            ", value='" + getValue() + "'" +
+            ", kvKey='" + getKvKey() + "'" +
+            ", kvValue='" + getKvValue() + "'" +
             "}";
     }
 }

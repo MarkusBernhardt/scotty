@@ -25,8 +25,8 @@ entity Payment {
 }
 
 entity KeyValue {
-    key String required maxlength(255),
-    value String maxlength(255),
+    kvKey String required maxlength(255),
+    kvValue String maxlength(255),
 }
 
 enum Gateway {

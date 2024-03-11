@@ -44,16 +44,16 @@
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="key">
+            <th scope="col" jhiSortBy="kvKey">
               <div class="d-flex">
-                <span jhiTranslate="scottyApp.keyValue.key">Key</span>
+                <span jhiTranslate="scottyApp.keyValue.kvKey">Kv Key</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="value">
+            <th scope="col" jhiSortBy="kvValue">
               <div class="d-flex">
-                <span jhiTranslate="scottyApp.keyValue.value">Value</span>
+                <span jhiTranslate="scottyApp.keyValue.kvValue">Kv Value</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
@@ -67,8 +67,8 @@
               <td>
                 <a [routerLink]="['/key-value', keyValue.id, 'view']">{{ keyValue.id }}</a>
               </td>
-              <td>{{ keyValue.key }}</td>
-              <td>{{ keyValue.value }}</td>
+              <td>{{ keyValue.kvKey }}</td>
+              <td>{{ keyValue.kvValue }}</td>
               <td class="text-end">
                 <div class="btn-group">
                   <a [routerLink]="['/key-value', keyValue.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">

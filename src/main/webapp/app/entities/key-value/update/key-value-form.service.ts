@@ -18,8 +18,8 @@ type KeyValueFormDefaults = Pick<NewKeyValue, 'id'>;
 
 type KeyValueFormGroupContent = {
   id: FormControl<IKeyValue['id'] | NewKeyValue['id']>;
-  key: FormControl<IKeyValue['key']>;
-  value: FormControl<IKeyValue['value']>;
+  kvKey: FormControl<IKeyValue['kvKey']>;
+  kvValue: FormControl<IKeyValue['kvValue']>;
 };
 
 export type KeyValueFormGroup = FormGroup<KeyValueFormGroupContent>;
@@ -39,10 +39,10 @@ export class KeyValueFormService {
           validators: [Validators.required],
         },
       ),
-      key: new FormControl(keyValueRawValue.key, {
+      kvKey: new FormControl(keyValueRawValue.kvKey, {
         validators: [Validators.required, Validators.maxLength(255)],
       }),
-      value: new FormControl(keyValueRawValue.value, {
+      kvValue: new FormControl(keyValueRawValue.kvValue, {
         validators: [Validators.maxLength(255)],
       }),
     });

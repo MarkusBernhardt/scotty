@@ -1,13 +1,12 @@
 package de.scmb.scotty.service;
 
 import de.scmb.scotty.domain.Payment;
+import de.scmb.scotty.domain.enumeration.Gateway;
 import de.scmb.scotty.repository.PaymentRepository;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -129,6 +128,82 @@ public class ExcelService {
 
     public ExcelService(PaymentRepository paymentRepository) {
         this.paymentRepository = paymentRepository;
+    }
+
+    public ValidationResult validatePaymentsFromStream(InputStream inputStream) throws IOException {
+        Workbook workbook = new XSSFWorkbook(inputStream);
+        Sheet sheet = workbook.getSheet("payments");
+        Row firstRow = sheet.getRow(0);
+
+        int columnAmount = -1;
+        for (int i = 0; i < COLUMNS.length; i++) {
+            ColumnDescription columnDescription = COLUMNS[i];
+            if (columnDescription.level != ColumnLevel.mandatory && columnDescription.level != ColumnLevel.mandatoryOnInit) {
+                continue;
+            }
+            boolean found = false;
+            for (Cell cell : firstRow) {
+                String value = cell.getStringCellValue();
+                if (value.equals(columnDescription.name)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                throw new IllegalArgumentException(String.format("Mandatory column \"%s\" not found in file.", columnDescription.name));
+            }
+            if (columnDescription.name.equals("amount")) {
+                columnAmount = i;
+            }
+        }
+
+        double amount = 0;
+        int count = 0;
+        boolean first = true;
+        for (Row row : sheet) {
+            if (first) {
+                first = false;
+                continue;
+            }
+            amount += getIntCellValue(row, columnAmount);
+            count++;
+        }
+
+        return new ValidationResult(count, amount);
+    }
+
+    public List<Payment> readPaymentsFromStream(InputStream inputStream, String fileName) throws IOException {
+        Workbook workbook = new XSSFWorkbook(inputStream);
+        Sheet sheet = workbook.getSheet("payments");
+
+        boolean first = true;
+        List<Payment> payments = new ArrayList<>();
+        Map<String, Integer> columnIndices = new HashMap<>();
+        for (Row row : sheet) {
+            if (first) {
+                first = false;
+                int index = 0;
+                for (Cell cell : row) {
+                    columnIndices.put(cell.getStringCellValue(), index);
+                    index++;
+                }
+                continue;
+            }
+
+            switch (row.getCell(columnIndices.get("gateway")).getStringCellValue()) {
+                case "emerchantpay" -> {
+                    payments.add(buildPayment(columnIndices, row, Gateway.EMERCHANTPAY, fileName));
+                }
+                case "ccbill" -> {
+                    payments.add(buildPayment(columnIndices, row, Gateway.CCBILL, fileName));
+                }
+                default -> {
+                    payments.add(buildPayment(columnIndices, row, Gateway.UNKNOWN, fileName));
+                }
+            }
+        }
+
+        return payments;
     }
 
     public void writePaymentsToStream(OutputStream outputStream, String fileName) throws IOException {
@@ -267,7 +342,7 @@ public class ExcelService {
             }
 
             index = 0;
-            for (ColumnDescription columnDescription : COLUMNS) {
+            for (ColumnDescription ignored : COLUMNS) {
                 sheet.autoSizeColumn(index);
                 index++;
             }
@@ -398,7 +473,67 @@ public class ExcelService {
         }
     }
 
-    public static enum ColumnLevel {
+    public static Payment buildPayment(Map<String, Integer> columnIndices, Row row, Gateway gateway, String fileName) {
+        Payment payment = new Payment();
+        payment.setAmount(getIntCellValue(row, columnIndices.get("amount")));
+        payment.setCurrencyCode(cutRight(getStringCellValue(columnIndices, row, "currencyCode"), 3));
+        payment.setFirstName(cutRight(getStringCellValue(columnIndices, row, "firstName"), 35));
+        payment.setLastName(cutRight(getStringCellValue(columnIndices, row, "lastName"), 35));
+        payment.setCity(cutRight(getStringCellValue(columnIndices, row, "city"), 35));
+        payment.setPostalCode(cutRight(getStringCellValue(columnIndices, row, "postalCode"), 16));
+        payment.setAddressLine1(cutRight(getStringCellValue(columnIndices, row, "addressLine1"), 70));
+        payment.setAddressLine2(cutRight(getStringCellValue(columnIndices, row, "addressLine2"), 70));
+        payment.setCountryCode(cutRight(getStringCellValue(columnIndices, row, "countryCode"), 2));
+        payment.setIban(cutRight(getStringCellValue(columnIndices, row, "iban"), 34));
+        payment.setBic(cutRight(getStringCellValue(columnIndices, row, "bic"), 11));
+        payment.setPaymentId(cutRight(getStringCellValue(columnIndices, row, "paymentId"), 35));
+        payment.setSoftDescriptor(cutRight(getStringCellValue(columnIndices, row, "softDescriptor"), 140));
+        payment.setRemoteIp(cutRight(getStringCellValue(columnIndices, row, "remoteIp"), 39));
+        payment.setGateway(gateway);
+        payment.setMandateId(cutRight(getStringCellValue(columnIndices, row, "mandateId"), 35));
+        payment.setFileName(cutRight(fileName, 255));
+        return payment;
+    }
+
+    public static int getIntCellValue(Row row, int columnInddex) {
+        try {
+            Cell cell = row.getCell(columnInddex);
+            return switch (cell.getCellType()) {
+                case STRING -> Integer.parseInt(cell.getStringCellValue());
+                case NUMERIC -> (int) cell.getNumericCellValue();
+                default -> throw new IllegalArgumentException();
+            };
+        } catch (Throwable t) {
+            return 0;
+        }
+    }
+
+    public static String getStringCellValue(Map<String, Integer> columnIndices, Row row, String columnName) {
+        try {
+            Cell cell = row.getCell(columnIndices.get(columnName));
+            return switch (cell.getCellType()) {
+                case STRING -> cell.getStringCellValue();
+                case NUMERIC -> Integer.toString((int) cell.getNumericCellValue());
+                default -> throw new IllegalArgumentException();
+            };
+        } catch (Throwable t) {
+            return "";
+        }
+    }
+
+    public static String cutRight(String value, int length) {
+        if (value == null) {
+            return "";
+        }
+
+        value = value.trim();
+        if (value.length() > length) {
+            value = value.substring(0, length);
+        }
+        return value;
+    }
+
+    public enum ColumnLevel {
         mandatory,
         optional,
         mandatoryOnInit,
@@ -421,6 +556,18 @@ public class ExcelService {
             this.level = level;
             this.description = description;
             this.example = example;
+        }
+    }
+
+    public static class ValidationResult {
+
+        public int count;
+
+        public double amount;
+
+        public ValidationResult(int count, double amount) {
+            this.count = count;
+            this.amount = amount;
         }
     }
 }

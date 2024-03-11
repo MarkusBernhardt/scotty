@@ -23,9 +23,9 @@ public class KeyValueCriteria implements Serializable, Criteria {
 
     private LongFilter id;
 
-    private StringFilter key;
+    private StringFilter kvKey;
 
-    private StringFilter value;
+    private StringFilter kvValue;
 
     private Boolean distinct;
 
@@ -33,8 +33,8 @@ public class KeyValueCriteria implements Serializable, Criteria {
 
     public KeyValueCriteria(KeyValueCriteria other) {
         this.id = other.id == null ? null : other.id.copy();
-        this.key = other.key == null ? null : other.key.copy();
-        this.value = other.value == null ? null : other.value.copy();
+        this.kvKey = other.kvKey == null ? null : other.kvKey.copy();
+        this.kvValue = other.kvValue == null ? null : other.kvValue.copy();
         this.distinct = other.distinct;
     }
 
@@ -58,34 +58,34 @@ public class KeyValueCriteria implements Serializable, Criteria {
         this.id = id;
     }
 
-    public StringFilter getKey() {
-        return key;
+    public StringFilter getKvKey() {
+        return kvKey;
     }
 
-    public StringFilter key() {
-        if (key == null) {
-            key = new StringFilter();
+    public StringFilter kvKey() {
+        if (kvKey == null) {
+            kvKey = new StringFilter();
         }
-        return key;
+        return kvKey;
     }
 
-    public void setKey(StringFilter key) {
-        this.key = key;
+    public void setKvKey(StringFilter kvKey) {
+        this.kvKey = kvKey;
     }
 
-    public StringFilter getValue() {
-        return value;
+    public StringFilter getKvValue() {
+        return kvValue;
     }
 
-    public StringFilter value() {
-        if (value == null) {
-            value = new StringFilter();
+    public StringFilter kvValue() {
+        if (kvValue == null) {
+            kvValue = new StringFilter();
         }
-        return value;
+        return kvValue;
     }
 
-    public void setValue(StringFilter value) {
-        this.value = value;
+    public void setKvValue(StringFilter kvValue) {
+        this.kvValue = kvValue;
     }
 
     public Boolean getDistinct() {
@@ -107,15 +107,15 @@ public class KeyValueCriteria implements Serializable, Criteria {
         final KeyValueCriteria that = (KeyValueCriteria) o;
         return (
             Objects.equals(id, that.id) &&
-            Objects.equals(key, that.key) &&
-            Objects.equals(value, that.value) &&
+            Objects.equals(kvKey, that.kvKey) &&
+            Objects.equals(kvValue, that.kvValue) &&
             Objects.equals(distinct, that.distinct)
         );
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, key, value, distinct);
+        return Objects.hash(id, kvKey, kvValue, distinct);
     }
 
     // prettier-ignore
@@ -123,8 +123,8 @@ public class KeyValueCriteria implements Serializable, Criteria {
     public String toString() {
         return "KeyValueCriteria{" +
             (id != null ? "id=" + id + ", " : "") +
-            (key != null ? "key=" + key + ", " : "") +
-            (value != null ? "value=" + value + ", " : "") +
+            (kvKey != null ? "kvKey=" + kvKey + ", " : "") +
+            (kvValue != null ? "kvValue=" + kvValue + ", " : "") +
             (distinct != null ? "distinct=" + distinct + ", " : "") +
             "}";
     }

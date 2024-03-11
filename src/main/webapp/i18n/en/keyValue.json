@@ -18,8 +18,8 @@
         "title": "Key Value"
       },
       "id": "ID",
-      "key": "Key",
-      "value": "Value"
+      "kvKey": "Kv Key",
+      "kvValue": "Kv Value"
     }
   }
 }
