@@ -17,7 +17,7 @@
     "enableHibernateCache": true,
     "enableSwaggerCodegen": false,
     "enableTranslation": true,
-    "entities": ["Payment"],
+    "entities": ["KeyValue", "Payment"],
     "feignClient": false,
     "gradleEnterpriseHost": null,
     "herokuAppName": "beam-me-up-scotty-85521471",

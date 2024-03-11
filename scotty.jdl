@@ -24,6 +24,11 @@ entity Payment {
     fileName String maxlength(255),
 }
 
+entity KeyValue {
+    key String required maxlength(255),
+    value String maxlength(255),
+}
+
 enum Gateway {
     EMERCHANTPAY(emerchantpay),
     CCBILL(ccbill),
