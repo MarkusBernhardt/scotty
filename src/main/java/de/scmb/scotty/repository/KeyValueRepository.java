@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface KeyValueRepository extends JpaRepository<KeyValue, Long>, JpaSpecificationExecutor<KeyValue> {}
+public interface KeyValueRepository extends JpaRepository<KeyValue, Long>, JpaSpecificationExecutor<KeyValue> {
+    KeyValue findFirstByKvKeyOrderById(String kvKey);
+}
