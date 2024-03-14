@@ -16,6 +16,8 @@ import org.springframework.stereotype.Repository;
 public interface PaymentRepository extends JpaRepository<Payment, Long>, JpaSpecificationExecutor<Payment> {
     Payment findFirstByPaymentIdOrderByIdAsc(String paymentId);
 
+    Payment findFirstByGatewayIdOrderByIdAsc(String gatewayId);
+
     Payment findFirstByMandateIdAndGatewayIdNotNullAndGatewayIdNotOrderByIdAsc(String mandateId, String gatewayId);
 
     List<Payment> findAllByFileNameOrderByIdAsc(String fileName);

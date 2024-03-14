@@ -30,7 +30,7 @@ entity Reconciliation {
     gateway Gateway required,
     iban String required minlength(16) maxlength(34),
     bic String required minlength(8) maxlength(11),
-    amount Integer required min(0),
+    amount Integer required,
     currencyCode String required minlength(3) maxlength(3),
     softDescriptor String required maxlength(140),
     firstName String required maxlength(35),

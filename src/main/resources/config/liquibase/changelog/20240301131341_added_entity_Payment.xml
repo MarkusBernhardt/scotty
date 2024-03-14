@@ -89,6 +89,9 @@
         <createIndex indexName="IX_PAYMENT_PAYMENT_ID" tableName="payment" unique="false">
             <column name="payment_id"/>
         </createIndex>
+        <createIndex indexName="IX_PAYMENT_GATEWAY_ID" tableName="payment" unique="false">
+            <column name="gateway_id"/>
+        </createIndex>
         <createIndex indexName="IX_PAYMENT_FILE_NAME" tableName="payment" unique="false">
             <column name="file_name"/>
         </createIndex>

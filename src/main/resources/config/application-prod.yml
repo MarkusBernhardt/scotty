@@ -123,13 +123,13 @@ jhipster:
 
 application:
   emerchantpay:
-    # environment: 'production'
-    # password: 'd8b68a25643baee9fa42aa785be1d13dea52e824'
-    # username: '3091957bcd0e1c4b83152e7ca3832530953a4833'
-    # token: '211db50061148b993717e9d57e65314dbcdf865f'
-    environment: 'staging'
-    password: '966c0b1b25b0208020df14703edfb36b9207829d'
-    username: '5ad798f33882146de4cfdfc401950fb48f9bc0af'
-    token: '3c1fbbbf8b3e23eff60009f4ae5260297abf62ab'
+    environment: 'production'
+    password: 'd8b68a25643baee9fa42aa785be1d13dea52e824'
+    username: '3091957bcd0e1c4b83152e7ca3832530953a4833'
+    token: '211db50061148b993717e9d57e65314dbcdf865f'
+    # environment: 'staging'
+    # password: '966c0b1b25b0208020df14703edfb36b9207829d'
+    # username: '5ad798f33882146de4cfdfc401950fb48f9bc0af'
+    # token: '3c1fbbbf8b3e23eff60009f4ae5260297abf62ab'
     notification-url: 'https://beam-me-up-scotty-85521471-9f8f0d090a9a.herokuapp.com/webhooks/emerchantpay'
     reconciliation-schedule: '0 15 * * * *'

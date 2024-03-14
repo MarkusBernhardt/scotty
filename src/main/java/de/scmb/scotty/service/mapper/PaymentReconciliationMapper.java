@@ -14,6 +14,7 @@ import org.mapstruct.Named;
  */
 @Mapper(componentModel = "spring")
 public interface PaymentReconciliationMapper extends EntityMapper<Payment, Reconciliation> {
-    @Mapping(target = "paymentId", source = "id")
+    @Mapping(target = "id", source = "id", ignore = true)
+    @Mapping(target = "fileName", source = "fileName", ignore = true)
     Reconciliation toEntity(Payment s);
 }

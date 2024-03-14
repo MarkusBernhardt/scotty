@@ -60,6 +60,8 @@ public class EmerchantpayService {
                 payment.setTimestamp(Instant.now());
                 payment.setGatewayId("");
                 payment.setMode("");
+                // TODO
+                // RECON
                 return true;
             }
 
@@ -121,7 +123,7 @@ public class EmerchantpayService {
         return sddInitRecurringSaleRequest;
     }
 
-    public String mapStateEmerchantpay(String state) {
+    public static String mapStateEmerchantpay(String state) {
         return switch (state) {
             case "approved" -> "paid";
             case "pending_async" -> "submitted";
