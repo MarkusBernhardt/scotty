@@ -42,7 +42,7 @@ describe('Reconciliation Form Service', () => {
             gatewayId: expect.any(Object),
             mode: expect.any(Object),
             fileName: expect.any(Object),
-            payment: expect.any(Object),
+            scottyPayment: expect.any(Object),
           }),
         );
       });
@@ -75,7 +75,7 @@ describe('Reconciliation Form Service', () => {
             gatewayId: expect.any(Object),
             mode: expect.any(Object),
             fileName: expect.any(Object),
-            payment: expect.any(Object),
+            scottyPayment: expect.any(Object),
           }),
         );
       });

@@ -40,7 +40,7 @@
       "gatewayId": "Gateway Id",
       "mode": "Mode",
       "fileName": "File Name",
-      "payment": "Payment"
+      "scottyPayment": "Scotty Payment"
     }
   }
 }

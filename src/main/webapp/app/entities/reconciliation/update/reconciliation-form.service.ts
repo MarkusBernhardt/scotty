@@ -53,7 +53,7 @@ type ReconciliationFormGroupContent = {
   gatewayId: FormControl<ReconciliationFormRawValue['gatewayId']>;
   mode: FormControl<ReconciliationFormRawValue['mode']>;
   fileName: FormControl<ReconciliationFormRawValue['fileName']>;
-  payment: FormControl<ReconciliationFormRawValue['payment']>;
+  scottyPayment: FormControl<ReconciliationFormRawValue['scottyPayment']>;
 };
 
 export type ReconciliationFormGroup = FormGroup<ReconciliationFormGroupContent>;
@@ -139,7 +139,7 @@ export class ReconciliationFormService {
       fileName: new FormControl(reconciliationRawValue.fileName, {
         validators: [Validators.maxLength(255)],
       }),
-      payment: new FormControl(reconciliationRawValue.payment),
+      scottyPayment: new FormControl(reconciliationRawValue.scottyPayment),
     });
   }
 

@@ -85,7 +85,7 @@ public class ReconciliationCriteria implements Serializable, Criteria {
 
     private StringFilter fileName;
 
-    private LongFilter paymentId;
+    private LongFilter scottyPaymentId;
 
     private Boolean distinct;
 
@@ -115,7 +115,7 @@ public class ReconciliationCriteria implements Serializable, Criteria {
         this.gatewayId = other.gatewayId == null ? null : other.gatewayId.copy();
         this.mode = other.mode == null ? null : other.mode.copy();
         this.fileName = other.fileName == null ? null : other.fileName.copy();
-        this.paymentId = other.paymentId == null ? null : other.paymentId.copy();
+        this.scottyPaymentId = other.scottyPaymentId == null ? null : other.scottyPaymentId.copy();
         this.distinct = other.distinct;
     }
 
@@ -469,19 +469,19 @@ public class ReconciliationCriteria implements Serializable, Criteria {
         this.fileName = fileName;
     }
 
-    public LongFilter getPaymentId() {
-        return paymentId;
+    public LongFilter getScottyPaymentId() {
+        return scottyPaymentId;
     }
 
-    public LongFilter paymentId() {
-        if (paymentId == null) {
-            paymentId = new LongFilter();
+    public LongFilter scottyPaymentId() {
+        if (scottyPaymentId == null) {
+            scottyPaymentId = new LongFilter();
         }
-        return paymentId;
+        return scottyPaymentId;
     }
 
-    public void setPaymentId(LongFilter paymentId) {
-        this.paymentId = paymentId;
+    public void setScottyPaymentId(LongFilter scottyPaymentId) {
+        this.scottyPaymentId = scottyPaymentId;
     }
 
     public Boolean getDistinct() {
@@ -525,7 +525,7 @@ public class ReconciliationCriteria implements Serializable, Criteria {
             Objects.equals(gatewayId, that.gatewayId) &&
             Objects.equals(mode, that.mode) &&
             Objects.equals(fileName, that.fileName) &&
-            Objects.equals(paymentId, that.paymentId) &&
+            Objects.equals(scottyPaymentId, that.scottyPaymentId) &&
             Objects.equals(distinct, that.distinct)
         );
     }
@@ -556,7 +556,7 @@ public class ReconciliationCriteria implements Serializable, Criteria {
             gatewayId,
             mode,
             fileName,
-            paymentId,
+            scottyPaymentId,
             distinct
         );
     }
@@ -588,7 +588,7 @@ public class ReconciliationCriteria implements Serializable, Criteria {
             (gatewayId != null ? "gatewayId=" + gatewayId + ", " : "") +
             (mode != null ? "mode=" + mode + ", " : "") +
             (fileName != null ? "fileName=" + fileName + ", " : "") +
-            (paymentId != null ? "paymentId=" + paymentId + ", " : "") +
+            (scottyPaymentId != null ? "scottyPaymentId=" + scottyPaymentId + ", " : "") +
             (distinct != null ? "distinct=" + distinct + ", " : "") +
             "}";
     }

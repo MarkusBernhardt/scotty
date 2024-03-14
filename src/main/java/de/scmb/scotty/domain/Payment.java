@@ -133,9 +133,9 @@ public class Payment implements Serializable {
     @Column(name = "file_name", length = 255)
     private String fileName;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "payment")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "scottyPayment")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JsonIgnoreProperties(value = { "payment" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "scottyPayment" }, allowSetters = true)
     private Set<Reconciliation> reconciliations = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -445,10 +445,10 @@ public class Payment implements Serializable {
 
     public void setReconciliations(Set<Reconciliation> reconciliations) {
         if (this.reconciliations != null) {
-            this.reconciliations.forEach(i -> i.setPayment(null));
+            this.reconciliations.forEach(i -> i.setScottyPayment(null));
         }
         if (reconciliations != null) {
-            reconciliations.forEach(i -> i.setPayment(this));
+            reconciliations.forEach(i -> i.setScottyPayment(this));
         }
         this.reconciliations = reconciliations;
     }
@@ -460,13 +460,13 @@ public class Payment implements Serializable {
 
     public Payment addReconciliation(Reconciliation reconciliation) {
         this.reconciliations.add(reconciliation);
-        reconciliation.setPayment(this);
+        reconciliation.setScottyPayment(this);
         return this;
     }
 
     public Payment removeReconciliation(Reconciliation reconciliation) {
         this.reconciliations.remove(reconciliation);
-        reconciliation.setPayment(null);
+        reconciliation.setScottyPayment(null);
         return this;
     }
 

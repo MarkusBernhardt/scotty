@@ -96,7 +96,7 @@ public class ReconciliationDTO implements Serializable {
     @Size(max = 255)
     private String fileName;
 
-    private PaymentDTO payment;
+    private PaymentDTO scottyPayment;
 
     public Long getId() {
         return id;
@@ -282,12 +282,12 @@ public class ReconciliationDTO implements Serializable {
         this.fileName = fileName;
     }
 
-    public PaymentDTO getPayment() {
-        return payment;
+    public PaymentDTO getScottyPayment() {
+        return scottyPayment;
     }
 
-    public void setPayment(PaymentDTO payment) {
-        this.payment = payment;
+    public void setScottyPayment(PaymentDTO scottyPayment) {
+        this.scottyPayment = scottyPayment;
     }
 
     @Override
@@ -338,7 +338,7 @@ public class ReconciliationDTO implements Serializable {
             ", gatewayId='" + getGatewayId() + "'" +
             ", mode='" + getMode() + "'" +
             ", fileName='" + getFileName() + "'" +
-            ", payment=" + getPayment() +
+            ", scottyPayment=" + getScottyPayment() +
             "}";
     }
 }

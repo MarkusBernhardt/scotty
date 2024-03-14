@@ -88,7 +88,7 @@ export class ReconciliationUpdateComponent implements OnInit {
 
     this.paymentsSharedCollection = this.paymentService.addPaymentToCollectionIfMissing<IPayment>(
       this.paymentsSharedCollection,
-      reconciliation.payment,
+      reconciliation.scottyPayment,
     );
   }
 
@@ -98,7 +98,7 @@ export class ReconciliationUpdateComponent implements OnInit {
       .pipe(map((res: HttpResponse<IPayment[]>) => res.body ?? []))
       .pipe(
         map((payments: IPayment[]) =>
-          this.paymentService.addPaymentToCollectionIfMissing<IPayment>(payments, this.reconciliation?.payment),
+          this.paymentService.addPaymentToCollectionIfMissing<IPayment>(payments, this.reconciliation?.scottyPayment),
         ),
       )
       .subscribe((payments: IPayment[]) => (this.paymentsSharedCollection = payments));

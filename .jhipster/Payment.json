@@ -148,7 +148,7 @@
   "relationships": [
     {
       "otherEntityName": "reconciliation",
-      "otherEntityRelationshipName": "payment",
+      "otherEntityRelationshipName": "scottyPayment",
       "relationshipName": "reconciliation",
       "relationshipSide": "left",
       "relationshipType": "one-to-many"

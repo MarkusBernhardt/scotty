@@ -61,7 +61,7 @@ enum Gateway {
 }
 
 relationship OneToMany {
-    Payment to Reconciliation,
+    Payment to Reconciliation{scottyPayment(id)},
 }
 
 filter all

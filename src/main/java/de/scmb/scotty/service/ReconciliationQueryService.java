@@ -156,12 +156,12 @@ public class ReconciliationQueryService extends QueryService<Reconciliation> {
             if (criteria.getFileName() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getFileName(), Reconciliation_.fileName));
             }
-            if (criteria.getPaymentId() != null) {
+            if (criteria.getScottyPaymentId() != null) {
                 specification =
                     specification.and(
                         buildSpecification(
-                            criteria.getPaymentId(),
-                            root -> root.join(Reconciliation_.payment, JoinType.LEFT).get(Payment_.id)
+                            criteria.getScottyPaymentId(),
+                            root -> root.join(Reconciliation_.scottyPayment, JoinType.LEFT).get(Payment_.id)
                         )
                     );
             }

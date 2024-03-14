@@ -198,9 +198,9 @@
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="payment.id">
+            <th scope="col" jhiSortBy="scottyPayment.id">
               <div class="d-flex">
-                <span jhiTranslate="scottyApp.reconciliation.payment">Payment</span>
+                <span jhiTranslate="scottyApp.reconciliation.scottyPayment">Scotty Payment</span>
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
@@ -236,9 +236,9 @@
               <td>{{ reconciliation.mode }}</td>
               <td>{{ reconciliation.fileName }}</td>
               <td>
-                @if (reconciliation.payment) {
+                @if (reconciliation.scottyPayment) {
                   <div>
-                    <a [routerLink]="['/payment', reconciliation.payment.id, 'view']">{{ reconciliation.payment.id }}</a>
+                    <a [routerLink]="['/payment', reconciliation.scottyPayment.id, 'view']">{{ reconciliation.scottyPayment.id }}</a>
                   </div>
                 }
               </td>

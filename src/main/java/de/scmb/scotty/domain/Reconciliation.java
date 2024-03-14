@@ -133,7 +133,7 @@ public class Reconciliation implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = { "reconciliations" }, allowSetters = true)
-    private Payment payment;
+    private Payment scottyPayment;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -436,16 +436,16 @@ public class Reconciliation implements Serializable {
         this.fileName = fileName;
     }
 
-    public Payment getPayment() {
-        return this.payment;
+    public Payment getScottyPayment() {
+        return this.scottyPayment;
     }
 
-    public void setPayment(Payment payment) {
-        this.payment = payment;
+    public void setScottyPayment(Payment payment) {
+        this.scottyPayment = payment;
     }
 
-    public Reconciliation payment(Payment payment) {
-        this.setPayment(payment);
+    public Reconciliation scottyPayment(Payment payment) {
+        this.setScottyPayment(payment);
         return this;
     }
 

@@ -32,18 +32,18 @@ class PaymentTest {
 
         payment.addReconciliation(reconciliationBack);
         assertThat(payment.getReconciliations()).containsOnly(reconciliationBack);
-        assertThat(reconciliationBack.getPayment()).isEqualTo(payment);
+        assertThat(reconciliationBack.getScottyPayment()).isEqualTo(payment);
 
         payment.removeReconciliation(reconciliationBack);
         assertThat(payment.getReconciliations()).doesNotContain(reconciliationBack);
-        assertThat(reconciliationBack.getPayment()).isNull();
+        assertThat(reconciliationBack.getScottyPayment()).isNull();
 
         payment.reconciliations(new HashSet<>(Set.of(reconciliationBack)));
         assertThat(payment.getReconciliations()).containsOnly(reconciliationBack);
-        assertThat(reconciliationBack.getPayment()).isEqualTo(payment);
+        assertThat(reconciliationBack.getScottyPayment()).isEqualTo(payment);
 
         payment.setReconciliations(new HashSet<>());
         assertThat(payment.getReconciliations()).doesNotContain(reconciliationBack);
-        assertThat(reconciliationBack.getPayment()).isNull();
+        assertThat(reconciliationBack.getScottyPayment()).isNull();
     }
 }

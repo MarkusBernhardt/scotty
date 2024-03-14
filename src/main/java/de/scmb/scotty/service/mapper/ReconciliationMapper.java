@@ -11,7 +11,7 @@ import org.mapstruct.*;
  */
 @Mapper(componentModel = "spring")
 public interface ReconciliationMapper extends EntityMapper<ReconciliationDTO, Reconciliation> {
-    @Mapping(target = "payment", source = "payment", qualifiedByName = "paymentId")
+    @Mapping(target = "scottyPayment", source = "scottyPayment", qualifiedByName = "paymentId")
     ReconciliationDTO toDto(Reconciliation s);
 
     @Named("paymentId")

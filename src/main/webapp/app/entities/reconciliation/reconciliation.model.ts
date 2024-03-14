@@ -26,7 +26,7 @@ export interface IReconciliation {
   gatewayId?: string | null;
   mode?: string | null;
   fileName?: string | null;
-  payment?: Pick<IPayment, 'id'> | null;
+  scottyPayment?: Pick<IPayment, 'id'> | null;
 }
 
 export type NewReconciliation = Omit<IReconciliation, 'id'> & { id: null };

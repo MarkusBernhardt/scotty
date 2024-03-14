@@ -103,11 +103,11 @@
           <dd>
             <span>{{ reconciliation.fileName }}</span>
           </dd>
-          <dt><span jhiTranslate="scottyApp.reconciliation.payment">Payment</span></dt>
+          <dt><span jhiTranslate="scottyApp.reconciliation.scottyPayment">Scotty Payment</span></dt>
           <dd>
-            @if (reconciliation.payment) {
+            @if (reconciliation.scottyPayment) {
               <div>
-                <a [routerLink]="['/payment', reconciliation.payment.id, 'view']">{{ reconciliation.payment.id }}</a>
+                <a [routerLink]="['/payment', reconciliation.scottyPayment.id, 'view']">{{ reconciliation.scottyPayment.id }}</a>
               </div>
             }
           </dd>

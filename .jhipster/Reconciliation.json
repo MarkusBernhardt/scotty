@@ -147,9 +147,9 @@
   "pagination": "pagination",
   "relationships": [
     {
+      "otherEntityField": "id",
       "otherEntityName": "payment",
-      "otherEntityRelationshipName": "reconciliation",
-      "relationshipName": "payment",
+      "relationshipName": "scottyPayment",
       "relationshipSide": "right",
       "relationshipType": "many-to-one"
     }

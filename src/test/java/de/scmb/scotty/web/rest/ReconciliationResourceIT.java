@@ -2110,24 +2110,24 @@ class ReconciliationResourceIT {
 
     @Test
     @Transactional
-    void getAllReconciliationsByPaymentIsEqualToSomething() throws Exception {
-        Payment payment;
+    void getAllReconciliationsByScottyPaymentIsEqualToSomething() throws Exception {
+        Payment scottyPayment;
         if (TestUtil.findAll(em, Payment.class).isEmpty()) {
             reconciliationRepository.saveAndFlush(reconciliation);
-            payment = PaymentResourceIT.createEntity(em);
+            scottyPayment = PaymentResourceIT.createEntity(em);
         } else {
-            payment = TestUtil.findAll(em, Payment.class).get(0);
+            scottyPayment = TestUtil.findAll(em, Payment.class).get(0);
         }
-        em.persist(payment);
+        em.persist(scottyPayment);
         em.flush();
-        reconciliation.setPayment(payment);
+        reconciliation.setScottyPayment(scottyPayment);
         reconciliationRepository.saveAndFlush(reconciliation);
-        Long paymentId = payment.getId();
-        // Get all the reconciliationList where payment equals to paymentId
-        defaultReconciliationShouldBeFound("paymentId.equals=" + paymentId);
+        Long scottyPaymentId = scottyPayment.getId();
+        // Get all the reconciliationList where scottyPayment equals to scottyPaymentId
+        defaultReconciliationShouldBeFound("scottyPaymentId.equals=" + scottyPaymentId);
 
-        // Get all the reconciliationList where payment equals to (paymentId + 1)
-        defaultReconciliationShouldNotBeFound("paymentId.equals=" + (paymentId + 1));
+        // Get all the reconciliationList where scottyPayment equals to (scottyPaymentId + 1)
+        defaultReconciliationShouldNotBeFound("scottyPaymentId.equals=" + (scottyPaymentId + 1));
     }
 
     /**

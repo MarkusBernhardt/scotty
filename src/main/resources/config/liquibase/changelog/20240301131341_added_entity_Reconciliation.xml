@@ -80,7 +80,7 @@
             <column name="file_name" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="payment_id" type="bigint">
+            <column name="scotty_payment_id" type="bigint">
                 <constraints nullable="true" />
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->

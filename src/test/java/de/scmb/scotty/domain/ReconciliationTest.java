@@ -24,14 +24,14 @@ class ReconciliationTest {
     }
 
     @Test
-    void paymentTest() throws Exception {
+    void scottyPaymentTest() throws Exception {
         Reconciliation reconciliation = getReconciliationRandomSampleGenerator();
         Payment paymentBack = getPaymentRandomSampleGenerator();
 
-        reconciliation.setPayment(paymentBack);
-        assertThat(reconciliation.getPayment()).isEqualTo(paymentBack);
+        reconciliation.setScottyPayment(paymentBack);
+        assertThat(reconciliation.getScottyPayment()).isEqualTo(paymentBack);
 
-        reconciliation.payment(null);
-        assertThat(reconciliation.getPayment()).isNull();
+        reconciliation.scottyPayment(null);
+        assertThat(reconciliation.getScottyPayment()).isNull();
     }
 }
