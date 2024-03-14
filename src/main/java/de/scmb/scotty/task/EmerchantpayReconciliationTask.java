@@ -8,6 +8,7 @@ import com.emerchantpay.gateway.util.NodeWrapper;
 import de.scmb.scotty.domain.KeyValue;
 import de.scmb.scotty.repository.KeyValueRepository;
 import de.scmb.scotty.service.EmerchantpayService;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -23,7 +24,7 @@ public class EmerchantpayReconciliationTask implements Runnable {
 
     private final Logger log = LoggerFactory.getLogger(EmerchantpayReconciliationTask.class);
 
-    public static final String LAST_EXECUTION_KEY = "emerchantpay.reconciliation.lastExecution";
+    public static final String LAST_READ_TIMESTAMP_KEY = "emerchantpay.reconciliation.lastReadTimestamp";
 
     public EmerchantpayReconciliationTask(EmerchantpayService emerchantpayService, KeyValueRepository keyValueRepository) {
         this.emerchantpayService = emerchantpayService;
@@ -32,30 +33,44 @@ public class EmerchantpayReconciliationTask implements Runnable {
 
     @Override
     public void run() {
-        KeyValue lastExecution = keyValueRepository.findFirstByKvKeyOrderById(LAST_EXECUTION_KEY);
+        int page = 1;
+        KeyValue lastExecution = keyValueRepository.findFirstByKvKeyOrderById(LAST_READ_TIMESTAMP_KEY);
         if (lastExecution == null) {
             lastExecution = new KeyValue();
-            lastExecution.setKvKey(LAST_EXECUTION_KEY);
-            lastExecution.setKvValue("2024-01-01 00:00:00");
+            lastExecution.setKvKey(LAST_READ_TIMESTAMP_KEY);
+            lastExecution.setKvValue("2024-01-01T00:00:00Z");
         }
 
         ReconcileByDateRequest reconcileByDateRequest = new ReconcileByDateRequest();
-        reconcileByDateRequest.setStartDate(lastExecution.getKvValue());
+        reconcileByDateRequest.setStartDate(
+            lastExecution.getKvValue().substring(0, 10) + " " + lastExecution.getKvValue().substring(11, 19)
+        );
+        reconcileByDateRequest.setPage(page);
 
         GenesisClient client = new GenesisClient(emerchantpayService.getConfiguration(), reconcileByDateRequest);
         client.debugMode(true);
         client.execute();
 
         NodeWrapper nodeWrapper = client.getResponse();
-        if (nodeWrapper.getElementName().equals("payment_response")) {
-            return;
-        }
-
-        List<NodeWrapper> childNodes = nodeWrapper.getChildNodes("payment_response");
-        for (NodeWrapper childNode : childNodes) {
-            Transaction transaction = new Transaction(childNode);
-            log.debug("Transaction Id: " + transaction.getTransactionId());
-            String t = transaction.getTranscationType();
+        if (nodeWrapper.getElementName().equals("payment_responses")) {
+            List<NodeWrapper> childNodes = nodeWrapper.getChildNodes("payment_response");
+            for (NodeWrapper childNode : childNodes) {
+                String status = childNode.findString("status");
+                String transactionType = childNode.findString("transaction_type");
+                String uniqueId = childNode.findString("unique_id");
+                String transactionId = childNode.findString("transaction_id");
+                int code = childNode.findInteger("code");
+                String message = childNode.findString("message");
+                String iban = childNode.findString("bank_account_number");
+                String bic = childNode.findString("bank_identifier_code");
+                String technicalMessage = childNode.findString("technical_message");
+                String descriptor = childNode.findString("descriptor");
+                BigDecimal amount = childNode.findBigDecimal("amount");
+                String currency = childNode.findString("currency");
+                String mode = childNode.findString("mode");
+                String timestamp = childNode.findString("timestamp");
+                boolean sentToAcquirer = childNode.findBoolean("sent_to_acquirer");
+            }
         }
 
         //lastExecution.setValue();
