@@ -24,6 +24,31 @@ entity Payment {
     fileName String maxlength(255),
 }
 
+entity Reconciliation {
+    mandateId String required maxlength(35),
+    paymentId String required maxlength(35),
+    gateway Gateway required,
+    iban String required minlength(16) maxlength(34),
+    bic String required minlength(8) maxlength(11),
+    amount Integer required min(0),
+    currencyCode String required minlength(3) maxlength(3),
+    softDescriptor String required maxlength(140),
+    firstName String required maxlength(35),
+    lastName String required maxlength(35),
+    addressLine1 String required maxlength(70),
+    addressLine2 String maxlength(70),
+    postalCode String required maxlength(16),
+    city String required maxlength(35),
+    countryCode String required minlength(2) maxlength(2),
+    remoteIp String required maxlength(39),
+    timestamp Instant required,
+    state String required maxlength(35),
+    message String required maxlength(255),
+    gatewayId String maxlength(35),
+    mode String maxlength(35),
+    fileName String maxlength(255),
+}
+
 entity KeyValue {
     kvKey String required maxlength(255),
     kvValue String maxlength(255),
@@ -33,6 +58,10 @@ enum Gateway {
     EMERCHANTPAY(emerchantpay),
     CCBILL(ccbill),
     UNKNOWN(unknown)
+}
+
+relationship OneToMany {
+    Payment to Reconciliation,
 }
 
 filter all

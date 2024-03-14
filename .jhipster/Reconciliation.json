@@ -4,7 +4,7 @@
   },
   "applications": "*",
   "dto": "mapstruct",
-  "entityTableName": "payment",
+  "entityTableName": "reconciliation",
   "fields": [
     {
       "fieldName": "mandateId",
@@ -143,15 +143,15 @@
     }
   ],
   "jpaMetamodelFiltering": true,
-  "name": "Payment",
+  "name": "Reconciliation",
   "pagination": "pagination",
   "relationships": [
     {
-      "otherEntityName": "reconciliation",
-      "otherEntityRelationshipName": "payment",
-      "relationshipName": "reconciliation",
-      "relationshipSide": "left",
-      "relationshipType": "one-to-many"
+      "otherEntityName": "payment",
+      "otherEntityRelationshipName": "reconciliation",
+      "relationshipName": "payment",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-one"
     }
   ],
   "searchEngine": "no",

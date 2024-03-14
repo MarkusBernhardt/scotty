@@ -121,7 +121,7 @@ public class EmerchantpayService {
         return sddInitRecurringSaleRequest;
     }
 
-    private String mapStateEmerchantpay(String state) {
+    public String mapStateEmerchantpay(String state) {
         return switch (state) {
             case "approved" -> "paid";
             case "pending_async" -> "submitted";

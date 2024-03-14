@@ -6,6 +6,7 @@ import de.scmb.scotty.repository.PaymentRepository;
 import de.scmb.scotty.service.criteria.PaymentCriteria;
 import de.scmb.scotty.service.dto.PaymentDTO;
 import de.scmb.scotty.service.mapper.PaymentMapper;
+import jakarta.persistence.criteria.JoinType;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -154,6 +155,15 @@ public class PaymentQueryService extends QueryService<Payment> {
             }
             if (criteria.getFileName() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getFileName(), Payment_.fileName));
+            }
+            if (criteria.getReconciliationId() != null) {
+                specification =
+                    specification.and(
+                        buildSpecification(
+                            criteria.getReconciliationId(),
+                            root -> root.join(Payment_.reconciliations, JoinType.LEFT).get(Reconciliation_.id)
+                        )
+                    );
             }
         }
         return specification;

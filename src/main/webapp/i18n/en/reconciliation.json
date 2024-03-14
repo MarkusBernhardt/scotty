@@ -1,21 +1,21 @@
 {
   "scottyApp": {
-    "payment": {
+    "reconciliation": {
       "home": {
-        "title": "Payments",
+        "title": "Reconciliations",
         "refreshListLabel": "Refresh list",
-        "createLabel": "Create a new Payment",
-        "createOrEditLabel": "Create or edit a Payment",
-        "notFound": "No Payments found"
+        "createLabel": "Create a new Reconciliation",
+        "createOrEditLabel": "Create or edit a Reconciliation",
+        "notFound": "No Reconciliations found"
       },
-      "created": "A new Payment is created with identifier {{ param }}",
-      "updated": "A Payment is updated with identifier {{ param }}",
-      "deleted": "A Payment is deleted with identifier {{ param }}",
+      "created": "A new Reconciliation is created with identifier {{ param }}",
+      "updated": "A Reconciliation is updated with identifier {{ param }}",
+      "deleted": "A Reconciliation is deleted with identifier {{ param }}",
       "delete": {
-        "question": "Are you sure you want to delete Payment {{ id }}?"
+        "question": "Are you sure you want to delete Reconciliation {{ id }}?"
       },
       "detail": {
-        "title": "Payment"
+        "title": "Reconciliation"
       },
       "id": "ID",
       "mandateId": "Mandate Id",
@@ -40,7 +40,7 @@
       "gatewayId": "Gateway Id",
       "mode": "Mode",
       "fileName": "File Name",
-      "reconciliation": "Reconciliation"
+      "payment": "Payment"
     }
   }
 }

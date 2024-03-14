@@ -1,8 +1,8 @@
 import dayjs from 'dayjs/esm';
-import { IReconciliation } from 'app/entities/reconciliation/reconciliation.model';
+import { IPayment } from 'app/entities/payment/payment.model';
 import { Gateway } from 'app/entities/enumerations/gateway.model';
 
-export interface IPayment {
+export interface IReconciliation {
   id: number;
   mandateId?: string | null;
   paymentId?: string | null;
@@ -26,7 +26,7 @@ export interface IPayment {
   gatewayId?: string | null;
   mode?: string | null;
   fileName?: string | null;
-  reconciliations?: Pick<IReconciliation, 'id'>[] | null;
+  payment?: Pick<IPayment, 'id'> | null;
 }
 
-export type NewPayment = Omit<IPayment, 'id'> & { id: null };
+export type NewReconciliation = Omit<IReconciliation, 'id'> & { id: null };

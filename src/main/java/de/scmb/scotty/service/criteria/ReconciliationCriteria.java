@@ -8,17 +8,17 @@ import tech.jhipster.service.Criteria;
 import tech.jhipster.service.filter.*;
 
 /**
- * Criteria class for the {@link de.scmb.scotty.domain.Payment} entity. This class is used
- * in {@link de.scmb.scotty.web.rest.PaymentResource} to receive all the possible filtering options from
+ * Criteria class for the {@link de.scmb.scotty.domain.Reconciliation} entity. This class is used
+ * in {@link de.scmb.scotty.web.rest.ReconciliationResource} to receive all the possible filtering options from
  * the Http GET request parameters.
  * For example the following could be a valid request:
- * {@code /payments?id.greaterThan=5&attr1.contains=something&attr2.specified=false}
+ * {@code /reconciliations?id.greaterThan=5&attr1.contains=something&attr2.specified=false}
  * As Spring is unable to properly convert the types, unless specific {@link Filter} class are used, we need to use
  * fix type specific filters.
  */
 @ParameterObject
 @SuppressWarnings("common-java:DuplicatedBlocks")
-public class PaymentCriteria implements Serializable, Criteria {
+public class ReconciliationCriteria implements Serializable, Criteria {
 
     /**
      * Class for filtering Gateway
@@ -85,13 +85,13 @@ public class PaymentCriteria implements Serializable, Criteria {
 
     private StringFilter fileName;
 
-    private LongFilter reconciliationId;
+    private LongFilter paymentId;
 
     private Boolean distinct;
 
-    public PaymentCriteria() {}
+    public ReconciliationCriteria() {}
 
-    public PaymentCriteria(PaymentCriteria other) {
+    public ReconciliationCriteria(ReconciliationCriteria other) {
         this.id = other.id == null ? null : other.id.copy();
         this.mandateId = other.mandateId == null ? null : other.mandateId.copy();
         this.paymentId = other.paymentId == null ? null : other.paymentId.copy();
@@ -115,13 +115,13 @@ public class PaymentCriteria implements Serializable, Criteria {
         this.gatewayId = other.gatewayId == null ? null : other.gatewayId.copy();
         this.mode = other.mode == null ? null : other.mode.copy();
         this.fileName = other.fileName == null ? null : other.fileName.copy();
-        this.reconciliationId = other.reconciliationId == null ? null : other.reconciliationId.copy();
+        this.paymentId = other.paymentId == null ? null : other.paymentId.copy();
         this.distinct = other.distinct;
     }
 
     @Override
-    public PaymentCriteria copy() {
-        return new PaymentCriteria(this);
+    public ReconciliationCriteria copy() {
+        return new ReconciliationCriteria(this);
     }
 
     public LongFilter getId() {
@@ -469,19 +469,19 @@ public class PaymentCriteria implements Serializable, Criteria {
         this.fileName = fileName;
     }
 
-    public LongFilter getReconciliationId() {
-        return reconciliationId;
+    public LongFilter getPaymentId() {
+        return paymentId;
     }
 
-    public LongFilter reconciliationId() {
-        if (reconciliationId == null) {
-            reconciliationId = new LongFilter();
+    public LongFilter paymentId() {
+        if (paymentId == null) {
+            paymentId = new LongFilter();
         }
-        return reconciliationId;
+        return paymentId;
     }
 
-    public void setReconciliationId(LongFilter reconciliationId) {
-        this.reconciliationId = reconciliationId;
+    public void setPaymentId(LongFilter paymentId) {
+        this.paymentId = paymentId;
     }
 
     public Boolean getDistinct() {
@@ -500,7 +500,7 @@ public class PaymentCriteria implements Serializable, Criteria {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final PaymentCriteria that = (PaymentCriteria) o;
+        final ReconciliationCriteria that = (ReconciliationCriteria) o;
         return (
             Objects.equals(id, that.id) &&
             Objects.equals(mandateId, that.mandateId) &&
@@ -525,7 +525,7 @@ public class PaymentCriteria implements Serializable, Criteria {
             Objects.equals(gatewayId, that.gatewayId) &&
             Objects.equals(mode, that.mode) &&
             Objects.equals(fileName, that.fileName) &&
-            Objects.equals(reconciliationId, that.reconciliationId) &&
+            Objects.equals(paymentId, that.paymentId) &&
             Objects.equals(distinct, that.distinct)
         );
     }
@@ -556,7 +556,7 @@ public class PaymentCriteria implements Serializable, Criteria {
             gatewayId,
             mode,
             fileName,
-            reconciliationId,
+            paymentId,
             distinct
         );
     }
@@ -564,7 +564,7 @@ public class PaymentCriteria implements Serializable, Criteria {
     // prettier-ignore
     @Override
     public String toString() {
-        return "PaymentCriteria{" +
+        return "ReconciliationCriteria{" +
             (id != null ? "id=" + id + ", " : "") +
             (mandateId != null ? "mandateId=" + mandateId + ", " : "") +
             (paymentId != null ? "paymentId=" + paymentId + ", " : "") +
@@ -588,7 +588,7 @@ public class PaymentCriteria implements Serializable, Criteria {
             (gatewayId != null ? "gatewayId=" + gatewayId + ", " : "") +
             (mode != null ? "mode=" + mode + ", " : "") +
             (fileName != null ? "fileName=" + fileName + ", " : "") +
-            (reconciliationId != null ? "reconciliationId=" + reconciliationId + ", " : "") +
+            (paymentId != null ? "paymentId=" + paymentId + ", " : "") +
             (distinct != null ? "distinct=" + distinct + ", " : "") +
             "}";
     }

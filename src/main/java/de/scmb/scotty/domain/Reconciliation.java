@@ -6,19 +6,17 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 /**
- * A Payment.
+ * A Reconciliation.
  */
 @Entity
-@Table(name = "payment")
+@Table(name = "reconciliation")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @SuppressWarnings("common-java:DuplicatedBlocks")
-public class Payment implements Serializable {
+public class Reconciliation implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -133,10 +131,9 @@ public class Payment implements Serializable {
     @Column(name = "file_name", length = 255)
     private String fileName;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "payment")
-    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JsonIgnoreProperties(value = { "payment" }, allowSetters = true)
-    private Set<Reconciliation> reconciliations = new HashSet<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "reconciliations" }, allowSetters = true)
+    private Payment payment;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -144,7 +141,7 @@ public class Payment implements Serializable {
         return this.id;
     }
 
-    public Payment id(Long id) {
+    public Reconciliation id(Long id) {
         this.setId(id);
         return this;
     }
@@ -157,7 +154,7 @@ public class Payment implements Serializable {
         return this.mandateId;
     }
 
-    public Payment mandateId(String mandateId) {
+    public Reconciliation mandateId(String mandateId) {
         this.setMandateId(mandateId);
         return this;
     }
@@ -170,7 +167,7 @@ public class Payment implements Serializable {
         return this.paymentId;
     }
 
-    public Payment paymentId(String paymentId) {
+    public Reconciliation paymentId(String paymentId) {
         this.setPaymentId(paymentId);
         return this;
     }
@@ -183,7 +180,7 @@ public class Payment implements Serializable {
         return this.gateway;
     }
 
-    public Payment gateway(Gateway gateway) {
+    public Reconciliation gateway(Gateway gateway) {
         this.setGateway(gateway);
         return this;
     }
@@ -196,7 +193,7 @@ public class Payment implements Serializable {
         return this.iban;
     }
 
-    public Payment iban(String iban) {
+    public Reconciliation iban(String iban) {
         this.setIban(iban);
         return this;
     }
@@ -209,7 +206,7 @@ public class Payment implements Serializable {
         return this.bic;
     }
 
-    public Payment bic(String bic) {
+    public Reconciliation bic(String bic) {
         this.setBic(bic);
         return this;
     }
@@ -222,7 +219,7 @@ public class Payment implements Serializable {
         return this.amount;
     }
 
-    public Payment amount(Integer amount) {
+    public Reconciliation amount(Integer amount) {
         this.setAmount(amount);
         return this;
     }
@@ -235,7 +232,7 @@ public class Payment implements Serializable {
         return this.currencyCode;
     }
 
-    public Payment currencyCode(String currencyCode) {
+    public Reconciliation currencyCode(String currencyCode) {
         this.setCurrencyCode(currencyCode);
         return this;
     }
@@ -248,7 +245,7 @@ public class Payment implements Serializable {
         return this.softDescriptor;
     }
 
-    public Payment softDescriptor(String softDescriptor) {
+    public Reconciliation softDescriptor(String softDescriptor) {
         this.setSoftDescriptor(softDescriptor);
         return this;
     }
@@ -261,7 +258,7 @@ public class Payment implements Serializable {
         return this.firstName;
     }
 
-    public Payment firstName(String firstName) {
+    public Reconciliation firstName(String firstName) {
         this.setFirstName(firstName);
         return this;
     }
@@ -274,7 +271,7 @@ public class Payment implements Serializable {
         return this.lastName;
     }
 
-    public Payment lastName(String lastName) {
+    public Reconciliation lastName(String lastName) {
         this.setLastName(lastName);
         return this;
     }
@@ -287,7 +284,7 @@ public class Payment implements Serializable {
         return this.addressLine1;
     }
 
-    public Payment addressLine1(String addressLine1) {
+    public Reconciliation addressLine1(String addressLine1) {
         this.setAddressLine1(addressLine1);
         return this;
     }
@@ -300,7 +297,7 @@ public class Payment implements Serializable {
         return this.addressLine2;
     }
 
-    public Payment addressLine2(String addressLine2) {
+    public Reconciliation addressLine2(String addressLine2) {
         this.setAddressLine2(addressLine2);
         return this;
     }
@@ -313,7 +310,7 @@ public class Payment implements Serializable {
         return this.postalCode;
     }
 
-    public Payment postalCode(String postalCode) {
+    public Reconciliation postalCode(String postalCode) {
         this.setPostalCode(postalCode);
         return this;
     }
@@ -326,7 +323,7 @@ public class Payment implements Serializable {
         return this.city;
     }
 
-    public Payment city(String city) {
+    public Reconciliation city(String city) {
         this.setCity(city);
         return this;
     }
@@ -339,7 +336,7 @@ public class Payment implements Serializable {
         return this.countryCode;
     }
 
-    public Payment countryCode(String countryCode) {
+    public Reconciliation countryCode(String countryCode) {
         this.setCountryCode(countryCode);
         return this;
     }
@@ -352,7 +349,7 @@ public class Payment implements Serializable {
         return this.remoteIp;
     }
 
-    public Payment remoteIp(String remoteIp) {
+    public Reconciliation remoteIp(String remoteIp) {
         this.setRemoteIp(remoteIp);
         return this;
     }
@@ -365,7 +362,7 @@ public class Payment implements Serializable {
         return this.timestamp;
     }
 
-    public Payment timestamp(Instant timestamp) {
+    public Reconciliation timestamp(Instant timestamp) {
         this.setTimestamp(timestamp);
         return this;
     }
@@ -378,7 +375,7 @@ public class Payment implements Serializable {
         return this.state;
     }
 
-    public Payment state(String state) {
+    public Reconciliation state(String state) {
         this.setState(state);
         return this;
     }
@@ -391,7 +388,7 @@ public class Payment implements Serializable {
         return this.message;
     }
 
-    public Payment message(String message) {
+    public Reconciliation message(String message) {
         this.setMessage(message);
         return this;
     }
@@ -404,7 +401,7 @@ public class Payment implements Serializable {
         return this.gatewayId;
     }
 
-    public Payment gatewayId(String gatewayId) {
+    public Reconciliation gatewayId(String gatewayId) {
         this.setGatewayId(gatewayId);
         return this;
     }
@@ -417,7 +414,7 @@ public class Payment implements Serializable {
         return this.mode;
     }
 
-    public Payment mode(String mode) {
+    public Reconciliation mode(String mode) {
         this.setMode(mode);
         return this;
     }
@@ -430,7 +427,7 @@ public class Payment implements Serializable {
         return this.fileName;
     }
 
-    public Payment fileName(String fileName) {
+    public Reconciliation fileName(String fileName) {
         this.setFileName(fileName);
         return this;
     }
@@ -439,34 +436,16 @@ public class Payment implements Serializable {
         this.fileName = fileName;
     }
 
-    public Set<Reconciliation> getReconciliations() {
-        return this.reconciliations;
+    public Payment getPayment() {
+        return this.payment;
     }
 
-    public void setReconciliations(Set<Reconciliation> reconciliations) {
-        if (this.reconciliations != null) {
-            this.reconciliations.forEach(i -> i.setPayment(null));
-        }
-        if (reconciliations != null) {
-            reconciliations.forEach(i -> i.setPayment(this));
-        }
-        this.reconciliations = reconciliations;
+    public void setPayment(Payment payment) {
+        this.payment = payment;
     }
 
-    public Payment reconciliations(Set<Reconciliation> reconciliations) {
-        this.setReconciliations(reconciliations);
-        return this;
-    }
-
-    public Payment addReconciliation(Reconciliation reconciliation) {
-        this.reconciliations.add(reconciliation);
-        reconciliation.setPayment(this);
-        return this;
-    }
-
-    public Payment removeReconciliation(Reconciliation reconciliation) {
-        this.reconciliations.remove(reconciliation);
-        reconciliation.setPayment(null);
+    public Reconciliation payment(Payment payment) {
+        this.setPayment(payment);
         return this;
     }
 
@@ -477,10 +456,10 @@ public class Payment implements Serializable {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof Payment)) {
+        if (!(o instanceof Reconciliation)) {
             return false;
         }
-        return getId() != null && getId().equals(((Payment) o).getId());
+        return getId() != null && getId().equals(((Reconciliation) o).getId());
     }
 
     @Override
@@ -492,7 +471,7 @@ public class Payment implements Serializable {
     // prettier-ignore
     @Override
     public String toString() {
-        return "Payment{" +
+        return "Reconciliation{" +
             "id=" + getId() +
             ", mandateId='" + getMandateId() + "'" +
             ", paymentId='" + getPaymentId() + "'" +

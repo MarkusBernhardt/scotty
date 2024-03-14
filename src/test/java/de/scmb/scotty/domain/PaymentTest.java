@@ -1,9 +1,12 @@
 package de.scmb.scotty.domain;
 
 import static de.scmb.scotty.domain.PaymentTestSamples.*;
+import static de.scmb.scotty.domain.ReconciliationTestSamples.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import de.scmb.scotty.web.rest.TestUtil;
+import java.util.HashSet;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 class PaymentTest {
@@ -20,5 +23,27 @@ class PaymentTest {
 
         payment2 = getPaymentSample2();
         assertThat(payment1).isNotEqualTo(payment2);
+    }
+
+    @Test
+    void reconciliationTest() throws Exception {
+        Payment payment = getPaymentRandomSampleGenerator();
+        Reconciliation reconciliationBack = getReconciliationRandomSampleGenerator();
+
+        payment.addReconciliation(reconciliationBack);
+        assertThat(payment.getReconciliations()).containsOnly(reconciliationBack);
+        assertThat(reconciliationBack.getPayment()).isEqualTo(payment);
+
+        payment.removeReconciliation(reconciliationBack);
+        assertThat(payment.getReconciliations()).doesNotContain(reconciliationBack);
+        assertThat(reconciliationBack.getPayment()).isNull();
+
+        payment.reconciliations(new HashSet<>(Set.of(reconciliationBack)));
+        assertThat(payment.getReconciliations()).containsOnly(reconciliationBack);
+        assertThat(reconciliationBack.getPayment()).isEqualTo(payment);
+
+        payment.setReconciliations(new HashSet<>());
+        assertThat(payment.getReconciliations()).doesNotContain(reconciliationBack);
+        assertThat(reconciliationBack.getPayment()).isNull();
     }
 }

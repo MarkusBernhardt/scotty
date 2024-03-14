@@ -11,6 +11,11 @@ const routes: Routes = [
     data: { pageTitle: 'scottyApp.keyValue.home.title' },
     loadChildren: () => import('./key-value/key-value.routes'),
   },
+  {
+    path: 'reconciliation',
+    data: { pageTitle: 'scottyApp.reconciliation.home.title' },
+    loadChildren: () => import('./reconciliation/reconciliation.routes'),
+  },
   /* jhipster-needle-add-entity-route - JHipster will add entity modules routes here */
 ];
 

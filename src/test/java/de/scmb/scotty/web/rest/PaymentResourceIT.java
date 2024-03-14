@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import de.scmb.scotty.IntegrationTest;
 import de.scmb.scotty.domain.Payment;
+import de.scmb.scotty.domain.Reconciliation;
 import de.scmb.scotty.domain.enumeration.Gateway;
 import de.scmb.scotty.repository.PaymentRepository;
 import de.scmb.scotty.service.dto.PaymentDTO;
@@ -2065,6 +2066,28 @@ class PaymentResourceIT {
 
         // Get all the paymentList where fileName does not contain UPDATED_FILE_NAME
         defaultPaymentShouldBeFound("fileName.doesNotContain=" + UPDATED_FILE_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByReconciliationIsEqualToSomething() throws Exception {
+        Reconciliation reconciliation;
+        if (TestUtil.findAll(em, Reconciliation.class).isEmpty()) {
+            paymentRepository.saveAndFlush(payment);
+            reconciliation = ReconciliationResourceIT.createEntity(em);
+        } else {
+            reconciliation = TestUtil.findAll(em, Reconciliation.class).get(0);
+        }
+        em.persist(reconciliation);
+        em.flush();
+        payment.addReconciliation(reconciliation);
+        paymentRepository.saveAndFlush(payment);
+        Long reconciliationId = reconciliation.getId();
+        // Get all the paymentList where reconciliation equals to reconciliationId
+        defaultPaymentShouldBeFound("reconciliationId.equals=" + reconciliationId);
+
+        // Get all the paymentList where reconciliation equals to (reconciliationId + 1)
+        defaultPaymentShouldNotBeFound("reconciliationId.equals=" + (reconciliationId + 1));
     }
 
     /**
