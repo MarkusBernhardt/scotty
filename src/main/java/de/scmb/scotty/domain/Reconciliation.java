@@ -52,7 +52,6 @@ public class Reconciliation implements Serializable {
     private String bic;
 
     @NotNull
-    @Min(value = 0)
     @Column(name = "amount", nullable = false)
     private Integer amount;
 

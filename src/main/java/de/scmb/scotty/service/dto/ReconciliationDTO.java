@@ -34,7 +34,6 @@ public class ReconciliationDTO implements Serializable {
     private String bic;
 
     @NotNull
-    @Min(value = 0)
     private Integer amount;
 
     @NotNull

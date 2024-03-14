@@ -89,7 +89,7 @@ export class ReconciliationFormService {
         validators: [Validators.required, Validators.minLength(8), Validators.maxLength(11)],
       }),
       amount: new FormControl(reconciliationRawValue.amount, {
-        validators: [Validators.required, Validators.min(0)],
+        validators: [Validators.required],
       }),
       currencyCode: new FormControl(reconciliationRawValue.currencyCode, {
         validators: [Validators.required, Validators.minLength(3), Validators.maxLength(3)],
