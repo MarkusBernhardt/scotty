@@ -3,9 +3,7 @@ package de.scmb.scotty.task;
 import static de.scmb.scotty.service.ExcelService.cutRight;
 
 import com.emerchantpay.gateway.GenesisClient;
-import com.emerchantpay.gateway.api.TransactionResult;
 import com.emerchantpay.gateway.api.requests.nonfinancial.reconcile.ReconcileByDateRequest;
-import com.emerchantpay.gateway.model.Transaction;
 import com.emerchantpay.gateway.util.NodeWrapper;
 import de.scmb.scotty.domain.KeyValue;
 import de.scmb.scotty.domain.Payment;
@@ -13,12 +11,18 @@ import de.scmb.scotty.domain.Reconciliation;
 import de.scmb.scotty.domain.enumeration.Gateway;
 import de.scmb.scotty.repository.KeyValueRepository;
 import de.scmb.scotty.repository.PaymentRepository;
+import de.scmb.scotty.repository.ReconciliationRepository;
 import de.scmb.scotty.service.EmerchantpayService;
 import de.scmb.scotty.service.mapper.PaymentReconciliationMapper;
-import java.math.BigDecimal;
+import de.scmb.scotty.service.mapper.ReconciliationMapper;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
+import java.time.temporal.TemporalUnit;
+import java.util.Calendar;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -34,6 +38,10 @@ public class EmerchantpayReconciliationTask implements Runnable {
 
     private final PaymentRepository paymentRepository;
 
+    private final ReconciliationMapper reconciliationMapper;
+
+    private final ReconciliationRepository reconciliationRepository;
+
     private final Logger log = LoggerFactory.getLogger(EmerchantpayReconciliationTask.class);
 
     public static final String LAST_READ_TIMESTAMP_KEY = "emerchantpay.reconciliation.lastReadTimestamp";
@@ -42,17 +50,24 @@ public class EmerchantpayReconciliationTask implements Runnable {
         EmerchantpayService emerchantpayService,
         KeyValueRepository keyValueRepository,
         PaymentReconciliationMapper paymentReconciliationMapper,
-        PaymentRepository paymentRepository
+        PaymentRepository paymentRepository,
+        ReconciliationMapper reconciliationMapper,
+        ReconciliationRepository reconciliationRepository
     ) {
         this.emerchantpayService = emerchantpayService;
         this.keyValueRepository = keyValueRepository;
         this.paymentReconciliationMapper = paymentReconciliationMapper;
         this.paymentRepository = paymentRepository;
+        this.reconciliationMapper = reconciliationMapper;
+        this.reconciliationRepository = reconciliationRepository;
     }
 
     @Override
     public void run() {
+        if (true) return;
+
         int page = 1;
+        int count;
         KeyValue lastExecution = keyValueRepository.findFirstByKvKeyOrderById(LAST_READ_TIMESTAMP_KEY);
         if (lastExecution == null) {
             lastExecution = new KeyValue();
@@ -60,10 +75,19 @@ public class EmerchantpayReconciliationTask implements Runnable {
             lastExecution.setKvValue("2024-01-01T00:00:00Z");
         }
 
+        String startDate = lastExecution.getKvValue().substring(0, 10) + " " + lastExecution.getKvValue().substring(11, 19);
+        do {
+            count = runPage(startDate, page);
+            page++;
+        } while (count == 100);
+
+        lastExecution.setKvValue(Instant.now().minus(1, ChronoUnit.DAYS).toString());
+        keyValueRepository.save(lastExecution);
+    }
+
+    private int runPage(String startDate, int page) {
         ReconcileByDateRequest reconcileByDateRequest = new ReconcileByDateRequest();
-        reconcileByDateRequest.setStartDate(
-            lastExecution.getKvValue().substring(0, 10) + " " + lastExecution.getKvValue().substring(11, 19)
-        );
+        reconcileByDateRequest.setStartDate(startDate);
         reconcileByDateRequest.setPage(page);
 
         GenesisClient client = new GenesisClient(emerchantpayService.getConfiguration(), reconcileByDateRequest);
@@ -74,20 +98,41 @@ public class EmerchantpayReconciliationTask implements Runnable {
         if (nodeWrapper.getElementName().equals("payment_responses")) {
             List<NodeWrapper> childNodes = nodeWrapper.getChildNodes("payment_response");
             for (NodeWrapper childNode : childNodes) {
-                String transactionType = childNode.findString("transaction_type");
-
-                Reconciliation reconciliation = getReconciliation(childNode);
-                boolean sentToAcquirer = childNode.findBoolean("sent_to_acquirer");
+                List<ReconciliationRepository.StateOnly> stateOnlyList = reconciliationRepository.findAllByGatewayIdOrderById(
+                    cutRight(childNode.findString("unique_id"), 35)
+                );
+                Set<String> stateOnlySet = stateOnlyList
+                    .stream()
+                    .map(ReconciliationRepository.StateOnly::getState)
+                    .collect(Collectors.toSet());
+                Reconciliation reconciliation = getReconciliation(childNode, stateOnlySet);
+                if (reconciliation == null) {
+                    continue;
+                }
+                if (
+                    (reconciliation.getState().equals("chargedBack") || reconciliation.getState().equals("refunded")) &&
+                    !stateOnlySet.contains("paid")
+                ) {
+                    Reconciliation paid = reconciliationMapper.toEntity(reconciliationMapper.toDto(reconciliation));
+                    paid.setState("paid");
+                    paid.setAmount(-1 * paid.getAmount());
+                    reconciliationRepository.save(paid);
+                }
+                Payment payment = reconciliation.getScottyPayment();
+                if (!reconciliation.getState().equals(payment.getState())) {
+                    payment.setState(reconciliation.getState());
+                    paymentRepository.save(payment);
+                }
+                reconciliationRepository.save(reconciliation);
             }
+            return childNodes.size();
         }
-
-        //lastExecution.setValue();
-        keyValueRepository.save(lastExecution);
+        return 0;
     }
 
-    private Reconciliation getReconciliation(NodeWrapper node) {
+    private Reconciliation getReconciliation(NodeWrapper node, Set<String> stateOnlySet) {
         String state = EmerchantpayService.mapStateEmerchantpay(node.findString("status"));
-        if (state.equals("submitted") || state.equals("pending")) {
+        if (state.equals("submitted") || state.equals("pending") || stateOnlySet.contains(state)) {
             return null;
         }
 
@@ -100,6 +145,7 @@ public class EmerchantpayReconciliationTask implements Runnable {
         Reconciliation reconciliation = paymentReconciliationMapper.toEntity(payment);
         reconciliation.setGateway(Gateway.EMERCHANTPAY);
         reconciliation.setState(state);
+        reconciliation.setScottyPayment(payment);
 
         reconciliation.setGatewayId(cutRight(node.findString("unique_id"), 35));
         reconciliation.setPaymentId(cutRight(node.findString("transaction_id"), 35));
@@ -116,6 +162,9 @@ public class EmerchantpayReconciliationTask implements Runnable {
         reconciliation.setCurrencyCode(cutRight(node.findString("currency"), 3));
         reconciliation.setMode(cutRight(node.findString("mode"), 35));
         reconciliation.setTimestamp(Instant.now());
+        reconciliation.setFileName(
+            "reconciliations-" + reconciliation.getTimestamp().toString().substring(0, 10).replace("-", "") + ".xlsx"
+        );
 
         return reconciliation;
     }

@@ -9,6 +9,13 @@
       "count": "Payments Count",
       "amount": "Payments Amount",
       "refreshListLabel": "Refresh list"
+    },
+    "downloadReconciliations": {
+      "title": "Download Reconciliation Files",
+      "fileName": "File Name",
+      "count": "Reconciliations Count",
+      "amount": "Reconciliations Amount",
+      "refreshListLabel": "Refresh list"
     }
   }
 }

@@ -1,9 +1,9 @@
 package de.scmb.scotty.web.rest;
 
-import de.scmb.scotty.repository.PaymentRepository;
+import de.scmb.scotty.repository.ReconciliationRepository;
 import de.scmb.scotty.service.ExcelService;
 import de.scmb.scotty.service.criteria.PaymentCriteria;
-import de.scmb.scotty.service.dto.*;
+import de.scmb.scotty.service.dto.PaymentsDownloadReconciliationsDto;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -14,34 +14,37 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.PaginationUtil;
 
 @RestController
-@RequestMapping("/api/payments-download-payments")
-public class PaymentsDownloadPayments {
+@RequestMapping("/api/payments-download-reconciliations")
+public class PaymentsDownloadReconciliations {
 
     private final ExcelService excelService;
 
-    private final PaymentRepository paymentRepository;
+    private final ReconciliationRepository reconciliationRepository;
 
-    private final Logger log = LoggerFactory.getLogger(PaymentsDownloadPayments.class);
+    private final Logger log = LoggerFactory.getLogger(PaymentsDownloadReconciliations.class);
 
-    public PaymentsDownloadPayments(ExcelService excelService, PaymentRepository paymentRepository) {
+    public PaymentsDownloadReconciliations(ExcelService excelService, ReconciliationRepository reconciliationRepository) {
         this.excelService = excelService;
-        this.paymentRepository = paymentRepository;
+        this.reconciliationRepository = reconciliationRepository;
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<PaymentsDownloadPaymentsDto>> getAllGroupByFileName(
+    public ResponseEntity<List<PaymentsDownloadReconciliationsDto>> getAllGroupByFileName(
         PaymentCriteria criteria,
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
         log.debug("REST request to get Payments by criteria: {}", criteria);
 
-        Page<PaymentsDownloadPaymentsDto> page = paymentRepository.findAllGroupByFileName(pageable);
+        Page<PaymentsDownloadReconciliationsDto> page = reconciliationRepository.findAllGroupByFileName(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
@@ -49,7 +52,7 @@ public class PaymentsDownloadPayments {
     @GetMapping(value = "/save")
     public ResponseEntity<StreamingResponseBody> save(@RequestParam(value = "fileName") String fileName)
         throws URISyntaxException, IOException {
-        StreamingResponseBody stream = outputStream -> excelService.writePaymentsToStream(outputStream, fileName);
+        StreamingResponseBody stream = outputStream -> excelService.writeReconciliationsToStream(outputStream, fileName);
         return ResponseEntity
             .ok()
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)

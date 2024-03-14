@@ -63,7 +63,19 @@
                   (click)="collapseNavbar()"
                 >
                   <fa-icon icon="cloud-arrow-down" [fixedWidth]="true"></fa-icon>
-                  <span jhiTranslate="global.menu.payments.downloadPayments">Upload Payments</span>
+                  <span jhiTranslate="global.menu.payments.downloadPayments">Download Payments</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  class="dropdown-item"
+                  routerLink="/payments/download-reconciliations"
+                  routerLinkActive="active"
+                  [routerLinkActiveOptions]="{ exact: true }"
+                  (click)="collapseNavbar()"
+                >
+                  <fa-icon icon="cloud-arrow-down" [fixedWidth]="true"></fa-icon>
+                  <span jhiTranslate="global.menu.payments.downloadReconciliations">Download Reconciliations</span>
                 </a>
               </li>
             </ul>

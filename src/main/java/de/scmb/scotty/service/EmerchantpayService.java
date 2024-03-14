@@ -11,6 +11,7 @@ import com.emerchantpay.gateway.api.requests.financial.sdd.SDDInitRecurringSaleR
 import com.emerchantpay.gateway.api.requests.financial.sdd.SDDRecurringSaleRequest;
 import com.emerchantpay.gateway.model.Transaction;
 import com.emerchantpay.gateway.util.Configuration;
+import com.emerchantpay.gateway.util.NodeWrapper;
 import de.scmb.scotty.config.ApplicationProperties;
 import de.scmb.scotty.domain.Payment;
 import de.scmb.scotty.repository.PaymentRepository;
@@ -53,25 +54,19 @@ public class EmerchantpayService {
                 payment.setBic(init.getBic());
             }
 
-            Payment duplicate = paymentRepository.findFirstByPaymentIdOrderByIdAsc(payment.getPaymentId());
-            if (duplicate != null) {
-                payment.setState("failed");
-                payment.setMessage("Duplicate payment with id: " + duplicate.getId());
-                payment.setTimestamp(Instant.now());
-                payment.setGatewayId("");
-                payment.setMode("");
-                // TODO
-                // RECON
-                return true;
-            }
-
             GenesisClient client = new GenesisClient(getConfiguration(), request);
             client.debugMode(true);
             client.execute();
 
+            NodeWrapper nodeWrapper = client.getResponse();
+            if (nodeWrapper.getElementName().equals("payment_response")) {
+                if (nodeWrapper.findString("status").equals("error")) {
+                    throw new IllegalArgumentException(nodeWrapper.findString("technical_message"));
+                }
+            }
+
             // Parse Payment result
             TransactionResult<? extends Transaction> result = client.getTransaction().getRequest();
-            log.debug("Transaction Id: " + result.getTransaction().getTransactionId());
 
             payment.setMessage(cutRight(result.getTransaction().getMessage(), 255));
             payment.setGatewayId(cutRight(result.getTransaction().getUniqueId(), 35));

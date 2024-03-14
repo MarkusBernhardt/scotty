@@ -1,6 +1,6 @@
 import dayjs from 'dayjs/esm';
 
-export interface IPaymentsDownloadPaymentsRecord {
+export interface IPaymentsDownloadReconciliationsRecord {
   fileName: string;
   count: number;
   amount: number;

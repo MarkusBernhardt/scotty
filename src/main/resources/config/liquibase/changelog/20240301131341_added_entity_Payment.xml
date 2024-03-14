@@ -95,6 +95,7 @@
         <createIndex indexName="IX_PAYMENT_FILE_NAME" tableName="payment" unique="false">
             <column name="file_name"/>
         </createIndex>
+
     </changeSet>
 
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->

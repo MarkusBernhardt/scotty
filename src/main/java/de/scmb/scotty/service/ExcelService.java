@@ -1,8 +1,10 @@
 package de.scmb.scotty.service;
 
 import de.scmb.scotty.domain.Payment;
+import de.scmb.scotty.domain.Reconciliation;
 import de.scmb.scotty.domain.enumeration.Gateway;
 import de.scmb.scotty.repository.PaymentRepository;
+import de.scmb.scotty.repository.ReconciliationRepository;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -16,6 +18,8 @@ import org.springframework.stereotype.Service;
 public class ExcelService {
 
     private final PaymentRepository paymentRepository;
+
+    private final ReconciliationRepository reconciliationRepository;
 
     public static final ColumnDescription[] COLUMNS = {
         new ColumnDescription(
@@ -126,8 +130,9 @@ public class ExcelService {
         new ColumnDescription("mode", ColumnLevel.response, "The mode of the payment. Can be \"test\" of \"live\"", "", ""),
     };
 
-    public ExcelService(PaymentRepository paymentRepository) {
+    public ExcelService(PaymentRepository paymentRepository, ReconciliationRepository reconciliationRepository) {
         this.paymentRepository = paymentRepository;
+        this.reconciliationRepository = reconciliationRepository;
     }
 
     public ValidationResult validatePaymentsFromStream(InputStream inputStream) throws IOException {
@@ -336,6 +341,151 @@ public class ExcelService {
 
                 cell = row.createCell(columnIndices.get("mode"));
                 cell.setCellValue(payment.getMode());
+                cell.setCellStyle(cellStyle);
+
+                index++;
+            }
+
+            index = 0;
+            for (ColumnDescription ignored : COLUMNS) {
+                sheet.autoSizeColumn(index);
+                index++;
+            }
+
+            workbook.write(outputStream);
+        }
+    }
+
+    public void writeReconciliationsToStream(OutputStream outputStream, String fileName) throws IOException {
+        try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+            XSSFFont headerFont = workbook.createFont();
+            headerFont.setFontName("Arial");
+            headerFont.setBold(true);
+
+            CellStyle headerStyle = workbook.createCellStyle();
+            headerStyle.setFillForegroundColor(IndexedColors.LIGHT_GREEN.getIndex());
+            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            headerStyle.setFont(headerFont);
+
+            CellStyle cellStyle = workbook.createCellStyle();
+            cellStyle.setWrapText(true);
+
+            Sheet sheet = workbook.createSheet("reconciliations");
+
+            int index = 0;
+            Row row = sheet.createRow(0);
+            Map<String, Integer> columnIndices = new HashMap<>();
+            for (ColumnDescription columnDescription : COLUMNS) {
+                Cell cell = row.createCell(index);
+                cell.setCellValue(columnDescription.name);
+                cell.setCellStyle(headerStyle);
+                columnIndices.put(columnDescription.name, index);
+                index++;
+            }
+
+            index = 1;
+            List<Reconciliation> reconciliations = reconciliationRepository.findAllByFileNameOrderByIdAsc(fileName);
+            for (Reconciliation reconciliation : reconciliations) {
+                row = sheet.createRow(index);
+
+                Cell cell = row.createCell(columnIndices.get("mandateId"));
+                try {
+                    cell.setCellValue(Integer.parseInt(reconciliation.getMandateId()));
+                } catch (Throwable t) {
+                    cell.setCellValue(reconciliation.getMandateId());
+                }
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("paymentId"));
+                try {
+                    cell.setCellValue(Integer.parseInt(reconciliation.getPaymentId()));
+                } catch (Throwable t) {
+                    cell.setCellValue(reconciliation.getPaymentId());
+                }
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("gateway"));
+                cell.setCellValue(reconciliation.getGateway().toString());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("iban"));
+                cell.setCellValue(reconciliation.getIban());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("bic"));
+                cell.setCellValue(reconciliation.getBic());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("amount"));
+                cell.setCellValue(reconciliation.getAmount());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("currencyCode"));
+                cell.setCellValue(reconciliation.getCurrencyCode());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("softDescriptor"));
+                cell.setCellValue(reconciliation.getSoftDescriptor());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("firstName"));
+                cell.setCellValue(reconciliation.getFirstName());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("lastName"));
+                cell.setCellValue(reconciliation.getLastName());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("addressLine1"));
+                cell.setCellValue(reconciliation.getAddressLine1());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("addressLine2"));
+                cell.setCellValue(reconciliation.getAddressLine2());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("postalCode"));
+                try {
+                    cell.setCellValue(Integer.parseInt(reconciliation.getPostalCode()));
+                } catch (Throwable t) {
+                    cell.setCellValue(reconciliation.getPostalCode());
+                }
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("city"));
+                cell.setCellValue(reconciliation.getCity());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("countryCode"));
+                cell.setCellValue(reconciliation.getCountryCode());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("remoteIp"));
+                cell.setCellValue(reconciliation.getRemoteIp());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("scottyId"));
+                cell.setCellValue(reconciliation.getId());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("state"));
+                cell.setCellValue(reconciliation.getState());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("timestamp"));
+                cell.setCellValue(reconciliation.getTimestamp().toString());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("gatewayId"));
+                cell.setCellValue(reconciliation.getGatewayId());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("message"));
+                cell.setCellValue(reconciliation.getMessage());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("mode"));
+                cell.setCellValue(reconciliation.getMode());
                 cell.setCellStyle(cellStyle);
 
                 index++;

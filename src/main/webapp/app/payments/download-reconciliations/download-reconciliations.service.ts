@@ -7,20 +7,20 @@ import dayjs from 'dayjs/esm';
 
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
-import { IPaymentsDownloadPaymentsRecord } from './download-payments.model';
+import { IPaymentsDownloadReconciliationsRecord } from './download-reconciliations.model';
 
-type RestOf<T extends IPaymentsDownloadPaymentsRecord> = Omit<T, 'timestamp'> & {
+type RestOf<T extends IPaymentsDownloadReconciliationsRecord> = Omit<T, 'timestamp'> & {
   timestamp?: string | null;
 };
 
-export type RestPayment = RestOf<IPaymentsDownloadPaymentsRecord>;
+export type RestPayment = RestOf<IPaymentsDownloadReconciliationsRecord>;
 
-export type EntityArrayResponseType = HttpResponse<IPaymentsDownloadPaymentsRecord[]>;
+export type EntityArrayResponseType = HttpResponse<IPaymentsDownloadReconciliationsRecord[]>;
 
 @Injectable({ providedIn: 'root' })
-export class PaymentsDownloadPaymentsService {
-  protected listUrl = this.applicationConfigService.getEndpointFor('api/payments-download-payments/list');
-  protected saveUrl = this.applicationConfigService.getEndpointFor('api/payments-download-payments/save');
+export class PaymentsDownloadReconciliationsService {
+  protected listUrl = this.applicationConfigService.getEndpointFor('api/payments-download-reconciliations/list');
+  protected saveUrl = this.applicationConfigService.getEndpointFor('api/payments-download-reconciliations/save');
 
   constructor(
     protected http: HttpClient,
@@ -34,17 +34,17 @@ export class PaymentsDownloadPaymentsService {
       .pipe(map(res => this.convertResponseArrayFromServer(res)));
   }
 
-  getDownloadPaymentRecordIdentifier(payment: Pick<IPaymentsDownloadPaymentsRecord, 'fileName'>): string {
+  getDownloadReconciliationRecordIdentifier(payment: Pick<IPaymentsDownloadReconciliationsRecord, 'fileName'>): string {
     return payment.fileName;
   }
 
-  protected convertDateFromServer(restPayment: RestPayment): IPaymentsDownloadPaymentsRecord {
+  protected convertDateFromServer(restPayment: RestPayment): IPaymentsDownloadReconciliationsRecord {
     return {
       ...restPayment,
     };
   }
 
-  protected convertResponseArrayFromServer(res: HttpResponse<RestPayment[]>): HttpResponse<IPaymentsDownloadPaymentsRecord[]> {
+  protected convertResponseArrayFromServer(res: HttpResponse<RestPayment[]>): HttpResponse<IPaymentsDownloadReconciliationsRecord[]> {
     return res.clone({
       body: res.body ? res.body.map(item => this.convertDateFromServer(item)) : null,
     });

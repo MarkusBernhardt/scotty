@@ -23,7 +23,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long>, JpaSpec
     List<Payment> findAllByFileNameOrderByIdAsc(String fileName);
 
     @Query(
-        "SELECT new de.scmb.scotty.service.dto.PaymentsDownloadPaymentsDto(p.fileName, min(p.timestamp), max(p.timestamp), COUNT(p), sum(p.amount)) FROM Payment p GROUP BY p.fileName"
+        "SELECT new de.scmb.scotty.service.dto.PaymentsDownloadPaymentsDto(p.fileName, COUNT(p), sum(p.amount)) FROM Payment p GROUP BY p.fileName"
     )
     Page<PaymentsDownloadPaymentsDto> findAllGroupByFileName(Pageable pageable);
 }

@@ -86,6 +86,18 @@
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
         <dropDefaultValue tableName="reconciliation" columnName="timestamp" columnDataType="${datetimeType}"/>
+        <createIndex indexName="IX_RECONCILIATION_MANDATE_ID" tableName="reconciliation" unique="false">
+            <column name="mandate_id"/>
+        </createIndex>
+        <createIndex indexName="IX_RECONCILIATION_PAYMENT_ID" tableName="reconciliation" unique="false">
+            <column name="payment_id"/>
+        </createIndex>
+        <createIndex indexName="IX_RECONCILIATION_GATEWAY_ID" tableName="reconciliation" unique="false">
+            <column name="gateway_id"/>
+        </createIndex>
+        <createIndex indexName="IX_RECONCILIATION_FILE_NAME" tableName="reconciliation" unique="false">
+            <column name="file_name"/>
+        </createIndex>
     </changeSet>
 
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->

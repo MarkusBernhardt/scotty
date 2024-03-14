@@ -2,7 +2,7 @@ package de.scmb.scotty.service.dto;
 
 import java.util.Objects;
 
-public class PaymentsDownloadPaymentsDto {
+public class PaymentsDownloadReconciliationsDto {
 
     private String fileName;
 
@@ -10,7 +10,7 @@ public class PaymentsDownloadPaymentsDto {
 
     private Long amount;
 
-    public PaymentsDownloadPaymentsDto(String fileName, Long count, Long amount) {
+    public PaymentsDownloadReconciliationsDto(String fileName, Long count, Long amount) {
         this.fileName = fileName;
         this.count = count;
         this.amount = amount;
@@ -44,7 +44,7 @@ public class PaymentsDownloadPaymentsDto {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PaymentsDownloadPaymentsDto that = (PaymentsDownloadPaymentsDto) o;
+        PaymentsDownloadReconciliationsDto that = (PaymentsDownloadReconciliationsDto) o;
         return Objects.equals(fileName, that.fileName) && Objects.equals(count, that.count) && Objects.equals(amount, that.amount);
     }
 
