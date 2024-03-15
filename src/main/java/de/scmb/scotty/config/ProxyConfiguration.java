@@ -22,8 +22,6 @@ public class ProxyConfiguration {
             if (this.applicationProperties.getProxy().getNonProxyHosts() != null) {
                 System.setProperty("http.nonProxyHosts", this.applicationProperties.getProxy().getNonProxyHosts());
             }
-            System.setProperty("https.proxyHost", this.applicationProperties.getProxy().getHost());
-            System.setProperty("https.proxyPort", Integer.toString(this.applicationProperties.getProxy().getPort()));
 
             Authenticator.setDefault(
                 new Authenticator() {
