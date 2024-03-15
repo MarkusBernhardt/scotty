@@ -119,7 +119,7 @@ application:
     notification-url: 'ftp://beam-me-up-scotty-85521471-9f8f0d090a9a.herokuapp.com/webhooks/emerchantpay'
     reconciliation-schedule: '0 * * * * *'
   proxy:
-    host: 'eu-west-shield-02.quotaguard.com'
-    port: 9294
-    username: 'xs6dvmj11wdupk'
-    password: '5224aa6peoinp08bz8kbqn0budm2wo'
+    host: 'eu-west-static-01.quotaguard.com'
+    port: 9293
+    username: 'nltnshun9adjc6'
+    password: 'r9h154ah4wkrbk39jgjpyugr6ft'
