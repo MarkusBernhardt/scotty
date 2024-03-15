@@ -72,7 +72,7 @@ public class EmerchantpayReconciliationTask implements Runnable {
             page++;
         } while (count == 100);
 
-        lastExecution.setKvValue(Instant.now().minus(1, ChronoUnit.DAYS).toString());
+        lastExecution.setKvValue(Instant.now().minus(3, ChronoUnit.HOURS).toString());
         keyValueRepository.save(lastExecution);
     }
 
