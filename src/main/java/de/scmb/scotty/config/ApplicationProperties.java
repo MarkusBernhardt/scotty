@@ -16,9 +16,15 @@ public class ApplicationProperties {
     // jhipster-needle-application-properties-property
     private final Emerchantpay emerchantpay = new Emerchantpay();
 
+    private final Proxy proxy = new Proxy();
+
     // jhipster-needle-application-properties-property-getter
     public Emerchantpay getEmerchantpay() {
         return this.emerchantpay;
+    }
+
+    public Proxy getProxy() {
+        return this.proxy;
     }
 
     // jhipster-needle-application-properties-property-class
@@ -84,6 +90,61 @@ public class ApplicationProperties {
 
         public void setReconciliationSchedule(String reconciliationSchedule) {
             this.reconciliationSchedule = CronExpression.parse(reconciliationSchedule);
+        }
+    }
+
+    public static class Proxy {
+
+        private String host;
+
+        private int port;
+
+        private String username;
+
+        private String password;
+
+        private String nonProxyHosts;
+
+        public Proxy() {}
+
+        public String getHost() {
+            return host;
+        }
+
+        public void setHost(String host) {
+            this.host = host;
+        }
+
+        public int getPort() {
+            return port;
+        }
+
+        public void setPort(int port) {
+            this.port = port;
+        }
+
+        public String getUsername() {
+            return username;
+        }
+
+        public void setUsername(String user) {
+            this.username = user;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
+        }
+
+        public String getNonProxyHosts() {
+            return nonProxyHosts;
+        }
+
+        public void setNonProxyHosts(String nonProxyHosts) {
+            this.nonProxyHosts = nonProxyHosts;
         }
     }
 }
