@@ -65,6 +65,7 @@ public class EmerchantpayReconciliationTask implements Runnable {
             lastExecution.setKvKey(LAST_READ_TIMESTAMP_KEY);
             lastExecution.setKvValue("2024-01-01T00:00:00Z");
         }
+        lastExecution.setKvValue("2024-01-01T00:00:00Z");
 
         String startDate = lastExecution.getKvValue().substring(0, 10) + " " + lastExecution.getKvValue().substring(11, 19);
         do {
@@ -72,7 +73,7 @@ public class EmerchantpayReconciliationTask implements Runnable {
             page++;
         } while (count == 100);
 
-        lastExecution.setKvValue(Instant.now().minus(3, ChronoUnit.HOURS).toString());
+        lastExecution.setKvValue(Instant.now().minus(1, ChronoUnit.DAYS).toString());
         keyValueRepository.save(lastExecution);
     }
 
