@@ -7,15 +7,13 @@ export class PaymentsUploadPaymentsValidateResponse {
 }
 
 export class PaymentsUploadPaymentsExecuteResponse {
-  constructor(
-    public success: number,
-    public filename: string,
-  ) {}
+  constructor(public stillRunning: boolean) {}
 }
 
 export class PaymentsUploadPaymentsProgressResponse {
   constructor(
     public success: number,
     public count: number,
+    public stillRunning: boolean,
   ) {}
 }

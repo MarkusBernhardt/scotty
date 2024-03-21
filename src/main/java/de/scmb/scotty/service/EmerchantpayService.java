@@ -35,11 +35,11 @@ public class EmerchantpayService {
         this.paymentRepository = paymentRepository;
     }
 
-    public boolean execute(Payment payment) {
+    public void execute(Payment payment) {
         try {
             Request request;
             Payment init = paymentRepository.findFirstByMandateIdAndGatewayIdNotNullAndGatewayIdNotOrderByIdAsc(payment.getMandateId(), "");
-            if (init == null) {
+            if (init == null || init.getState().equals("submitted")) {
                 request = getSddInitRecurringSaleRequest(payment);
             } else {
                 request = getSddRecurringSaleRequest(payment, init);
@@ -79,11 +79,9 @@ public class EmerchantpayService {
             payment.setTimestamp(Instant.now());
             payment.setGatewayId("");
             payment.setMode("");
-            return true;
         } finally {
             paymentRepository.save(payment);
         }
-        return false;
     }
 
     private SDDRecurringSaleRequest getSddRecurringSaleRequest(Payment payment, Payment init) {

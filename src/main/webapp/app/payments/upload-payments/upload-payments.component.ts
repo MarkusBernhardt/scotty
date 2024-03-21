@@ -112,13 +112,12 @@ export default class PaymentsUploadPaymentsComponent {
         switch (event.type) {
           case HttpEventType.UploadProgress:
             if (event.total) {
-              fileCache.executeProgress = Math.round((10 * event.loaded) / event.total);
+              fileCache.executeProgress = Math.round((50 * event.loaded) / event.total);
             }
             break;
           case HttpEventType.Response:
             const response = event.body as PaymentsUploadPaymentsExecuteResponse;
-            fileCache.executeProgress = 100;
-            fileCache.executeSuccess = response.success;
+            fileCache.executeProgress = 10;
             break;
           default:
             break;
@@ -131,15 +130,19 @@ export default class PaymentsUploadPaymentsComponent {
     });
 
     (async () => {
-      while (!fileCache.executeSubscription?.closed) {
+      await new Promise(f => setTimeout(f, 3000));
+      let stillRunning = true;
+      while (stillRunning) {
         this.paymentsUploadPaymentsService.progress(fileCache.executeFileName).subscribe({
           next: response => {
             fileCache.executeSuccess = response.success;
             fileCache.executeProgress = Math.round(10 + (90 * response.count) / fileCache.validateCount);
+            stillRunning = response.stillRunning;
           },
         });
         await new Promise(f => setTimeout(f, 1000));
       }
+      fileCache.executeProgress = 100;
     })();
   }
 

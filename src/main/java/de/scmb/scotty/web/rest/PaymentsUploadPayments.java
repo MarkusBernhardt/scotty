@@ -12,6 +12,16 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import org.apache.commons.math3.stat.inference.OneWayAnova;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -29,10 +39,22 @@ public class PaymentsUploadPayments {
 
     private final PaymentRepository paymentRepository;
 
-    public PaymentsUploadPayments(ExcelService excelService, EmerchantpayService emerchantpayService, PaymentRepository paymentRepository) {
+    private final TaskExecutor taskExecutor;
+
+    private final Logger log = LoggerFactory.getLogger(PaymentsUploadPayments.class);
+
+    private static final Set<String> executionTasks = ConcurrentHashMap.newKeySet();
+
+    public PaymentsUploadPayments(
+        ExcelService excelService,
+        EmerchantpayService emerchantpayService,
+        PaymentRepository paymentRepository,
+        @Qualifier("taskExecutor") TaskExecutor taskExecutor
+    ) {
         this.excelService = excelService;
         this.emerchantpayService = emerchantpayService;
         this.paymentRepository = paymentRepository;
+        this.taskExecutor = taskExecutor;
     }
 
     @PostMapping("/validate")
@@ -52,36 +74,38 @@ public class PaymentsUploadPayments {
         @Valid @RequestPart MultipartFile file,
         @Valid @RequestPart String fileName
     ) throws IOException {
-        try {
-            List<Payment> payments = excelService.readPaymentsFromStream(file.getInputStream(), fileName);
-            int count = 0;
-            int countFailed = 0;
-            for (Payment payment : payments) {
-                count++;
-                switch (payment.getGateway()) {
-                    case EMERCHANTPAY -> {
-                        if (emerchantpayService.execute(payment)) countFailed++;
-                    }
-                    case CCBILL -> {
-                        if (executeCcbill()) countFailed++;
-                    }
-                    default -> {
-                        if (executeUnknown(payment)) countFailed++;
+        taskExecutor.execute(
+            new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        executionTasks.add(fileName);
+
+                        List<Payment> payments = excelService.readPaymentsFromStream(file.getInputStream(), fileName);
+
+                        for (Payment payment : payments) {
+                            switch (payment.getGateway()) {
+                                case EMERCHANTPAY -> {
+                                    emerchantpayService.execute(payment);
+                                }
+                                case CCBILL -> {
+                                    executeCcbill();
+                                }
+                                default -> {
+                                    executeUnknown(payment);
+                                }
+                            }
+                        }
+                    } catch (Throwable t) {
+                        log.warn(t.getMessage());
+                    } finally {
+                        executionTasks.remove(fileName);
                     }
                 }
             }
+        );
 
-            int success = 2;
-            if (countFailed == 0) {
-                success = 3;
-            } else if (countFailed == count) {
-                success = 1;
-            }
-
-            return ResponseEntity.ok().body(new PaymentsUploadPaymentsExecuteResponseDTO(success, null));
-        } catch (Throwable t) {
-            return ResponseEntity.ok().body(new PaymentsUploadPaymentsExecuteResponseDTO(1, t.getMessage()));
-        }
+        return ResponseEntity.ok().body(new PaymentsUploadPaymentsExecuteResponseDTO(true));
     }
 
     @GetMapping(value = "/progress")
@@ -101,14 +125,12 @@ public class PaymentsUploadPayments {
         } else if (countFailed == count) {
             success = 1;
         }
-        return ResponseEntity.ok().body(new PaymentsUploadPaymentsProgressResponseDTO(success, count));
+        return ResponseEntity.ok().body(new PaymentsUploadPaymentsProgressResponseDTO(success, count, executionTasks.contains(fileName)));
     }
 
-    private boolean executeCcbill() {
-        return true;
-    }
+    private void executeCcbill() {}
 
-    private boolean executeUnknown(Payment payment) {
+    private void executeUnknown(Payment payment) {
         try {
             payment.setState("failed");
             payment.setMessage("Unknown gateway");
@@ -118,7 +140,6 @@ public class PaymentsUploadPayments {
         } finally {
             paymentRepository.save(payment);
         }
-        return true;
     }
 
     @GetMapping(value = "/save")

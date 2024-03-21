@@ -4,29 +4,18 @@ import java.util.Objects;
 
 public class PaymentsUploadPaymentsExecuteResponseDTO {
 
-    private int success;
+    private boolean stillRunning;
 
-    private String message;
-
-    public PaymentsUploadPaymentsExecuteResponseDTO(int success, String message) {
-        this.success = success;
-        this.message = message;
+    public PaymentsUploadPaymentsExecuteResponseDTO(boolean stillRunning) {
+        this.stillRunning = stillRunning;
     }
 
-    public int getSuccess() {
-        return success;
+    public boolean isStillRunning() {
+        return stillRunning;
     }
 
-    public void setSuccess(int success) {
-        this.success = success;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
+    public void setStillRunning(boolean stillRunning) {
+        this.stillRunning = stillRunning;
     }
 
     @Override
@@ -34,16 +23,16 @@ public class PaymentsUploadPaymentsExecuteResponseDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PaymentsUploadPaymentsExecuteResponseDTO that = (PaymentsUploadPaymentsExecuteResponseDTO) o;
-        return success == that.success && Objects.equals(message, that.message);
+        return stillRunning == that.stillRunning;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(success, message);
+        return Objects.hash(stillRunning);
     }
 
     @Override
     public String toString() {
-        return ("PaymentsUploadPaymentsExecuteResponseDTO{" + "success=" + success + ", message='" + message + '\'' + '}');
+        return "PaymentsUploadPaymentsExecuteResponseDTO{" + "stillRunning=" + stillRunning + '}';
     }
 }
