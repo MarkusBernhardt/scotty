@@ -66,13 +66,14 @@ public class EmerchantpayReconciliationTask implements Runnable {
             lastExecution.setKvValue("2024-01-01T00:00:00Z");
         }
 
-        String startDate = lastExecution.getKvValue().substring(0, 10) + " " + lastExecution.getKvValue().substring(11, 19);
+        String startDate = Instant.now().minus(60, ChronoUnit.DAYS).toString();
+        startDate = startDate.substring(0, 10) + " " + startDate.substring(11, 19);
         do {
             count = runPage(startDate, page);
             page++;
         } while (count == 100);
 
-        lastExecution.setKvValue(Instant.now().minus(1, ChronoUnit.DAYS).toString());
+        lastExecution.setKvValue(Instant.now().toString());
         keyValueRepository.save(lastExecution);
     }
 
