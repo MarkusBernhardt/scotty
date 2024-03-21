@@ -170,6 +170,13 @@
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
+            <th scope="col" jhiSortBy="reasonCode">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.reconciliation.reasonCode">Reason Code</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
             <th scope="col" jhiSortBy="message">
               <div class="d-flex">
                 <span jhiTranslate="scottyApp.reconciliation.message">Message</span>
@@ -231,6 +238,7 @@
               <td>{{ reconciliation.remoteIp }}</td>
               <td>{{ reconciliation.timestamp | formatMediumDatetime }}</td>
               <td>{{ reconciliation.state }}</td>
+              <td>{{ reconciliation.reasonCode }}</td>
               <td>{{ reconciliation.message }}</td>
               <td>{{ reconciliation.gatewayId }}</td>
               <td>{{ reconciliation.mode }}</td>

@@ -22,6 +22,7 @@ export interface IReconciliation {
   remoteIp?: string | null;
   timestamp?: dayjs.Dayjs | null;
   state?: string | null;
+  reasonCode?: string | null;
   message?: string | null;
   gatewayId?: string | null;
   mode?: string | null;

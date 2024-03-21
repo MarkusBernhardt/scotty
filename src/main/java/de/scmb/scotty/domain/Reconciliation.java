@@ -114,6 +114,11 @@ public class Reconciliation implements Serializable {
     private String state;
 
     @NotNull
+    @Size(max = 35)
+    @Column(name = "reason_code", length = 35, nullable = false)
+    private String reasonCode;
+
+    @NotNull
     @Size(max = 255)
     @Column(name = "message", length = 255, nullable = false)
     private String message;
@@ -383,6 +388,19 @@ public class Reconciliation implements Serializable {
         this.state = state;
     }
 
+    public String getReasonCode() {
+        return this.reasonCode;
+    }
+
+    public Reconciliation reasonCode(String reasonCode) {
+        this.setReasonCode(reasonCode);
+        return this;
+    }
+
+    public void setReasonCode(String reasonCode) {
+        this.reasonCode = reasonCode;
+    }
+
     public String getMessage() {
         return this.message;
     }
@@ -490,6 +508,7 @@ public class Reconciliation implements Serializable {
             ", remoteIp='" + getRemoteIp() + "'" +
             ", timestamp='" + getTimestamp() + "'" +
             ", state='" + getState() + "'" +
+            ", reasonCode='" + getReasonCode() + "'" +
             ", message='" + getMessage() + "'" +
             ", gatewayId='" + getGatewayId() + "'" +
             ", mode='" + getMode() + "'" +

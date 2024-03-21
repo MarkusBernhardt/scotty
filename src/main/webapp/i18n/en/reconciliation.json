@@ -36,6 +36,7 @@
       "remoteIp": "Remote Ip",
       "timestamp": "Timestamp",
       "state": "State",
+      "reasonCode": "Reason Code",
       "message": "Message",
       "gatewayId": "Gateway Id",
       "mode": "Mode",

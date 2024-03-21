@@ -66,6 +66,9 @@
             <column name="state" type="varchar(35)">
                 <constraints nullable="false" />
             </column>
+            <column name="reason_code" type="varchar(35)">
+                <constraints nullable="false" />
+            </column>
             <column name="message" type="varchar(255)">
                 <constraints nullable="false" />
             </column>
@@ -133,6 +136,7 @@
             <column name="remote_ip" type="string"/>
             <column name="timestamp" type="date"/>
             <column name="state" type="string"/>
+            <column name="reason_code" type="string"/>
             <column name="message" type="string"/>
             <column name="gateway_id" type="string"/>
             <column name="mode" type="string"/>

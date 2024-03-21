@@ -49,6 +49,7 @@ type ReconciliationFormGroupContent = {
   remoteIp: FormControl<ReconciliationFormRawValue['remoteIp']>;
   timestamp: FormControl<ReconciliationFormRawValue['timestamp']>;
   state: FormControl<ReconciliationFormRawValue['state']>;
+  reasonCode: FormControl<ReconciliationFormRawValue['reasonCode']>;
   message: FormControl<ReconciliationFormRawValue['message']>;
   gatewayId: FormControl<ReconciliationFormRawValue['gatewayId']>;
   mode: FormControl<ReconciliationFormRawValue['mode']>;
@@ -125,6 +126,9 @@ export class ReconciliationFormService {
         validators: [Validators.required],
       }),
       state: new FormControl(reconciliationRawValue.state, {
+        validators: [Validators.required, Validators.maxLength(35)],
+      }),
+      reasonCode: new FormControl(reconciliationRawValue.reasonCode, {
         validators: [Validators.required, Validators.maxLength(35)],
       }),
       message: new FormControl(reconciliationRawValue.message, {

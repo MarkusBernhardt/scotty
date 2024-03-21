@@ -83,6 +83,10 @@ public class ReconciliationDTO implements Serializable {
     private String state;
 
     @NotNull
+    @Size(max = 35)
+    private String reasonCode;
+
+    @NotNull
     @Size(max = 255)
     private String message;
 
@@ -249,6 +253,14 @@ public class ReconciliationDTO implements Serializable {
         this.state = state;
     }
 
+    public String getReasonCode() {
+        return reasonCode;
+    }
+
+    public void setReasonCode(String reasonCode) {
+        this.reasonCode = reasonCode;
+    }
+
     public String getMessage() {
         return message;
     }
@@ -333,6 +345,7 @@ public class ReconciliationDTO implements Serializable {
             ", remoteIp='" + getRemoteIp() + "'" +
             ", timestamp='" + getTimestamp() + "'" +
             ", state='" + getState() + "'" +
+            ", reasonCode='" + getReasonCode() + "'" +
             ", message='" + getMessage() + "'" +
             ", gatewayId='" + getGatewayId() + "'" +
             ", mode='" + getMode() + "'" +

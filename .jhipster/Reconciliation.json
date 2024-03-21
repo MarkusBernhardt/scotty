@@ -117,6 +117,12 @@
       "fieldValidateRulesMaxlength": "35"
     },
     {
+      "fieldName": "reasonCode",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "maxlength"],
+      "fieldValidateRulesMaxlength": "35"
+    },
+    {
       "fieldName": "message",
       "fieldType": "String",
       "fieldValidateRules": ["required", "maxlength"],

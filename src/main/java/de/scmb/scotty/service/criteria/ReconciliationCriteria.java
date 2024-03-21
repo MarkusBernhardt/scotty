@@ -77,6 +77,8 @@ public class ReconciliationCriteria implements Serializable, Criteria {
 
     private StringFilter state;
 
+    private StringFilter reasonCode;
+
     private StringFilter message;
 
     private StringFilter gatewayId;
@@ -111,6 +113,7 @@ public class ReconciliationCriteria implements Serializable, Criteria {
         this.remoteIp = other.remoteIp == null ? null : other.remoteIp.copy();
         this.timestamp = other.timestamp == null ? null : other.timestamp.copy();
         this.state = other.state == null ? null : other.state.copy();
+        this.reasonCode = other.reasonCode == null ? null : other.reasonCode.copy();
         this.message = other.message == null ? null : other.message.copy();
         this.gatewayId = other.gatewayId == null ? null : other.gatewayId.copy();
         this.mode = other.mode == null ? null : other.mode.copy();
@@ -409,6 +412,21 @@ public class ReconciliationCriteria implements Serializable, Criteria {
         this.state = state;
     }
 
+    public StringFilter getReasonCode() {
+        return reasonCode;
+    }
+
+    public StringFilter reasonCode() {
+        if (reasonCode == null) {
+            reasonCode = new StringFilter();
+        }
+        return reasonCode;
+    }
+
+    public void setReasonCode(StringFilter reasonCode) {
+        this.reasonCode = reasonCode;
+    }
+
     public StringFilter getMessage() {
         return message;
     }
@@ -521,6 +539,7 @@ public class ReconciliationCriteria implements Serializable, Criteria {
             Objects.equals(remoteIp, that.remoteIp) &&
             Objects.equals(timestamp, that.timestamp) &&
             Objects.equals(state, that.state) &&
+            Objects.equals(reasonCode, that.reasonCode) &&
             Objects.equals(message, that.message) &&
             Objects.equals(gatewayId, that.gatewayId) &&
             Objects.equals(mode, that.mode) &&
@@ -552,6 +571,7 @@ public class ReconciliationCriteria implements Serializable, Criteria {
             remoteIp,
             timestamp,
             state,
+            reasonCode,
             message,
             gatewayId,
             mode,
@@ -584,6 +604,7 @@ public class ReconciliationCriteria implements Serializable, Criteria {
             (remoteIp != null ? "remoteIp=" + remoteIp + ", " : "") +
             (timestamp != null ? "timestamp=" + timestamp + ", " : "") +
             (state != null ? "state=" + state + ", " : "") +
+            (reasonCode != null ? "reasonCode=" + reasonCode + ", " : "") +
             (message != null ? "message=" + message + ", " : "") +
             (gatewayId != null ? "gatewayId=" + gatewayId + ", " : "") +
             (mode != null ? "mode=" + mode + ", " : "") +

@@ -90,6 +90,9 @@ class ReconciliationResourceIT {
     private static final String DEFAULT_STATE = "AAAAAAAAAA";
     private static final String UPDATED_STATE = "BBBBBBBBBB";
 
+    private static final String DEFAULT_REASON_CODE = "AAAAAAAAAA";
+    private static final String UPDATED_REASON_CODE = "BBBBBBBBBB";
+
     private static final String DEFAULT_MESSAGE = "AAAAAAAAAA";
     private static final String UPDATED_MESSAGE = "BBBBBBBBBB";
 
@@ -148,6 +151,7 @@ class ReconciliationResourceIT {
             .remoteIp(DEFAULT_REMOTE_IP)
             .timestamp(DEFAULT_TIMESTAMP)
             .state(DEFAULT_STATE)
+            .reasonCode(DEFAULT_REASON_CODE)
             .message(DEFAULT_MESSAGE)
             .gatewayId(DEFAULT_GATEWAY_ID)
             .mode(DEFAULT_MODE)
@@ -181,6 +185,7 @@ class ReconciliationResourceIT {
             .remoteIp(UPDATED_REMOTE_IP)
             .timestamp(UPDATED_TIMESTAMP)
             .state(UPDATED_STATE)
+            .reasonCode(UPDATED_REASON_CODE)
             .message(UPDATED_MESSAGE)
             .gatewayId(UPDATED_GATEWAY_ID)
             .mode(UPDATED_MODE)
@@ -227,6 +232,7 @@ class ReconciliationResourceIT {
         assertThat(testReconciliation.getRemoteIp()).isEqualTo(DEFAULT_REMOTE_IP);
         assertThat(testReconciliation.getTimestamp()).isEqualTo(DEFAULT_TIMESTAMP);
         assertThat(testReconciliation.getState()).isEqualTo(DEFAULT_STATE);
+        assertThat(testReconciliation.getReasonCode()).isEqualTo(DEFAULT_REASON_CODE);
         assertThat(testReconciliation.getMessage()).isEqualTo(DEFAULT_MESSAGE);
         assertThat(testReconciliation.getGatewayId()).isEqualTo(DEFAULT_GATEWAY_ID);
         assertThat(testReconciliation.getMode()).isEqualTo(DEFAULT_MODE);
@@ -596,6 +602,26 @@ class ReconciliationResourceIT {
 
     @Test
     @Transactional
+    void checkReasonCodeIsRequired() throws Exception {
+        int databaseSizeBeforeTest = reconciliationRepository.findAll().size();
+        // set the field null
+        reconciliation.setReasonCode(null);
+
+        // Create the Reconciliation, which fails.
+        ReconciliationDTO reconciliationDTO = reconciliationMapper.toDto(reconciliation);
+
+        restReconciliationMockMvc
+            .perform(
+                post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(reconciliationDTO))
+            )
+            .andExpect(status().isBadRequest());
+
+        List<Reconciliation> reconciliationList = reconciliationRepository.findAll();
+        assertThat(reconciliationList).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
     void checkMessageIsRequired() throws Exception {
         int databaseSizeBeforeTest = reconciliationRepository.findAll().size();
         // set the field null
@@ -644,6 +670,7 @@ class ReconciliationResourceIT {
             .andExpect(jsonPath("$.[*].remoteIp").value(hasItem(DEFAULT_REMOTE_IP)))
             .andExpect(jsonPath("$.[*].timestamp").value(hasItem(DEFAULT_TIMESTAMP.toString())))
             .andExpect(jsonPath("$.[*].state").value(hasItem(DEFAULT_STATE)))
+            .andExpect(jsonPath("$.[*].reasonCode").value(hasItem(DEFAULT_REASON_CODE)))
             .andExpect(jsonPath("$.[*].message").value(hasItem(DEFAULT_MESSAGE)))
             .andExpect(jsonPath("$.[*].gatewayId").value(hasItem(DEFAULT_GATEWAY_ID)))
             .andExpect(jsonPath("$.[*].mode").value(hasItem(DEFAULT_MODE)))
@@ -680,6 +707,7 @@ class ReconciliationResourceIT {
             .andExpect(jsonPath("$.remoteIp").value(DEFAULT_REMOTE_IP))
             .andExpect(jsonPath("$.timestamp").value(DEFAULT_TIMESTAMP.toString()))
             .andExpect(jsonPath("$.state").value(DEFAULT_STATE))
+            .andExpect(jsonPath("$.reasonCode").value(DEFAULT_REASON_CODE))
             .andExpect(jsonPath("$.message").value(DEFAULT_MESSAGE))
             .andExpect(jsonPath("$.gatewayId").value(DEFAULT_GATEWAY_ID))
             .andExpect(jsonPath("$.mode").value(DEFAULT_MODE))
@@ -1850,6 +1878,71 @@ class ReconciliationResourceIT {
 
     @Test
     @Transactional
+    void getAllReconciliationsByReasonCodeIsEqualToSomething() throws Exception {
+        // Initialize the database
+        reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where reasonCode equals to DEFAULT_REASON_CODE
+        defaultReconciliationShouldBeFound("reasonCode.equals=" + DEFAULT_REASON_CODE);
+
+        // Get all the reconciliationList where reasonCode equals to UPDATED_REASON_CODE
+        defaultReconciliationShouldNotBeFound("reasonCode.equals=" + UPDATED_REASON_CODE);
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByReasonCodeIsInShouldWork() throws Exception {
+        // Initialize the database
+        reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where reasonCode in DEFAULT_REASON_CODE or UPDATED_REASON_CODE
+        defaultReconciliationShouldBeFound("reasonCode.in=" + DEFAULT_REASON_CODE + "," + UPDATED_REASON_CODE);
+
+        // Get all the reconciliationList where reasonCode equals to UPDATED_REASON_CODE
+        defaultReconciliationShouldNotBeFound("reasonCode.in=" + UPDATED_REASON_CODE);
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByReasonCodeIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where reasonCode is not null
+        defaultReconciliationShouldBeFound("reasonCode.specified=true");
+
+        // Get all the reconciliationList where reasonCode is null
+        defaultReconciliationShouldNotBeFound("reasonCode.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByReasonCodeContainsSomething() throws Exception {
+        // Initialize the database
+        reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where reasonCode contains DEFAULT_REASON_CODE
+        defaultReconciliationShouldBeFound("reasonCode.contains=" + DEFAULT_REASON_CODE);
+
+        // Get all the reconciliationList where reasonCode contains UPDATED_REASON_CODE
+        defaultReconciliationShouldNotBeFound("reasonCode.contains=" + UPDATED_REASON_CODE);
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByReasonCodeNotContainsSomething() throws Exception {
+        // Initialize the database
+        reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where reasonCode does not contain DEFAULT_REASON_CODE
+        defaultReconciliationShouldNotBeFound("reasonCode.doesNotContain=" + DEFAULT_REASON_CODE);
+
+        // Get all the reconciliationList where reasonCode does not contain UPDATED_REASON_CODE
+        defaultReconciliationShouldBeFound("reasonCode.doesNotContain=" + UPDATED_REASON_CODE);
+    }
+
+    @Test
+    @Transactional
     void getAllReconciliationsByMessageIsEqualToSomething() throws Exception {
         // Initialize the database
         reconciliationRepository.saveAndFlush(reconciliation);
@@ -2157,6 +2250,7 @@ class ReconciliationResourceIT {
             .andExpect(jsonPath("$.[*].remoteIp").value(hasItem(DEFAULT_REMOTE_IP)))
             .andExpect(jsonPath("$.[*].timestamp").value(hasItem(DEFAULT_TIMESTAMP.toString())))
             .andExpect(jsonPath("$.[*].state").value(hasItem(DEFAULT_STATE)))
+            .andExpect(jsonPath("$.[*].reasonCode").value(hasItem(DEFAULT_REASON_CODE)))
             .andExpect(jsonPath("$.[*].message").value(hasItem(DEFAULT_MESSAGE)))
             .andExpect(jsonPath("$.[*].gatewayId").value(hasItem(DEFAULT_GATEWAY_ID)))
             .andExpect(jsonPath("$.[*].mode").value(hasItem(DEFAULT_MODE)))
@@ -2227,6 +2321,7 @@ class ReconciliationResourceIT {
             .remoteIp(UPDATED_REMOTE_IP)
             .timestamp(UPDATED_TIMESTAMP)
             .state(UPDATED_STATE)
+            .reasonCode(UPDATED_REASON_CODE)
             .message(UPDATED_MESSAGE)
             .gatewayId(UPDATED_GATEWAY_ID)
             .mode(UPDATED_MODE)
@@ -2263,6 +2358,7 @@ class ReconciliationResourceIT {
         assertThat(testReconciliation.getRemoteIp()).isEqualTo(UPDATED_REMOTE_IP);
         assertThat(testReconciliation.getTimestamp()).isEqualTo(UPDATED_TIMESTAMP);
         assertThat(testReconciliation.getState()).isEqualTo(UPDATED_STATE);
+        assertThat(testReconciliation.getReasonCode()).isEqualTo(UPDATED_REASON_CODE);
         assertThat(testReconciliation.getMessage()).isEqualTo(UPDATED_MESSAGE);
         assertThat(testReconciliation.getGatewayId()).isEqualTo(UPDATED_GATEWAY_ID);
         assertThat(testReconciliation.getMode()).isEqualTo(UPDATED_MODE);
@@ -2359,8 +2455,9 @@ class ReconciliationResourceIT {
             .postalCode(UPDATED_POSTAL_CODE)
             .countryCode(UPDATED_COUNTRY_CODE)
             .timestamp(UPDATED_TIMESTAMP)
+            .message(UPDATED_MESSAGE)
             .gatewayId(UPDATED_GATEWAY_ID)
-            .mode(UPDATED_MODE);
+            .fileName(UPDATED_FILE_NAME);
 
         restReconciliationMockMvc
             .perform(
@@ -2392,10 +2489,11 @@ class ReconciliationResourceIT {
         assertThat(testReconciliation.getRemoteIp()).isEqualTo(DEFAULT_REMOTE_IP);
         assertThat(testReconciliation.getTimestamp()).isEqualTo(UPDATED_TIMESTAMP);
         assertThat(testReconciliation.getState()).isEqualTo(DEFAULT_STATE);
-        assertThat(testReconciliation.getMessage()).isEqualTo(DEFAULT_MESSAGE);
+        assertThat(testReconciliation.getReasonCode()).isEqualTo(DEFAULT_REASON_CODE);
+        assertThat(testReconciliation.getMessage()).isEqualTo(UPDATED_MESSAGE);
         assertThat(testReconciliation.getGatewayId()).isEqualTo(UPDATED_GATEWAY_ID);
-        assertThat(testReconciliation.getMode()).isEqualTo(UPDATED_MODE);
-        assertThat(testReconciliation.getFileName()).isEqualTo(DEFAULT_FILE_NAME);
+        assertThat(testReconciliation.getMode()).isEqualTo(DEFAULT_MODE);
+        assertThat(testReconciliation.getFileName()).isEqualTo(UPDATED_FILE_NAME);
     }
 
     @Test
@@ -2429,6 +2527,7 @@ class ReconciliationResourceIT {
             .remoteIp(UPDATED_REMOTE_IP)
             .timestamp(UPDATED_TIMESTAMP)
             .state(UPDATED_STATE)
+            .reasonCode(UPDATED_REASON_CODE)
             .message(UPDATED_MESSAGE)
             .gatewayId(UPDATED_GATEWAY_ID)
             .mode(UPDATED_MODE)
@@ -2464,6 +2563,7 @@ class ReconciliationResourceIT {
         assertThat(testReconciliation.getRemoteIp()).isEqualTo(UPDATED_REMOTE_IP);
         assertThat(testReconciliation.getTimestamp()).isEqualTo(UPDATED_TIMESTAMP);
         assertThat(testReconciliation.getState()).isEqualTo(UPDATED_STATE);
+        assertThat(testReconciliation.getReasonCode()).isEqualTo(UPDATED_REASON_CODE);
         assertThat(testReconciliation.getMessage()).isEqualTo(UPDATED_MESSAGE);
         assertThat(testReconciliation.getGatewayId()).isEqualTo(UPDATED_GATEWAY_ID);
         assertThat(testReconciliation.getMode()).isEqualTo(UPDATED_MODE);

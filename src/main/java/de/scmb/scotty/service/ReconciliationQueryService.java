@@ -144,6 +144,9 @@ public class ReconciliationQueryService extends QueryService<Reconciliation> {
             if (criteria.getState() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getState(), Reconciliation_.state));
             }
+            if (criteria.getReasonCode() != null) {
+                specification = specification.and(buildStringSpecification(criteria.getReasonCode(), Reconciliation_.reasonCode));
+            }
             if (criteria.getMessage() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getMessage(), Reconciliation_.message));
             }

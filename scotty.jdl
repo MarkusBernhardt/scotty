@@ -43,6 +43,7 @@ entity Reconciliation {
     remoteIp String required maxlength(39),
     timestamp Instant required,
     state String required maxlength(35),
+    reasonCode String required maxlength(35),
     message String required maxlength(255),
     gatewayId String maxlength(35),
     mode String maxlength(35),
