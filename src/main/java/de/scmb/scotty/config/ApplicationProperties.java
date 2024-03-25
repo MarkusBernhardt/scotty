@@ -16,11 +16,17 @@ public class ApplicationProperties {
     // jhipster-needle-application-properties-property
     private final Emerchantpay emerchantpay = new Emerchantpay();
 
+    private final Novalnet novalnet = new Novalnet();
+
     private final Proxy proxy = new Proxy();
 
     // jhipster-needle-application-properties-property-getter
     public Emerchantpay getEmerchantpay() {
         return this.emerchantpay;
+    }
+
+    public Novalnet getNovalnet() {
+        return this.novalnet;
     }
 
     public Proxy getProxy() {
@@ -145,6 +151,71 @@ public class ApplicationProperties {
 
         public void setNonProxyHosts(String nonProxyHosts) {
             this.nonProxyHosts = nonProxyHosts;
+        }
+    }
+
+    public static class Novalnet {
+
+        private String baseUrl;
+
+        private String signature;
+
+        private String paymentAccessKey;
+
+        private String testMode;
+
+        private String tariff;
+
+        private String subscriptionTariff;
+
+        public Novalnet() {}
+
+        public String getBaseUrl() {
+            return baseUrl;
+        }
+
+        public void setBaseUrl(String baseUrl) {
+            this.baseUrl = baseUrl;
+        }
+
+        public String getSignature() {
+            return signature;
+        }
+
+        public void setSignature(String signature) {
+            this.signature = signature;
+        }
+
+        public String getPaymentAccessKey() {
+            return paymentAccessKey;
+        }
+
+        public void setPaymentAccessKey(String paymentAccessKey) {
+            this.paymentAccessKey = paymentAccessKey;
+        }
+
+        public String getTestMode() {
+            return testMode;
+        }
+
+        public void setTestMode(String testMode) {
+            this.testMode = testMode;
+        }
+
+        public String getTariff() {
+            return tariff;
+        }
+
+        public void setTariff(String tariff) {
+            this.tariff = tariff;
+        }
+
+        public String getSubscriptionTariff() {
+            return subscriptionTariff;
+        }
+
+        public void setSubscriptionTariff(String subscriptionTariff) {
+            this.subscriptionTariff = subscriptionTariff;
         }
     }
 }
