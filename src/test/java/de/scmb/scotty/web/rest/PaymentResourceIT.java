@@ -66,11 +66,11 @@ class PaymentResourceIT {
     private static final String DEFAULT_LAST_NAME = "AAAAAAAAAA";
     private static final String UPDATED_LAST_NAME = "BBBBBBBBBB";
 
-    private static final String DEFAULT_ADDRESS_LINE_1 = "AAAAAAAAAA";
-    private static final String UPDATED_ADDRESS_LINE_1 = "BBBBBBBBBB";
+    private static final String DEFAULT_STREET_NAME = "AAAAAAAAAA";
+    private static final String UPDATED_STREET_NAME = "BBBBBBBBBB";
 
-    private static final String DEFAULT_ADDRESS_LINE_2 = "AAAAAAAAAA";
-    private static final String UPDATED_ADDRESS_LINE_2 = "BBBBBBBBBB";
+    private static final String DEFAULT_HOUSE_NUMBER = "AAAAAAAAAA";
+    private static final String UPDATED_HOUSE_NUMBER = "BBBBBBBBBB";
 
     private static final String DEFAULT_POSTAL_CODE = "AAAAAAAAAA";
     private static final String UPDATED_POSTAL_CODE = "BBBBBBBBBB";
@@ -83,6 +83,9 @@ class PaymentResourceIT {
 
     private static final String DEFAULT_REMOTE_IP = "AAAAAAAAAA";
     private static final String UPDATED_REMOTE_IP = "BBBBBBBBBB";
+
+    private static final String DEFAULT_EMAIL_ADDRESS = "AAAAAAAAAA";
+    private static final String UPDATED_EMAIL_ADDRESS = "BBBBBBBBBB";
 
     private static final Instant DEFAULT_TIMESTAMP = Instant.ofEpochMilli(0L);
     private static final Instant UPDATED_TIMESTAMP = Instant.now().truncatedTo(ChronoUnit.MILLIS);
@@ -140,12 +143,13 @@ class PaymentResourceIT {
             .softDescriptor(DEFAULT_SOFT_DESCRIPTOR)
             .firstName(DEFAULT_FIRST_NAME)
             .lastName(DEFAULT_LAST_NAME)
-            .addressLine1(DEFAULT_ADDRESS_LINE_1)
-            .addressLine2(DEFAULT_ADDRESS_LINE_2)
+            .streetName(DEFAULT_STREET_NAME)
+            .houseNumber(DEFAULT_HOUSE_NUMBER)
             .postalCode(DEFAULT_POSTAL_CODE)
             .city(DEFAULT_CITY)
             .countryCode(DEFAULT_COUNTRY_CODE)
             .remoteIp(DEFAULT_REMOTE_IP)
+            .emailAddress(DEFAULT_EMAIL_ADDRESS)
             .timestamp(DEFAULT_TIMESTAMP)
             .state(DEFAULT_STATE)
             .message(DEFAULT_MESSAGE)
@@ -173,12 +177,13 @@ class PaymentResourceIT {
             .softDescriptor(UPDATED_SOFT_DESCRIPTOR)
             .firstName(UPDATED_FIRST_NAME)
             .lastName(UPDATED_LAST_NAME)
-            .addressLine1(UPDATED_ADDRESS_LINE_1)
-            .addressLine2(UPDATED_ADDRESS_LINE_2)
+            .streetName(UPDATED_STREET_NAME)
+            .houseNumber(UPDATED_HOUSE_NUMBER)
             .postalCode(UPDATED_POSTAL_CODE)
             .city(UPDATED_CITY)
             .countryCode(UPDATED_COUNTRY_CODE)
             .remoteIp(UPDATED_REMOTE_IP)
+            .emailAddress(UPDATED_EMAIL_ADDRESS)
             .timestamp(UPDATED_TIMESTAMP)
             .state(UPDATED_STATE)
             .message(UPDATED_MESSAGE)
@@ -217,12 +222,13 @@ class PaymentResourceIT {
         assertThat(testPayment.getSoftDescriptor()).isEqualTo(DEFAULT_SOFT_DESCRIPTOR);
         assertThat(testPayment.getFirstName()).isEqualTo(DEFAULT_FIRST_NAME);
         assertThat(testPayment.getLastName()).isEqualTo(DEFAULT_LAST_NAME);
-        assertThat(testPayment.getAddressLine1()).isEqualTo(DEFAULT_ADDRESS_LINE_1);
-        assertThat(testPayment.getAddressLine2()).isEqualTo(DEFAULT_ADDRESS_LINE_2);
+        assertThat(testPayment.getStreetName()).isEqualTo(DEFAULT_STREET_NAME);
+        assertThat(testPayment.getHouseNumber()).isEqualTo(DEFAULT_HOUSE_NUMBER);
         assertThat(testPayment.getPostalCode()).isEqualTo(DEFAULT_POSTAL_CODE);
         assertThat(testPayment.getCity()).isEqualTo(DEFAULT_CITY);
         assertThat(testPayment.getCountryCode()).isEqualTo(DEFAULT_COUNTRY_CODE);
         assertThat(testPayment.getRemoteIp()).isEqualTo(DEFAULT_REMOTE_IP);
+        assertThat(testPayment.getEmailAddress()).isEqualTo(DEFAULT_EMAIL_ADDRESS);
         assertThat(testPayment.getTimestamp()).isEqualTo(DEFAULT_TIMESTAMP);
         assertThat(testPayment.getState()).isEqualTo(DEFAULT_STATE);
         assertThat(testPayment.getMessage()).isEqualTo(DEFAULT_MESSAGE);
@@ -432,10 +438,28 @@ class PaymentResourceIT {
 
     @Test
     @Transactional
-    void checkAddressLine1IsRequired() throws Exception {
+    void checkStreetNameIsRequired() throws Exception {
         int databaseSizeBeforeTest = paymentRepository.findAll().size();
         // set the field null
-        payment.setAddressLine1(null);
+        payment.setStreetName(null);
+
+        // Create the Payment, which fails.
+        PaymentDTO paymentDTO = paymentMapper.toDto(payment);
+
+        restPaymentMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(paymentDTO)))
+            .andExpect(status().isBadRequest());
+
+        List<Payment> paymentList = paymentRepository.findAll();
+        assertThat(paymentList).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
+    void checkHouseNumberIsRequired() throws Exception {
+        int databaseSizeBeforeTest = paymentRepository.findAll().size();
+        // set the field null
+        payment.setHouseNumber(null);
 
         // Create the Payment, which fails.
         PaymentDTO paymentDTO = paymentMapper.toDto(payment);
@@ -508,6 +532,24 @@ class PaymentResourceIT {
         int databaseSizeBeforeTest = paymentRepository.findAll().size();
         // set the field null
         payment.setRemoteIp(null);
+
+        // Create the Payment, which fails.
+        PaymentDTO paymentDTO = paymentMapper.toDto(payment);
+
+        restPaymentMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(paymentDTO)))
+            .andExpect(status().isBadRequest());
+
+        List<Payment> paymentList = paymentRepository.findAll();
+        assertThat(paymentList).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
+    void checkEmailAddressIsRequired() throws Exception {
+        int databaseSizeBeforeTest = paymentRepository.findAll().size();
+        // set the field null
+        payment.setEmailAddress(null);
 
         // Create the Payment, which fails.
         PaymentDTO paymentDTO = paymentMapper.toDto(payment);
@@ -596,12 +638,13 @@ class PaymentResourceIT {
             .andExpect(jsonPath("$.[*].softDescriptor").value(hasItem(DEFAULT_SOFT_DESCRIPTOR)))
             .andExpect(jsonPath("$.[*].firstName").value(hasItem(DEFAULT_FIRST_NAME)))
             .andExpect(jsonPath("$.[*].lastName").value(hasItem(DEFAULT_LAST_NAME)))
-            .andExpect(jsonPath("$.[*].addressLine1").value(hasItem(DEFAULT_ADDRESS_LINE_1)))
-            .andExpect(jsonPath("$.[*].addressLine2").value(hasItem(DEFAULT_ADDRESS_LINE_2)))
+            .andExpect(jsonPath("$.[*].streetName").value(hasItem(DEFAULT_STREET_NAME)))
+            .andExpect(jsonPath("$.[*].houseNumber").value(hasItem(DEFAULT_HOUSE_NUMBER)))
             .andExpect(jsonPath("$.[*].postalCode").value(hasItem(DEFAULT_POSTAL_CODE)))
             .andExpect(jsonPath("$.[*].city").value(hasItem(DEFAULT_CITY)))
             .andExpect(jsonPath("$.[*].countryCode").value(hasItem(DEFAULT_COUNTRY_CODE)))
             .andExpect(jsonPath("$.[*].remoteIp").value(hasItem(DEFAULT_REMOTE_IP)))
+            .andExpect(jsonPath("$.[*].emailAddress").value(hasItem(DEFAULT_EMAIL_ADDRESS)))
             .andExpect(jsonPath("$.[*].timestamp").value(hasItem(DEFAULT_TIMESTAMP.toString())))
             .andExpect(jsonPath("$.[*].state").value(hasItem(DEFAULT_STATE)))
             .andExpect(jsonPath("$.[*].message").value(hasItem(DEFAULT_MESSAGE)))
@@ -632,12 +675,13 @@ class PaymentResourceIT {
             .andExpect(jsonPath("$.softDescriptor").value(DEFAULT_SOFT_DESCRIPTOR))
             .andExpect(jsonPath("$.firstName").value(DEFAULT_FIRST_NAME))
             .andExpect(jsonPath("$.lastName").value(DEFAULT_LAST_NAME))
-            .andExpect(jsonPath("$.addressLine1").value(DEFAULT_ADDRESS_LINE_1))
-            .andExpect(jsonPath("$.addressLine2").value(DEFAULT_ADDRESS_LINE_2))
+            .andExpect(jsonPath("$.streetName").value(DEFAULT_STREET_NAME))
+            .andExpect(jsonPath("$.houseNumber").value(DEFAULT_HOUSE_NUMBER))
             .andExpect(jsonPath("$.postalCode").value(DEFAULT_POSTAL_CODE))
             .andExpect(jsonPath("$.city").value(DEFAULT_CITY))
             .andExpect(jsonPath("$.countryCode").value(DEFAULT_COUNTRY_CODE))
             .andExpect(jsonPath("$.remoteIp").value(DEFAULT_REMOTE_IP))
+            .andExpect(jsonPath("$.emailAddress").value(DEFAULT_EMAIL_ADDRESS))
             .andExpect(jsonPath("$.timestamp").value(DEFAULT_TIMESTAMP.toString()))
             .andExpect(jsonPath("$.state").value(DEFAULT_STATE))
             .andExpect(jsonPath("$.message").value(DEFAULT_MESSAGE))
@@ -1316,132 +1360,132 @@ class PaymentResourceIT {
 
     @Test
     @Transactional
-    void getAllPaymentsByAddressLine1IsEqualToSomething() throws Exception {
+    void getAllPaymentsByStreetNameIsEqualToSomething() throws Exception {
         // Initialize the database
         paymentRepository.saveAndFlush(payment);
 
-        // Get all the paymentList where addressLine1 equals to DEFAULT_ADDRESS_LINE_1
-        defaultPaymentShouldBeFound("addressLine1.equals=" + DEFAULT_ADDRESS_LINE_1);
+        // Get all the paymentList where streetName equals to DEFAULT_STREET_NAME
+        defaultPaymentShouldBeFound("streetName.equals=" + DEFAULT_STREET_NAME);
 
-        // Get all the paymentList where addressLine1 equals to UPDATED_ADDRESS_LINE_1
-        defaultPaymentShouldNotBeFound("addressLine1.equals=" + UPDATED_ADDRESS_LINE_1);
+        // Get all the paymentList where streetName equals to UPDATED_STREET_NAME
+        defaultPaymentShouldNotBeFound("streetName.equals=" + UPDATED_STREET_NAME);
     }
 
     @Test
     @Transactional
-    void getAllPaymentsByAddressLine1IsInShouldWork() throws Exception {
+    void getAllPaymentsByStreetNameIsInShouldWork() throws Exception {
         // Initialize the database
         paymentRepository.saveAndFlush(payment);
 
-        // Get all the paymentList where addressLine1 in DEFAULT_ADDRESS_LINE_1 or UPDATED_ADDRESS_LINE_1
-        defaultPaymentShouldBeFound("addressLine1.in=" + DEFAULT_ADDRESS_LINE_1 + "," + UPDATED_ADDRESS_LINE_1);
+        // Get all the paymentList where streetName in DEFAULT_STREET_NAME or UPDATED_STREET_NAME
+        defaultPaymentShouldBeFound("streetName.in=" + DEFAULT_STREET_NAME + "," + UPDATED_STREET_NAME);
 
-        // Get all the paymentList where addressLine1 equals to UPDATED_ADDRESS_LINE_1
-        defaultPaymentShouldNotBeFound("addressLine1.in=" + UPDATED_ADDRESS_LINE_1);
+        // Get all the paymentList where streetName equals to UPDATED_STREET_NAME
+        defaultPaymentShouldNotBeFound("streetName.in=" + UPDATED_STREET_NAME);
     }
 
     @Test
     @Transactional
-    void getAllPaymentsByAddressLine1IsNullOrNotNull() throws Exception {
+    void getAllPaymentsByStreetNameIsNullOrNotNull() throws Exception {
         // Initialize the database
         paymentRepository.saveAndFlush(payment);
 
-        // Get all the paymentList where addressLine1 is not null
-        defaultPaymentShouldBeFound("addressLine1.specified=true");
+        // Get all the paymentList where streetName is not null
+        defaultPaymentShouldBeFound("streetName.specified=true");
 
-        // Get all the paymentList where addressLine1 is null
-        defaultPaymentShouldNotBeFound("addressLine1.specified=false");
+        // Get all the paymentList where streetName is null
+        defaultPaymentShouldNotBeFound("streetName.specified=false");
     }
 
     @Test
     @Transactional
-    void getAllPaymentsByAddressLine1ContainsSomething() throws Exception {
+    void getAllPaymentsByStreetNameContainsSomething() throws Exception {
         // Initialize the database
         paymentRepository.saveAndFlush(payment);
 
-        // Get all the paymentList where addressLine1 contains DEFAULT_ADDRESS_LINE_1
-        defaultPaymentShouldBeFound("addressLine1.contains=" + DEFAULT_ADDRESS_LINE_1);
+        // Get all the paymentList where streetName contains DEFAULT_STREET_NAME
+        defaultPaymentShouldBeFound("streetName.contains=" + DEFAULT_STREET_NAME);
 
-        // Get all the paymentList where addressLine1 contains UPDATED_ADDRESS_LINE_1
-        defaultPaymentShouldNotBeFound("addressLine1.contains=" + UPDATED_ADDRESS_LINE_1);
+        // Get all the paymentList where streetName contains UPDATED_STREET_NAME
+        defaultPaymentShouldNotBeFound("streetName.contains=" + UPDATED_STREET_NAME);
     }
 
     @Test
     @Transactional
-    void getAllPaymentsByAddressLine1NotContainsSomething() throws Exception {
+    void getAllPaymentsByStreetNameNotContainsSomething() throws Exception {
         // Initialize the database
         paymentRepository.saveAndFlush(payment);
 
-        // Get all the paymentList where addressLine1 does not contain DEFAULT_ADDRESS_LINE_1
-        defaultPaymentShouldNotBeFound("addressLine1.doesNotContain=" + DEFAULT_ADDRESS_LINE_1);
+        // Get all the paymentList where streetName does not contain DEFAULT_STREET_NAME
+        defaultPaymentShouldNotBeFound("streetName.doesNotContain=" + DEFAULT_STREET_NAME);
 
-        // Get all the paymentList where addressLine1 does not contain UPDATED_ADDRESS_LINE_1
-        defaultPaymentShouldBeFound("addressLine1.doesNotContain=" + UPDATED_ADDRESS_LINE_1);
+        // Get all the paymentList where streetName does not contain UPDATED_STREET_NAME
+        defaultPaymentShouldBeFound("streetName.doesNotContain=" + UPDATED_STREET_NAME);
     }
 
     @Test
     @Transactional
-    void getAllPaymentsByAddressLine2IsEqualToSomething() throws Exception {
+    void getAllPaymentsByHouseNumberIsEqualToSomething() throws Exception {
         // Initialize the database
         paymentRepository.saveAndFlush(payment);
 
-        // Get all the paymentList where addressLine2 equals to DEFAULT_ADDRESS_LINE_2
-        defaultPaymentShouldBeFound("addressLine2.equals=" + DEFAULT_ADDRESS_LINE_2);
+        // Get all the paymentList where houseNumber equals to DEFAULT_HOUSE_NUMBER
+        defaultPaymentShouldBeFound("houseNumber.equals=" + DEFAULT_HOUSE_NUMBER);
 
-        // Get all the paymentList where addressLine2 equals to UPDATED_ADDRESS_LINE_2
-        defaultPaymentShouldNotBeFound("addressLine2.equals=" + UPDATED_ADDRESS_LINE_2);
+        // Get all the paymentList where houseNumber equals to UPDATED_HOUSE_NUMBER
+        defaultPaymentShouldNotBeFound("houseNumber.equals=" + UPDATED_HOUSE_NUMBER);
     }
 
     @Test
     @Transactional
-    void getAllPaymentsByAddressLine2IsInShouldWork() throws Exception {
+    void getAllPaymentsByHouseNumberIsInShouldWork() throws Exception {
         // Initialize the database
         paymentRepository.saveAndFlush(payment);
 
-        // Get all the paymentList where addressLine2 in DEFAULT_ADDRESS_LINE_2 or UPDATED_ADDRESS_LINE_2
-        defaultPaymentShouldBeFound("addressLine2.in=" + DEFAULT_ADDRESS_LINE_2 + "," + UPDATED_ADDRESS_LINE_2);
+        // Get all the paymentList where houseNumber in DEFAULT_HOUSE_NUMBER or UPDATED_HOUSE_NUMBER
+        defaultPaymentShouldBeFound("houseNumber.in=" + DEFAULT_HOUSE_NUMBER + "," + UPDATED_HOUSE_NUMBER);
 
-        // Get all the paymentList where addressLine2 equals to UPDATED_ADDRESS_LINE_2
-        defaultPaymentShouldNotBeFound("addressLine2.in=" + UPDATED_ADDRESS_LINE_2);
+        // Get all the paymentList where houseNumber equals to UPDATED_HOUSE_NUMBER
+        defaultPaymentShouldNotBeFound("houseNumber.in=" + UPDATED_HOUSE_NUMBER);
     }
 
     @Test
     @Transactional
-    void getAllPaymentsByAddressLine2IsNullOrNotNull() throws Exception {
+    void getAllPaymentsByHouseNumberIsNullOrNotNull() throws Exception {
         // Initialize the database
         paymentRepository.saveAndFlush(payment);
 
-        // Get all the paymentList where addressLine2 is not null
-        defaultPaymentShouldBeFound("addressLine2.specified=true");
+        // Get all the paymentList where houseNumber is not null
+        defaultPaymentShouldBeFound("houseNumber.specified=true");
 
-        // Get all the paymentList where addressLine2 is null
-        defaultPaymentShouldNotBeFound("addressLine2.specified=false");
+        // Get all the paymentList where houseNumber is null
+        defaultPaymentShouldNotBeFound("houseNumber.specified=false");
     }
 
     @Test
     @Transactional
-    void getAllPaymentsByAddressLine2ContainsSomething() throws Exception {
+    void getAllPaymentsByHouseNumberContainsSomething() throws Exception {
         // Initialize the database
         paymentRepository.saveAndFlush(payment);
 
-        // Get all the paymentList where addressLine2 contains DEFAULT_ADDRESS_LINE_2
-        defaultPaymentShouldBeFound("addressLine2.contains=" + DEFAULT_ADDRESS_LINE_2);
+        // Get all the paymentList where houseNumber contains DEFAULT_HOUSE_NUMBER
+        defaultPaymentShouldBeFound("houseNumber.contains=" + DEFAULT_HOUSE_NUMBER);
 
-        // Get all the paymentList where addressLine2 contains UPDATED_ADDRESS_LINE_2
-        defaultPaymentShouldNotBeFound("addressLine2.contains=" + UPDATED_ADDRESS_LINE_2);
+        // Get all the paymentList where houseNumber contains UPDATED_HOUSE_NUMBER
+        defaultPaymentShouldNotBeFound("houseNumber.contains=" + UPDATED_HOUSE_NUMBER);
     }
 
     @Test
     @Transactional
-    void getAllPaymentsByAddressLine2NotContainsSomething() throws Exception {
+    void getAllPaymentsByHouseNumberNotContainsSomething() throws Exception {
         // Initialize the database
         paymentRepository.saveAndFlush(payment);
 
-        // Get all the paymentList where addressLine2 does not contain DEFAULT_ADDRESS_LINE_2
-        defaultPaymentShouldNotBeFound("addressLine2.doesNotContain=" + DEFAULT_ADDRESS_LINE_2);
+        // Get all the paymentList where houseNumber does not contain DEFAULT_HOUSE_NUMBER
+        defaultPaymentShouldNotBeFound("houseNumber.doesNotContain=" + DEFAULT_HOUSE_NUMBER);
 
-        // Get all the paymentList where addressLine2 does not contain UPDATED_ADDRESS_LINE_2
-        defaultPaymentShouldBeFound("addressLine2.doesNotContain=" + UPDATED_ADDRESS_LINE_2);
+        // Get all the paymentList where houseNumber does not contain UPDATED_HOUSE_NUMBER
+        defaultPaymentShouldBeFound("houseNumber.doesNotContain=" + UPDATED_HOUSE_NUMBER);
     }
 
     @Test
@@ -1702,6 +1746,71 @@ class PaymentResourceIT {
 
         // Get all the paymentList where remoteIp does not contain UPDATED_REMOTE_IP
         defaultPaymentShouldBeFound("remoteIp.doesNotContain=" + UPDATED_REMOTE_IP);
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByEmailAddressIsEqualToSomething() throws Exception {
+        // Initialize the database
+        paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where emailAddress equals to DEFAULT_EMAIL_ADDRESS
+        defaultPaymentShouldBeFound("emailAddress.equals=" + DEFAULT_EMAIL_ADDRESS);
+
+        // Get all the paymentList where emailAddress equals to UPDATED_EMAIL_ADDRESS
+        defaultPaymentShouldNotBeFound("emailAddress.equals=" + UPDATED_EMAIL_ADDRESS);
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByEmailAddressIsInShouldWork() throws Exception {
+        // Initialize the database
+        paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where emailAddress in DEFAULT_EMAIL_ADDRESS or UPDATED_EMAIL_ADDRESS
+        defaultPaymentShouldBeFound("emailAddress.in=" + DEFAULT_EMAIL_ADDRESS + "," + UPDATED_EMAIL_ADDRESS);
+
+        // Get all the paymentList where emailAddress equals to UPDATED_EMAIL_ADDRESS
+        defaultPaymentShouldNotBeFound("emailAddress.in=" + UPDATED_EMAIL_ADDRESS);
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByEmailAddressIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where emailAddress is not null
+        defaultPaymentShouldBeFound("emailAddress.specified=true");
+
+        // Get all the paymentList where emailAddress is null
+        defaultPaymentShouldNotBeFound("emailAddress.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByEmailAddressContainsSomething() throws Exception {
+        // Initialize the database
+        paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where emailAddress contains DEFAULT_EMAIL_ADDRESS
+        defaultPaymentShouldBeFound("emailAddress.contains=" + DEFAULT_EMAIL_ADDRESS);
+
+        // Get all the paymentList where emailAddress contains UPDATED_EMAIL_ADDRESS
+        defaultPaymentShouldNotBeFound("emailAddress.contains=" + UPDATED_EMAIL_ADDRESS);
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByEmailAddressNotContainsSomething() throws Exception {
+        // Initialize the database
+        paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where emailAddress does not contain DEFAULT_EMAIL_ADDRESS
+        defaultPaymentShouldNotBeFound("emailAddress.doesNotContain=" + DEFAULT_EMAIL_ADDRESS);
+
+        // Get all the paymentList where emailAddress does not contain UPDATED_EMAIL_ADDRESS
+        defaultPaymentShouldBeFound("emailAddress.doesNotContain=" + UPDATED_EMAIL_ADDRESS);
     }
 
     @Test
@@ -2109,12 +2218,13 @@ class PaymentResourceIT {
             .andExpect(jsonPath("$.[*].softDescriptor").value(hasItem(DEFAULT_SOFT_DESCRIPTOR)))
             .andExpect(jsonPath("$.[*].firstName").value(hasItem(DEFAULT_FIRST_NAME)))
             .andExpect(jsonPath("$.[*].lastName").value(hasItem(DEFAULT_LAST_NAME)))
-            .andExpect(jsonPath("$.[*].addressLine1").value(hasItem(DEFAULT_ADDRESS_LINE_1)))
-            .andExpect(jsonPath("$.[*].addressLine2").value(hasItem(DEFAULT_ADDRESS_LINE_2)))
+            .andExpect(jsonPath("$.[*].streetName").value(hasItem(DEFAULT_STREET_NAME)))
+            .andExpect(jsonPath("$.[*].houseNumber").value(hasItem(DEFAULT_HOUSE_NUMBER)))
             .andExpect(jsonPath("$.[*].postalCode").value(hasItem(DEFAULT_POSTAL_CODE)))
             .andExpect(jsonPath("$.[*].city").value(hasItem(DEFAULT_CITY)))
             .andExpect(jsonPath("$.[*].countryCode").value(hasItem(DEFAULT_COUNTRY_CODE)))
             .andExpect(jsonPath("$.[*].remoteIp").value(hasItem(DEFAULT_REMOTE_IP)))
+            .andExpect(jsonPath("$.[*].emailAddress").value(hasItem(DEFAULT_EMAIL_ADDRESS)))
             .andExpect(jsonPath("$.[*].timestamp").value(hasItem(DEFAULT_TIMESTAMP.toString())))
             .andExpect(jsonPath("$.[*].state").value(hasItem(DEFAULT_STATE)))
             .andExpect(jsonPath("$.[*].message").value(hasItem(DEFAULT_MESSAGE)))
@@ -2179,12 +2289,13 @@ class PaymentResourceIT {
             .softDescriptor(UPDATED_SOFT_DESCRIPTOR)
             .firstName(UPDATED_FIRST_NAME)
             .lastName(UPDATED_LAST_NAME)
-            .addressLine1(UPDATED_ADDRESS_LINE_1)
-            .addressLine2(UPDATED_ADDRESS_LINE_2)
+            .streetName(UPDATED_STREET_NAME)
+            .houseNumber(UPDATED_HOUSE_NUMBER)
             .postalCode(UPDATED_POSTAL_CODE)
             .city(UPDATED_CITY)
             .countryCode(UPDATED_COUNTRY_CODE)
             .remoteIp(UPDATED_REMOTE_IP)
+            .emailAddress(UPDATED_EMAIL_ADDRESS)
             .timestamp(UPDATED_TIMESTAMP)
             .state(UPDATED_STATE)
             .message(UPDATED_MESSAGE)
@@ -2215,12 +2326,13 @@ class PaymentResourceIT {
         assertThat(testPayment.getSoftDescriptor()).isEqualTo(UPDATED_SOFT_DESCRIPTOR);
         assertThat(testPayment.getFirstName()).isEqualTo(UPDATED_FIRST_NAME);
         assertThat(testPayment.getLastName()).isEqualTo(UPDATED_LAST_NAME);
-        assertThat(testPayment.getAddressLine1()).isEqualTo(UPDATED_ADDRESS_LINE_1);
-        assertThat(testPayment.getAddressLine2()).isEqualTo(UPDATED_ADDRESS_LINE_2);
+        assertThat(testPayment.getStreetName()).isEqualTo(UPDATED_STREET_NAME);
+        assertThat(testPayment.getHouseNumber()).isEqualTo(UPDATED_HOUSE_NUMBER);
         assertThat(testPayment.getPostalCode()).isEqualTo(UPDATED_POSTAL_CODE);
         assertThat(testPayment.getCity()).isEqualTo(UPDATED_CITY);
         assertThat(testPayment.getCountryCode()).isEqualTo(UPDATED_COUNTRY_CODE);
         assertThat(testPayment.getRemoteIp()).isEqualTo(UPDATED_REMOTE_IP);
+        assertThat(testPayment.getEmailAddress()).isEqualTo(UPDATED_EMAIL_ADDRESS);
         assertThat(testPayment.getTimestamp()).isEqualTo(UPDATED_TIMESTAMP);
         assertThat(testPayment.getState()).isEqualTo(UPDATED_STATE);
         assertThat(testPayment.getMessage()).isEqualTo(UPDATED_MESSAGE);
@@ -2307,17 +2419,16 @@ class PaymentResourceIT {
         partialUpdatedPayment.setId(payment.getId());
 
         partialUpdatedPayment
+            .mandateId(UPDATED_MANDATE_ID)
             .paymentId(UPDATED_PAYMENT_ID)
-            .gateway(UPDATED_GATEWAY)
             .bic(UPDATED_BIC)
-            .amount(UPDATED_AMOUNT)
-            .softDescriptor(UPDATED_SOFT_DESCRIPTOR)
             .firstName(UPDATED_FIRST_NAME)
-            .addressLine1(UPDATED_ADDRESS_LINE_1)
-            .city(UPDATED_CITY)
-            .countryCode(UPDATED_COUNTRY_CODE)
-            .state(UPDATED_STATE)
-            .fileName(UPDATED_FILE_NAME);
+            .lastName(UPDATED_LAST_NAME)
+            .postalCode(UPDATED_POSTAL_CODE)
+            .remoteIp(UPDATED_REMOTE_IP)
+            .emailAddress(UPDATED_EMAIL_ADDRESS)
+            .gatewayId(UPDATED_GATEWAY_ID)
+            .mode(UPDATED_MODE);
 
         restPaymentMockMvc
             .perform(
@@ -2331,28 +2442,29 @@ class PaymentResourceIT {
         List<Payment> paymentList = paymentRepository.findAll();
         assertThat(paymentList).hasSize(databaseSizeBeforeUpdate);
         Payment testPayment = paymentList.get(paymentList.size() - 1);
-        assertThat(testPayment.getMandateId()).isEqualTo(DEFAULT_MANDATE_ID);
+        assertThat(testPayment.getMandateId()).isEqualTo(UPDATED_MANDATE_ID);
         assertThat(testPayment.getPaymentId()).isEqualTo(UPDATED_PAYMENT_ID);
-        assertThat(testPayment.getGateway()).isEqualTo(UPDATED_GATEWAY);
+        assertThat(testPayment.getGateway()).isEqualTo(DEFAULT_GATEWAY);
         assertThat(testPayment.getIban()).isEqualTo(DEFAULT_IBAN);
         assertThat(testPayment.getBic()).isEqualTo(UPDATED_BIC);
-        assertThat(testPayment.getAmount()).isEqualTo(UPDATED_AMOUNT);
+        assertThat(testPayment.getAmount()).isEqualTo(DEFAULT_AMOUNT);
         assertThat(testPayment.getCurrencyCode()).isEqualTo(DEFAULT_CURRENCY_CODE);
-        assertThat(testPayment.getSoftDescriptor()).isEqualTo(UPDATED_SOFT_DESCRIPTOR);
+        assertThat(testPayment.getSoftDescriptor()).isEqualTo(DEFAULT_SOFT_DESCRIPTOR);
         assertThat(testPayment.getFirstName()).isEqualTo(UPDATED_FIRST_NAME);
-        assertThat(testPayment.getLastName()).isEqualTo(DEFAULT_LAST_NAME);
-        assertThat(testPayment.getAddressLine1()).isEqualTo(UPDATED_ADDRESS_LINE_1);
-        assertThat(testPayment.getAddressLine2()).isEqualTo(DEFAULT_ADDRESS_LINE_2);
-        assertThat(testPayment.getPostalCode()).isEqualTo(DEFAULT_POSTAL_CODE);
-        assertThat(testPayment.getCity()).isEqualTo(UPDATED_CITY);
-        assertThat(testPayment.getCountryCode()).isEqualTo(UPDATED_COUNTRY_CODE);
-        assertThat(testPayment.getRemoteIp()).isEqualTo(DEFAULT_REMOTE_IP);
+        assertThat(testPayment.getLastName()).isEqualTo(UPDATED_LAST_NAME);
+        assertThat(testPayment.getStreetName()).isEqualTo(DEFAULT_STREET_NAME);
+        assertThat(testPayment.getHouseNumber()).isEqualTo(DEFAULT_HOUSE_NUMBER);
+        assertThat(testPayment.getPostalCode()).isEqualTo(UPDATED_POSTAL_CODE);
+        assertThat(testPayment.getCity()).isEqualTo(DEFAULT_CITY);
+        assertThat(testPayment.getCountryCode()).isEqualTo(DEFAULT_COUNTRY_CODE);
+        assertThat(testPayment.getRemoteIp()).isEqualTo(UPDATED_REMOTE_IP);
+        assertThat(testPayment.getEmailAddress()).isEqualTo(UPDATED_EMAIL_ADDRESS);
         assertThat(testPayment.getTimestamp()).isEqualTo(DEFAULT_TIMESTAMP);
-        assertThat(testPayment.getState()).isEqualTo(UPDATED_STATE);
+        assertThat(testPayment.getState()).isEqualTo(DEFAULT_STATE);
         assertThat(testPayment.getMessage()).isEqualTo(DEFAULT_MESSAGE);
-        assertThat(testPayment.getGatewayId()).isEqualTo(DEFAULT_GATEWAY_ID);
-        assertThat(testPayment.getMode()).isEqualTo(DEFAULT_MODE);
-        assertThat(testPayment.getFileName()).isEqualTo(UPDATED_FILE_NAME);
+        assertThat(testPayment.getGatewayId()).isEqualTo(UPDATED_GATEWAY_ID);
+        assertThat(testPayment.getMode()).isEqualTo(UPDATED_MODE);
+        assertThat(testPayment.getFileName()).isEqualTo(DEFAULT_FILE_NAME);
     }
 
     @Test
@@ -2378,12 +2490,13 @@ class PaymentResourceIT {
             .softDescriptor(UPDATED_SOFT_DESCRIPTOR)
             .firstName(UPDATED_FIRST_NAME)
             .lastName(UPDATED_LAST_NAME)
-            .addressLine1(UPDATED_ADDRESS_LINE_1)
-            .addressLine2(UPDATED_ADDRESS_LINE_2)
+            .streetName(UPDATED_STREET_NAME)
+            .houseNumber(UPDATED_HOUSE_NUMBER)
             .postalCode(UPDATED_POSTAL_CODE)
             .city(UPDATED_CITY)
             .countryCode(UPDATED_COUNTRY_CODE)
             .remoteIp(UPDATED_REMOTE_IP)
+            .emailAddress(UPDATED_EMAIL_ADDRESS)
             .timestamp(UPDATED_TIMESTAMP)
             .state(UPDATED_STATE)
             .message(UPDATED_MESSAGE)
@@ -2413,12 +2526,13 @@ class PaymentResourceIT {
         assertThat(testPayment.getSoftDescriptor()).isEqualTo(UPDATED_SOFT_DESCRIPTOR);
         assertThat(testPayment.getFirstName()).isEqualTo(UPDATED_FIRST_NAME);
         assertThat(testPayment.getLastName()).isEqualTo(UPDATED_LAST_NAME);
-        assertThat(testPayment.getAddressLine1()).isEqualTo(UPDATED_ADDRESS_LINE_1);
-        assertThat(testPayment.getAddressLine2()).isEqualTo(UPDATED_ADDRESS_LINE_2);
+        assertThat(testPayment.getStreetName()).isEqualTo(UPDATED_STREET_NAME);
+        assertThat(testPayment.getHouseNumber()).isEqualTo(UPDATED_HOUSE_NUMBER);
         assertThat(testPayment.getPostalCode()).isEqualTo(UPDATED_POSTAL_CODE);
         assertThat(testPayment.getCity()).isEqualTo(UPDATED_CITY);
         assertThat(testPayment.getCountryCode()).isEqualTo(UPDATED_COUNTRY_CODE);
         assertThat(testPayment.getRemoteIp()).isEqualTo(UPDATED_REMOTE_IP);
+        assertThat(testPayment.getEmailAddress()).isEqualTo(UPDATED_EMAIL_ADDRESS);
         assertThat(testPayment.getTimestamp()).isEqualTo(UPDATED_TIMESTAMP);
         assertThat(testPayment.getState()).isEqualTo(UPDATED_STATE);
         assertThat(testPayment.getMessage()).isEqualTo(UPDATED_MESSAGE);

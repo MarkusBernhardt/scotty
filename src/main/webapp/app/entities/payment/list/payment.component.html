@@ -114,16 +114,16 @@
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="addressLine1">
+            <th scope="col" jhiSortBy="streetName">
               <div class="d-flex">
-                <span jhiTranslate="scottyApp.payment.addressLine1">Address Line 1</span>
+                <span jhiTranslate="scottyApp.payment.streetName">Street Name</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="addressLine2">
+            <th scope="col" jhiSortBy="houseNumber">
               <div class="d-flex">
-                <span jhiTranslate="scottyApp.payment.addressLine2">Address Line 2</span>
+                <span jhiTranslate="scottyApp.payment.houseNumber">House Number</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
@@ -152,6 +152,13 @@
             <th scope="col" jhiSortBy="remoteIp">
               <div class="d-flex">
                 <span jhiTranslate="scottyApp.payment.remoteIp">Remote Ip</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="emailAddress">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.payment.emailAddress">Email Address</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
@@ -217,12 +224,13 @@
               <td>{{ payment.softDescriptor }}</td>
               <td>{{ payment.firstName }}</td>
               <td>{{ payment.lastName }}</td>
-              <td>{{ payment.addressLine1 }}</td>
-              <td>{{ payment.addressLine2 }}</td>
+              <td>{{ payment.streetName }}</td>
+              <td>{{ payment.houseNumber }}</td>
               <td>{{ payment.postalCode }}</td>
               <td>{{ payment.city }}</td>
               <td>{{ payment.countryCode }}</td>
               <td>{{ payment.remoteIp }}</td>
+              <td>{{ payment.emailAddress }}</td>
               <td>{{ payment.timestamp | formatMediumDatetime }}</td>
               <td>{{ payment.state }}</td>
               <td>{{ payment.message }}</td>

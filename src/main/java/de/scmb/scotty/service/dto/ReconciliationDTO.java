@@ -54,10 +54,11 @@ public class ReconciliationDTO implements Serializable {
 
     @NotNull
     @Size(max = 70)
-    private String addressLine1;
+    private String streetName;
 
-    @Size(max = 70)
-    private String addressLine2;
+    @NotNull
+    @Size(max = 16)
+    private String houseNumber;
 
     @NotNull
     @Size(max = 16)
@@ -74,6 +75,10 @@ public class ReconciliationDTO implements Serializable {
     @NotNull
     @Size(max = 39)
     private String remoteIp;
+
+    @NotNull
+    @Size(max = 255)
+    private String emailAddress;
 
     @NotNull
     private Instant timestamp;
@@ -189,20 +194,20 @@ public class ReconciliationDTO implements Serializable {
         this.lastName = lastName;
     }
 
-    public String getAddressLine1() {
-        return addressLine1;
+    public String getStreetName() {
+        return streetName;
     }
 
-    public void setAddressLine1(String addressLine1) {
-        this.addressLine1 = addressLine1;
+    public void setStreetName(String streetName) {
+        this.streetName = streetName;
     }
 
-    public String getAddressLine2() {
-        return addressLine2;
+    public String getHouseNumber() {
+        return houseNumber;
     }
 
-    public void setAddressLine2(String addressLine2) {
-        this.addressLine2 = addressLine2;
+    public void setHouseNumber(String houseNumber) {
+        this.houseNumber = houseNumber;
     }
 
     public String getPostalCode() {
@@ -235,6 +240,14 @@ public class ReconciliationDTO implements Serializable {
 
     public void setRemoteIp(String remoteIp) {
         this.remoteIp = remoteIp;
+    }
+
+    public String getEmailAddress() {
+        return emailAddress;
+    }
+
+    public void setEmailAddress(String emailAddress) {
+        this.emailAddress = emailAddress;
     }
 
     public Instant getTimestamp() {
@@ -337,12 +350,13 @@ public class ReconciliationDTO implements Serializable {
             ", softDescriptor='" + getSoftDescriptor() + "'" +
             ", firstName='" + getFirstName() + "'" +
             ", lastName='" + getLastName() + "'" +
-            ", addressLine1='" + getAddressLine1() + "'" +
-            ", addressLine2='" + getAddressLine2() + "'" +
+            ", streetName='" + getStreetName() + "'" +
+            ", houseNumber='" + getHouseNumber() + "'" +
             ", postalCode='" + getPostalCode() + "'" +
             ", city='" + getCity() + "'" +
             ", countryCode='" + getCountryCode() + "'" +
             ", remoteIp='" + getRemoteIp() + "'" +
+            ", emailAddress='" + getEmailAddress() + "'" +
             ", timestamp='" + getTimestamp() + "'" +
             ", state='" + getState() + "'" +
             ", reasonCode='" + getReasonCode() + "'" +

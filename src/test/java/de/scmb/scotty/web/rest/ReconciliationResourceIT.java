@@ -66,11 +66,11 @@ class ReconciliationResourceIT {
     private static final String DEFAULT_LAST_NAME = "AAAAAAAAAA";
     private static final String UPDATED_LAST_NAME = "BBBBBBBBBB";
 
-    private static final String DEFAULT_ADDRESS_LINE_1 = "AAAAAAAAAA";
-    private static final String UPDATED_ADDRESS_LINE_1 = "BBBBBBBBBB";
+    private static final String DEFAULT_STREET_NAME = "AAAAAAAAAA";
+    private static final String UPDATED_STREET_NAME = "BBBBBBBBBB";
 
-    private static final String DEFAULT_ADDRESS_LINE_2 = "AAAAAAAAAA";
-    private static final String UPDATED_ADDRESS_LINE_2 = "BBBBBBBBBB";
+    private static final String DEFAULT_HOUSE_NUMBER = "AAAAAAAAAA";
+    private static final String UPDATED_HOUSE_NUMBER = "BBBBBBBBBB";
 
     private static final String DEFAULT_POSTAL_CODE = "AAAAAAAAAA";
     private static final String UPDATED_POSTAL_CODE = "BBBBBBBBBB";
@@ -83,6 +83,9 @@ class ReconciliationResourceIT {
 
     private static final String DEFAULT_REMOTE_IP = "AAAAAAAAAA";
     private static final String UPDATED_REMOTE_IP = "BBBBBBBBBB";
+
+    private static final String DEFAULT_EMAIL_ADDRESS = "AAAAAAAAAA";
+    private static final String UPDATED_EMAIL_ADDRESS = "BBBBBBBBBB";
 
     private static final Instant DEFAULT_TIMESTAMP = Instant.ofEpochMilli(0L);
     private static final Instant UPDATED_TIMESTAMP = Instant.now().truncatedTo(ChronoUnit.MILLIS);
@@ -143,12 +146,13 @@ class ReconciliationResourceIT {
             .softDescriptor(DEFAULT_SOFT_DESCRIPTOR)
             .firstName(DEFAULT_FIRST_NAME)
             .lastName(DEFAULT_LAST_NAME)
-            .addressLine1(DEFAULT_ADDRESS_LINE_1)
-            .addressLine2(DEFAULT_ADDRESS_LINE_2)
+            .streetName(DEFAULT_STREET_NAME)
+            .houseNumber(DEFAULT_HOUSE_NUMBER)
             .postalCode(DEFAULT_POSTAL_CODE)
             .city(DEFAULT_CITY)
             .countryCode(DEFAULT_COUNTRY_CODE)
             .remoteIp(DEFAULT_REMOTE_IP)
+            .emailAddress(DEFAULT_EMAIL_ADDRESS)
             .timestamp(DEFAULT_TIMESTAMP)
             .state(DEFAULT_STATE)
             .reasonCode(DEFAULT_REASON_CODE)
@@ -177,12 +181,13 @@ class ReconciliationResourceIT {
             .softDescriptor(UPDATED_SOFT_DESCRIPTOR)
             .firstName(UPDATED_FIRST_NAME)
             .lastName(UPDATED_LAST_NAME)
-            .addressLine1(UPDATED_ADDRESS_LINE_1)
-            .addressLine2(UPDATED_ADDRESS_LINE_2)
+            .streetName(UPDATED_STREET_NAME)
+            .houseNumber(UPDATED_HOUSE_NUMBER)
             .postalCode(UPDATED_POSTAL_CODE)
             .city(UPDATED_CITY)
             .countryCode(UPDATED_COUNTRY_CODE)
             .remoteIp(UPDATED_REMOTE_IP)
+            .emailAddress(UPDATED_EMAIL_ADDRESS)
             .timestamp(UPDATED_TIMESTAMP)
             .state(UPDATED_STATE)
             .reasonCode(UPDATED_REASON_CODE)
@@ -224,12 +229,13 @@ class ReconciliationResourceIT {
         assertThat(testReconciliation.getSoftDescriptor()).isEqualTo(DEFAULT_SOFT_DESCRIPTOR);
         assertThat(testReconciliation.getFirstName()).isEqualTo(DEFAULT_FIRST_NAME);
         assertThat(testReconciliation.getLastName()).isEqualTo(DEFAULT_LAST_NAME);
-        assertThat(testReconciliation.getAddressLine1()).isEqualTo(DEFAULT_ADDRESS_LINE_1);
-        assertThat(testReconciliation.getAddressLine2()).isEqualTo(DEFAULT_ADDRESS_LINE_2);
+        assertThat(testReconciliation.getStreetName()).isEqualTo(DEFAULT_STREET_NAME);
+        assertThat(testReconciliation.getHouseNumber()).isEqualTo(DEFAULT_HOUSE_NUMBER);
         assertThat(testReconciliation.getPostalCode()).isEqualTo(DEFAULT_POSTAL_CODE);
         assertThat(testReconciliation.getCity()).isEqualTo(DEFAULT_CITY);
         assertThat(testReconciliation.getCountryCode()).isEqualTo(DEFAULT_COUNTRY_CODE);
         assertThat(testReconciliation.getRemoteIp()).isEqualTo(DEFAULT_REMOTE_IP);
+        assertThat(testReconciliation.getEmailAddress()).isEqualTo(DEFAULT_EMAIL_ADDRESS);
         assertThat(testReconciliation.getTimestamp()).isEqualTo(DEFAULT_TIMESTAMP);
         assertThat(testReconciliation.getState()).isEqualTo(DEFAULT_STATE);
         assertThat(testReconciliation.getReasonCode()).isEqualTo(DEFAULT_REASON_CODE);
@@ -462,10 +468,30 @@ class ReconciliationResourceIT {
 
     @Test
     @Transactional
-    void checkAddressLine1IsRequired() throws Exception {
+    void checkStreetNameIsRequired() throws Exception {
         int databaseSizeBeforeTest = reconciliationRepository.findAll().size();
         // set the field null
-        reconciliation.setAddressLine1(null);
+        reconciliation.setStreetName(null);
+
+        // Create the Reconciliation, which fails.
+        ReconciliationDTO reconciliationDTO = reconciliationMapper.toDto(reconciliation);
+
+        restReconciliationMockMvc
+            .perform(
+                post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(reconciliationDTO))
+            )
+            .andExpect(status().isBadRequest());
+
+        List<Reconciliation> reconciliationList = reconciliationRepository.findAll();
+        assertThat(reconciliationList).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
+    void checkHouseNumberIsRequired() throws Exception {
+        int databaseSizeBeforeTest = reconciliationRepository.findAll().size();
+        // set the field null
+        reconciliation.setHouseNumber(null);
 
         // Create the Reconciliation, which fails.
         ReconciliationDTO reconciliationDTO = reconciliationMapper.toDto(reconciliation);
@@ -546,6 +572,26 @@ class ReconciliationResourceIT {
         int databaseSizeBeforeTest = reconciliationRepository.findAll().size();
         // set the field null
         reconciliation.setRemoteIp(null);
+
+        // Create the Reconciliation, which fails.
+        ReconciliationDTO reconciliationDTO = reconciliationMapper.toDto(reconciliation);
+
+        restReconciliationMockMvc
+            .perform(
+                post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(reconciliationDTO))
+            )
+            .andExpect(status().isBadRequest());
+
+        List<Reconciliation> reconciliationList = reconciliationRepository.findAll();
+        assertThat(reconciliationList).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
+    void checkEmailAddressIsRequired() throws Exception {
+        int databaseSizeBeforeTest = reconciliationRepository.findAll().size();
+        // set the field null
+        reconciliation.setEmailAddress(null);
 
         // Create the Reconciliation, which fails.
         ReconciliationDTO reconciliationDTO = reconciliationMapper.toDto(reconciliation);
@@ -662,12 +708,13 @@ class ReconciliationResourceIT {
             .andExpect(jsonPath("$.[*].softDescriptor").value(hasItem(DEFAULT_SOFT_DESCRIPTOR)))
             .andExpect(jsonPath("$.[*].firstName").value(hasItem(DEFAULT_FIRST_NAME)))
             .andExpect(jsonPath("$.[*].lastName").value(hasItem(DEFAULT_LAST_NAME)))
-            .andExpect(jsonPath("$.[*].addressLine1").value(hasItem(DEFAULT_ADDRESS_LINE_1)))
-            .andExpect(jsonPath("$.[*].addressLine2").value(hasItem(DEFAULT_ADDRESS_LINE_2)))
+            .andExpect(jsonPath("$.[*].streetName").value(hasItem(DEFAULT_STREET_NAME)))
+            .andExpect(jsonPath("$.[*].houseNumber").value(hasItem(DEFAULT_HOUSE_NUMBER)))
             .andExpect(jsonPath("$.[*].postalCode").value(hasItem(DEFAULT_POSTAL_CODE)))
             .andExpect(jsonPath("$.[*].city").value(hasItem(DEFAULT_CITY)))
             .andExpect(jsonPath("$.[*].countryCode").value(hasItem(DEFAULT_COUNTRY_CODE)))
             .andExpect(jsonPath("$.[*].remoteIp").value(hasItem(DEFAULT_REMOTE_IP)))
+            .andExpect(jsonPath("$.[*].emailAddress").value(hasItem(DEFAULT_EMAIL_ADDRESS)))
             .andExpect(jsonPath("$.[*].timestamp").value(hasItem(DEFAULT_TIMESTAMP.toString())))
             .andExpect(jsonPath("$.[*].state").value(hasItem(DEFAULT_STATE)))
             .andExpect(jsonPath("$.[*].reasonCode").value(hasItem(DEFAULT_REASON_CODE)))
@@ -699,12 +746,13 @@ class ReconciliationResourceIT {
             .andExpect(jsonPath("$.softDescriptor").value(DEFAULT_SOFT_DESCRIPTOR))
             .andExpect(jsonPath("$.firstName").value(DEFAULT_FIRST_NAME))
             .andExpect(jsonPath("$.lastName").value(DEFAULT_LAST_NAME))
-            .andExpect(jsonPath("$.addressLine1").value(DEFAULT_ADDRESS_LINE_1))
-            .andExpect(jsonPath("$.addressLine2").value(DEFAULT_ADDRESS_LINE_2))
+            .andExpect(jsonPath("$.streetName").value(DEFAULT_STREET_NAME))
+            .andExpect(jsonPath("$.houseNumber").value(DEFAULT_HOUSE_NUMBER))
             .andExpect(jsonPath("$.postalCode").value(DEFAULT_POSTAL_CODE))
             .andExpect(jsonPath("$.city").value(DEFAULT_CITY))
             .andExpect(jsonPath("$.countryCode").value(DEFAULT_COUNTRY_CODE))
             .andExpect(jsonPath("$.remoteIp").value(DEFAULT_REMOTE_IP))
+            .andExpect(jsonPath("$.emailAddress").value(DEFAULT_EMAIL_ADDRESS))
             .andExpect(jsonPath("$.timestamp").value(DEFAULT_TIMESTAMP.toString()))
             .andExpect(jsonPath("$.state").value(DEFAULT_STATE))
             .andExpect(jsonPath("$.reasonCode").value(DEFAULT_REASON_CODE))
@@ -1384,132 +1432,132 @@ class ReconciliationResourceIT {
 
     @Test
     @Transactional
-    void getAllReconciliationsByAddressLine1IsEqualToSomething() throws Exception {
+    void getAllReconciliationsByStreetNameIsEqualToSomething() throws Exception {
         // Initialize the database
         reconciliationRepository.saveAndFlush(reconciliation);
 
-        // Get all the reconciliationList where addressLine1 equals to DEFAULT_ADDRESS_LINE_1
-        defaultReconciliationShouldBeFound("addressLine1.equals=" + DEFAULT_ADDRESS_LINE_1);
+        // Get all the reconciliationList where streetName equals to DEFAULT_STREET_NAME
+        defaultReconciliationShouldBeFound("streetName.equals=" + DEFAULT_STREET_NAME);
 
-        // Get all the reconciliationList where addressLine1 equals to UPDATED_ADDRESS_LINE_1
-        defaultReconciliationShouldNotBeFound("addressLine1.equals=" + UPDATED_ADDRESS_LINE_1);
+        // Get all the reconciliationList where streetName equals to UPDATED_STREET_NAME
+        defaultReconciliationShouldNotBeFound("streetName.equals=" + UPDATED_STREET_NAME);
     }
 
     @Test
     @Transactional
-    void getAllReconciliationsByAddressLine1IsInShouldWork() throws Exception {
+    void getAllReconciliationsByStreetNameIsInShouldWork() throws Exception {
         // Initialize the database
         reconciliationRepository.saveAndFlush(reconciliation);
 
-        // Get all the reconciliationList where addressLine1 in DEFAULT_ADDRESS_LINE_1 or UPDATED_ADDRESS_LINE_1
-        defaultReconciliationShouldBeFound("addressLine1.in=" + DEFAULT_ADDRESS_LINE_1 + "," + UPDATED_ADDRESS_LINE_1);
+        // Get all the reconciliationList where streetName in DEFAULT_STREET_NAME or UPDATED_STREET_NAME
+        defaultReconciliationShouldBeFound("streetName.in=" + DEFAULT_STREET_NAME + "," + UPDATED_STREET_NAME);
 
-        // Get all the reconciliationList where addressLine1 equals to UPDATED_ADDRESS_LINE_1
-        defaultReconciliationShouldNotBeFound("addressLine1.in=" + UPDATED_ADDRESS_LINE_1);
+        // Get all the reconciliationList where streetName equals to UPDATED_STREET_NAME
+        defaultReconciliationShouldNotBeFound("streetName.in=" + UPDATED_STREET_NAME);
     }
 
     @Test
     @Transactional
-    void getAllReconciliationsByAddressLine1IsNullOrNotNull() throws Exception {
+    void getAllReconciliationsByStreetNameIsNullOrNotNull() throws Exception {
         // Initialize the database
         reconciliationRepository.saveAndFlush(reconciliation);
 
-        // Get all the reconciliationList where addressLine1 is not null
-        defaultReconciliationShouldBeFound("addressLine1.specified=true");
+        // Get all the reconciliationList where streetName is not null
+        defaultReconciliationShouldBeFound("streetName.specified=true");
 
-        // Get all the reconciliationList where addressLine1 is null
-        defaultReconciliationShouldNotBeFound("addressLine1.specified=false");
+        // Get all the reconciliationList where streetName is null
+        defaultReconciliationShouldNotBeFound("streetName.specified=false");
     }
 
     @Test
     @Transactional
-    void getAllReconciliationsByAddressLine1ContainsSomething() throws Exception {
+    void getAllReconciliationsByStreetNameContainsSomething() throws Exception {
         // Initialize the database
         reconciliationRepository.saveAndFlush(reconciliation);
 
-        // Get all the reconciliationList where addressLine1 contains DEFAULT_ADDRESS_LINE_1
-        defaultReconciliationShouldBeFound("addressLine1.contains=" + DEFAULT_ADDRESS_LINE_1);
+        // Get all the reconciliationList where streetName contains DEFAULT_STREET_NAME
+        defaultReconciliationShouldBeFound("streetName.contains=" + DEFAULT_STREET_NAME);
 
-        // Get all the reconciliationList where addressLine1 contains UPDATED_ADDRESS_LINE_1
-        defaultReconciliationShouldNotBeFound("addressLine1.contains=" + UPDATED_ADDRESS_LINE_1);
+        // Get all the reconciliationList where streetName contains UPDATED_STREET_NAME
+        defaultReconciliationShouldNotBeFound("streetName.contains=" + UPDATED_STREET_NAME);
     }
 
     @Test
     @Transactional
-    void getAllReconciliationsByAddressLine1NotContainsSomething() throws Exception {
+    void getAllReconciliationsByStreetNameNotContainsSomething() throws Exception {
         // Initialize the database
         reconciliationRepository.saveAndFlush(reconciliation);
 
-        // Get all the reconciliationList where addressLine1 does not contain DEFAULT_ADDRESS_LINE_1
-        defaultReconciliationShouldNotBeFound("addressLine1.doesNotContain=" + DEFAULT_ADDRESS_LINE_1);
+        // Get all the reconciliationList where streetName does not contain DEFAULT_STREET_NAME
+        defaultReconciliationShouldNotBeFound("streetName.doesNotContain=" + DEFAULT_STREET_NAME);
 
-        // Get all the reconciliationList where addressLine1 does not contain UPDATED_ADDRESS_LINE_1
-        defaultReconciliationShouldBeFound("addressLine1.doesNotContain=" + UPDATED_ADDRESS_LINE_1);
+        // Get all the reconciliationList where streetName does not contain UPDATED_STREET_NAME
+        defaultReconciliationShouldBeFound("streetName.doesNotContain=" + UPDATED_STREET_NAME);
     }
 
     @Test
     @Transactional
-    void getAllReconciliationsByAddressLine2IsEqualToSomething() throws Exception {
+    void getAllReconciliationsByHouseNumberIsEqualToSomething() throws Exception {
         // Initialize the database
         reconciliationRepository.saveAndFlush(reconciliation);
 
-        // Get all the reconciliationList where addressLine2 equals to DEFAULT_ADDRESS_LINE_2
-        defaultReconciliationShouldBeFound("addressLine2.equals=" + DEFAULT_ADDRESS_LINE_2);
+        // Get all the reconciliationList where houseNumber equals to DEFAULT_HOUSE_NUMBER
+        defaultReconciliationShouldBeFound("houseNumber.equals=" + DEFAULT_HOUSE_NUMBER);
 
-        // Get all the reconciliationList where addressLine2 equals to UPDATED_ADDRESS_LINE_2
-        defaultReconciliationShouldNotBeFound("addressLine2.equals=" + UPDATED_ADDRESS_LINE_2);
+        // Get all the reconciliationList where houseNumber equals to UPDATED_HOUSE_NUMBER
+        defaultReconciliationShouldNotBeFound("houseNumber.equals=" + UPDATED_HOUSE_NUMBER);
     }
 
     @Test
     @Transactional
-    void getAllReconciliationsByAddressLine2IsInShouldWork() throws Exception {
+    void getAllReconciliationsByHouseNumberIsInShouldWork() throws Exception {
         // Initialize the database
         reconciliationRepository.saveAndFlush(reconciliation);
 
-        // Get all the reconciliationList where addressLine2 in DEFAULT_ADDRESS_LINE_2 or UPDATED_ADDRESS_LINE_2
-        defaultReconciliationShouldBeFound("addressLine2.in=" + DEFAULT_ADDRESS_LINE_2 + "," + UPDATED_ADDRESS_LINE_2);
+        // Get all the reconciliationList where houseNumber in DEFAULT_HOUSE_NUMBER or UPDATED_HOUSE_NUMBER
+        defaultReconciliationShouldBeFound("houseNumber.in=" + DEFAULT_HOUSE_NUMBER + "," + UPDATED_HOUSE_NUMBER);
 
-        // Get all the reconciliationList where addressLine2 equals to UPDATED_ADDRESS_LINE_2
-        defaultReconciliationShouldNotBeFound("addressLine2.in=" + UPDATED_ADDRESS_LINE_2);
+        // Get all the reconciliationList where houseNumber equals to UPDATED_HOUSE_NUMBER
+        defaultReconciliationShouldNotBeFound("houseNumber.in=" + UPDATED_HOUSE_NUMBER);
     }
 
     @Test
     @Transactional
-    void getAllReconciliationsByAddressLine2IsNullOrNotNull() throws Exception {
+    void getAllReconciliationsByHouseNumberIsNullOrNotNull() throws Exception {
         // Initialize the database
         reconciliationRepository.saveAndFlush(reconciliation);
 
-        // Get all the reconciliationList where addressLine2 is not null
-        defaultReconciliationShouldBeFound("addressLine2.specified=true");
+        // Get all the reconciliationList where houseNumber is not null
+        defaultReconciliationShouldBeFound("houseNumber.specified=true");
 
-        // Get all the reconciliationList where addressLine2 is null
-        defaultReconciliationShouldNotBeFound("addressLine2.specified=false");
+        // Get all the reconciliationList where houseNumber is null
+        defaultReconciliationShouldNotBeFound("houseNumber.specified=false");
     }
 
     @Test
     @Transactional
-    void getAllReconciliationsByAddressLine2ContainsSomething() throws Exception {
+    void getAllReconciliationsByHouseNumberContainsSomething() throws Exception {
         // Initialize the database
         reconciliationRepository.saveAndFlush(reconciliation);
 
-        // Get all the reconciliationList where addressLine2 contains DEFAULT_ADDRESS_LINE_2
-        defaultReconciliationShouldBeFound("addressLine2.contains=" + DEFAULT_ADDRESS_LINE_2);
+        // Get all the reconciliationList where houseNumber contains DEFAULT_HOUSE_NUMBER
+        defaultReconciliationShouldBeFound("houseNumber.contains=" + DEFAULT_HOUSE_NUMBER);
 
-        // Get all the reconciliationList where addressLine2 contains UPDATED_ADDRESS_LINE_2
-        defaultReconciliationShouldNotBeFound("addressLine2.contains=" + UPDATED_ADDRESS_LINE_2);
+        // Get all the reconciliationList where houseNumber contains UPDATED_HOUSE_NUMBER
+        defaultReconciliationShouldNotBeFound("houseNumber.contains=" + UPDATED_HOUSE_NUMBER);
     }
 
     @Test
     @Transactional
-    void getAllReconciliationsByAddressLine2NotContainsSomething() throws Exception {
+    void getAllReconciliationsByHouseNumberNotContainsSomething() throws Exception {
         // Initialize the database
         reconciliationRepository.saveAndFlush(reconciliation);
 
-        // Get all the reconciliationList where addressLine2 does not contain DEFAULT_ADDRESS_LINE_2
-        defaultReconciliationShouldNotBeFound("addressLine2.doesNotContain=" + DEFAULT_ADDRESS_LINE_2);
+        // Get all the reconciliationList where houseNumber does not contain DEFAULT_HOUSE_NUMBER
+        defaultReconciliationShouldNotBeFound("houseNumber.doesNotContain=" + DEFAULT_HOUSE_NUMBER);
 
-        // Get all the reconciliationList where addressLine2 does not contain UPDATED_ADDRESS_LINE_2
-        defaultReconciliationShouldBeFound("addressLine2.doesNotContain=" + UPDATED_ADDRESS_LINE_2);
+        // Get all the reconciliationList where houseNumber does not contain UPDATED_HOUSE_NUMBER
+        defaultReconciliationShouldBeFound("houseNumber.doesNotContain=" + UPDATED_HOUSE_NUMBER);
     }
 
     @Test
@@ -1770,6 +1818,71 @@ class ReconciliationResourceIT {
 
         // Get all the reconciliationList where remoteIp does not contain UPDATED_REMOTE_IP
         defaultReconciliationShouldBeFound("remoteIp.doesNotContain=" + UPDATED_REMOTE_IP);
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByEmailAddressIsEqualToSomething() throws Exception {
+        // Initialize the database
+        reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where emailAddress equals to DEFAULT_EMAIL_ADDRESS
+        defaultReconciliationShouldBeFound("emailAddress.equals=" + DEFAULT_EMAIL_ADDRESS);
+
+        // Get all the reconciliationList where emailAddress equals to UPDATED_EMAIL_ADDRESS
+        defaultReconciliationShouldNotBeFound("emailAddress.equals=" + UPDATED_EMAIL_ADDRESS);
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByEmailAddressIsInShouldWork() throws Exception {
+        // Initialize the database
+        reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where emailAddress in DEFAULT_EMAIL_ADDRESS or UPDATED_EMAIL_ADDRESS
+        defaultReconciliationShouldBeFound("emailAddress.in=" + DEFAULT_EMAIL_ADDRESS + "," + UPDATED_EMAIL_ADDRESS);
+
+        // Get all the reconciliationList where emailAddress equals to UPDATED_EMAIL_ADDRESS
+        defaultReconciliationShouldNotBeFound("emailAddress.in=" + UPDATED_EMAIL_ADDRESS);
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByEmailAddressIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where emailAddress is not null
+        defaultReconciliationShouldBeFound("emailAddress.specified=true");
+
+        // Get all the reconciliationList where emailAddress is null
+        defaultReconciliationShouldNotBeFound("emailAddress.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByEmailAddressContainsSomething() throws Exception {
+        // Initialize the database
+        reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where emailAddress contains DEFAULT_EMAIL_ADDRESS
+        defaultReconciliationShouldBeFound("emailAddress.contains=" + DEFAULT_EMAIL_ADDRESS);
+
+        // Get all the reconciliationList where emailAddress contains UPDATED_EMAIL_ADDRESS
+        defaultReconciliationShouldNotBeFound("emailAddress.contains=" + UPDATED_EMAIL_ADDRESS);
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByEmailAddressNotContainsSomething() throws Exception {
+        // Initialize the database
+        reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where emailAddress does not contain DEFAULT_EMAIL_ADDRESS
+        defaultReconciliationShouldNotBeFound("emailAddress.doesNotContain=" + DEFAULT_EMAIL_ADDRESS);
+
+        // Get all the reconciliationList where emailAddress does not contain UPDATED_EMAIL_ADDRESS
+        defaultReconciliationShouldBeFound("emailAddress.doesNotContain=" + UPDATED_EMAIL_ADDRESS);
     }
 
     @Test
@@ -2242,12 +2355,13 @@ class ReconciliationResourceIT {
             .andExpect(jsonPath("$.[*].softDescriptor").value(hasItem(DEFAULT_SOFT_DESCRIPTOR)))
             .andExpect(jsonPath("$.[*].firstName").value(hasItem(DEFAULT_FIRST_NAME)))
             .andExpect(jsonPath("$.[*].lastName").value(hasItem(DEFAULT_LAST_NAME)))
-            .andExpect(jsonPath("$.[*].addressLine1").value(hasItem(DEFAULT_ADDRESS_LINE_1)))
-            .andExpect(jsonPath("$.[*].addressLine2").value(hasItem(DEFAULT_ADDRESS_LINE_2)))
+            .andExpect(jsonPath("$.[*].streetName").value(hasItem(DEFAULT_STREET_NAME)))
+            .andExpect(jsonPath("$.[*].houseNumber").value(hasItem(DEFAULT_HOUSE_NUMBER)))
             .andExpect(jsonPath("$.[*].postalCode").value(hasItem(DEFAULT_POSTAL_CODE)))
             .andExpect(jsonPath("$.[*].city").value(hasItem(DEFAULT_CITY)))
             .andExpect(jsonPath("$.[*].countryCode").value(hasItem(DEFAULT_COUNTRY_CODE)))
             .andExpect(jsonPath("$.[*].remoteIp").value(hasItem(DEFAULT_REMOTE_IP)))
+            .andExpect(jsonPath("$.[*].emailAddress").value(hasItem(DEFAULT_EMAIL_ADDRESS)))
             .andExpect(jsonPath("$.[*].timestamp").value(hasItem(DEFAULT_TIMESTAMP.toString())))
             .andExpect(jsonPath("$.[*].state").value(hasItem(DEFAULT_STATE)))
             .andExpect(jsonPath("$.[*].reasonCode").value(hasItem(DEFAULT_REASON_CODE)))
@@ -2313,12 +2427,13 @@ class ReconciliationResourceIT {
             .softDescriptor(UPDATED_SOFT_DESCRIPTOR)
             .firstName(UPDATED_FIRST_NAME)
             .lastName(UPDATED_LAST_NAME)
-            .addressLine1(UPDATED_ADDRESS_LINE_1)
-            .addressLine2(UPDATED_ADDRESS_LINE_2)
+            .streetName(UPDATED_STREET_NAME)
+            .houseNumber(UPDATED_HOUSE_NUMBER)
             .postalCode(UPDATED_POSTAL_CODE)
             .city(UPDATED_CITY)
             .countryCode(UPDATED_COUNTRY_CODE)
             .remoteIp(UPDATED_REMOTE_IP)
+            .emailAddress(UPDATED_EMAIL_ADDRESS)
             .timestamp(UPDATED_TIMESTAMP)
             .state(UPDATED_STATE)
             .reasonCode(UPDATED_REASON_CODE)
@@ -2350,12 +2465,13 @@ class ReconciliationResourceIT {
         assertThat(testReconciliation.getSoftDescriptor()).isEqualTo(UPDATED_SOFT_DESCRIPTOR);
         assertThat(testReconciliation.getFirstName()).isEqualTo(UPDATED_FIRST_NAME);
         assertThat(testReconciliation.getLastName()).isEqualTo(UPDATED_LAST_NAME);
-        assertThat(testReconciliation.getAddressLine1()).isEqualTo(UPDATED_ADDRESS_LINE_1);
-        assertThat(testReconciliation.getAddressLine2()).isEqualTo(UPDATED_ADDRESS_LINE_2);
+        assertThat(testReconciliation.getStreetName()).isEqualTo(UPDATED_STREET_NAME);
+        assertThat(testReconciliation.getHouseNumber()).isEqualTo(UPDATED_HOUSE_NUMBER);
         assertThat(testReconciliation.getPostalCode()).isEqualTo(UPDATED_POSTAL_CODE);
         assertThat(testReconciliation.getCity()).isEqualTo(UPDATED_CITY);
         assertThat(testReconciliation.getCountryCode()).isEqualTo(UPDATED_COUNTRY_CODE);
         assertThat(testReconciliation.getRemoteIp()).isEqualTo(UPDATED_REMOTE_IP);
+        assertThat(testReconciliation.getEmailAddress()).isEqualTo(UPDATED_EMAIL_ADDRESS);
         assertThat(testReconciliation.getTimestamp()).isEqualTo(UPDATED_TIMESTAMP);
         assertThat(testReconciliation.getState()).isEqualTo(UPDATED_STATE);
         assertThat(testReconciliation.getReasonCode()).isEqualTo(UPDATED_REASON_CODE);
@@ -2451,12 +2567,13 @@ class ReconciliationResourceIT {
             .currencyCode(UPDATED_CURRENCY_CODE)
             .firstName(UPDATED_FIRST_NAME)
             .lastName(UPDATED_LAST_NAME)
-            .addressLine2(UPDATED_ADDRESS_LINE_2)
+            .houseNumber(UPDATED_HOUSE_NUMBER)
             .postalCode(UPDATED_POSTAL_CODE)
             .countryCode(UPDATED_COUNTRY_CODE)
-            .timestamp(UPDATED_TIMESTAMP)
+            .emailAddress(UPDATED_EMAIL_ADDRESS)
+            .reasonCode(UPDATED_REASON_CODE)
             .message(UPDATED_MESSAGE)
-            .gatewayId(UPDATED_GATEWAY_ID)
+            .mode(UPDATED_MODE)
             .fileName(UPDATED_FILE_NAME);
 
         restReconciliationMockMvc
@@ -2481,18 +2598,19 @@ class ReconciliationResourceIT {
         assertThat(testReconciliation.getSoftDescriptor()).isEqualTo(DEFAULT_SOFT_DESCRIPTOR);
         assertThat(testReconciliation.getFirstName()).isEqualTo(UPDATED_FIRST_NAME);
         assertThat(testReconciliation.getLastName()).isEqualTo(UPDATED_LAST_NAME);
-        assertThat(testReconciliation.getAddressLine1()).isEqualTo(DEFAULT_ADDRESS_LINE_1);
-        assertThat(testReconciliation.getAddressLine2()).isEqualTo(UPDATED_ADDRESS_LINE_2);
+        assertThat(testReconciliation.getStreetName()).isEqualTo(DEFAULT_STREET_NAME);
+        assertThat(testReconciliation.getHouseNumber()).isEqualTo(UPDATED_HOUSE_NUMBER);
         assertThat(testReconciliation.getPostalCode()).isEqualTo(UPDATED_POSTAL_CODE);
         assertThat(testReconciliation.getCity()).isEqualTo(DEFAULT_CITY);
         assertThat(testReconciliation.getCountryCode()).isEqualTo(UPDATED_COUNTRY_CODE);
         assertThat(testReconciliation.getRemoteIp()).isEqualTo(DEFAULT_REMOTE_IP);
-        assertThat(testReconciliation.getTimestamp()).isEqualTo(UPDATED_TIMESTAMP);
+        assertThat(testReconciliation.getEmailAddress()).isEqualTo(UPDATED_EMAIL_ADDRESS);
+        assertThat(testReconciliation.getTimestamp()).isEqualTo(DEFAULT_TIMESTAMP);
         assertThat(testReconciliation.getState()).isEqualTo(DEFAULT_STATE);
-        assertThat(testReconciliation.getReasonCode()).isEqualTo(DEFAULT_REASON_CODE);
+        assertThat(testReconciliation.getReasonCode()).isEqualTo(UPDATED_REASON_CODE);
         assertThat(testReconciliation.getMessage()).isEqualTo(UPDATED_MESSAGE);
-        assertThat(testReconciliation.getGatewayId()).isEqualTo(UPDATED_GATEWAY_ID);
-        assertThat(testReconciliation.getMode()).isEqualTo(DEFAULT_MODE);
+        assertThat(testReconciliation.getGatewayId()).isEqualTo(DEFAULT_GATEWAY_ID);
+        assertThat(testReconciliation.getMode()).isEqualTo(UPDATED_MODE);
         assertThat(testReconciliation.getFileName()).isEqualTo(UPDATED_FILE_NAME);
     }
 
@@ -2519,12 +2637,13 @@ class ReconciliationResourceIT {
             .softDescriptor(UPDATED_SOFT_DESCRIPTOR)
             .firstName(UPDATED_FIRST_NAME)
             .lastName(UPDATED_LAST_NAME)
-            .addressLine1(UPDATED_ADDRESS_LINE_1)
-            .addressLine2(UPDATED_ADDRESS_LINE_2)
+            .streetName(UPDATED_STREET_NAME)
+            .houseNumber(UPDATED_HOUSE_NUMBER)
             .postalCode(UPDATED_POSTAL_CODE)
             .city(UPDATED_CITY)
             .countryCode(UPDATED_COUNTRY_CODE)
             .remoteIp(UPDATED_REMOTE_IP)
+            .emailAddress(UPDATED_EMAIL_ADDRESS)
             .timestamp(UPDATED_TIMESTAMP)
             .state(UPDATED_STATE)
             .reasonCode(UPDATED_REASON_CODE)
@@ -2555,12 +2674,13 @@ class ReconciliationResourceIT {
         assertThat(testReconciliation.getSoftDescriptor()).isEqualTo(UPDATED_SOFT_DESCRIPTOR);
         assertThat(testReconciliation.getFirstName()).isEqualTo(UPDATED_FIRST_NAME);
         assertThat(testReconciliation.getLastName()).isEqualTo(UPDATED_LAST_NAME);
-        assertThat(testReconciliation.getAddressLine1()).isEqualTo(UPDATED_ADDRESS_LINE_1);
-        assertThat(testReconciliation.getAddressLine2()).isEqualTo(UPDATED_ADDRESS_LINE_2);
+        assertThat(testReconciliation.getStreetName()).isEqualTo(UPDATED_STREET_NAME);
+        assertThat(testReconciliation.getHouseNumber()).isEqualTo(UPDATED_HOUSE_NUMBER);
         assertThat(testReconciliation.getPostalCode()).isEqualTo(UPDATED_POSTAL_CODE);
         assertThat(testReconciliation.getCity()).isEqualTo(UPDATED_CITY);
         assertThat(testReconciliation.getCountryCode()).isEqualTo(UPDATED_COUNTRY_CODE);
         assertThat(testReconciliation.getRemoteIp()).isEqualTo(UPDATED_REMOTE_IP);
+        assertThat(testReconciliation.getEmailAddress()).isEqualTo(UPDATED_EMAIL_ADDRESS);
         assertThat(testReconciliation.getTimestamp()).isEqualTo(UPDATED_TIMESTAMP);
         assertThat(testReconciliation.getState()).isEqualTo(UPDATED_STATE);
         assertThat(testReconciliation.getReasonCode()).isEqualTo(UPDATED_REASON_CODE);

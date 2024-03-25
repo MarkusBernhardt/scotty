@@ -41,12 +41,13 @@ type ReconciliationFormGroupContent = {
   softDescriptor: FormControl<ReconciliationFormRawValue['softDescriptor']>;
   firstName: FormControl<ReconciliationFormRawValue['firstName']>;
   lastName: FormControl<ReconciliationFormRawValue['lastName']>;
-  addressLine1: FormControl<ReconciliationFormRawValue['addressLine1']>;
-  addressLine2: FormControl<ReconciliationFormRawValue['addressLine2']>;
+  streetName: FormControl<ReconciliationFormRawValue['streetName']>;
+  houseNumber: FormControl<ReconciliationFormRawValue['houseNumber']>;
   postalCode: FormControl<ReconciliationFormRawValue['postalCode']>;
   city: FormControl<ReconciliationFormRawValue['city']>;
   countryCode: FormControl<ReconciliationFormRawValue['countryCode']>;
   remoteIp: FormControl<ReconciliationFormRawValue['remoteIp']>;
+  emailAddress: FormControl<ReconciliationFormRawValue['emailAddress']>;
   timestamp: FormControl<ReconciliationFormRawValue['timestamp']>;
   state: FormControl<ReconciliationFormRawValue['state']>;
   reasonCode: FormControl<ReconciliationFormRawValue['reasonCode']>;
@@ -104,11 +105,11 @@ export class ReconciliationFormService {
       lastName: new FormControl(reconciliationRawValue.lastName, {
         validators: [Validators.required, Validators.maxLength(35)],
       }),
-      addressLine1: new FormControl(reconciliationRawValue.addressLine1, {
+      streetName: new FormControl(reconciliationRawValue.streetName, {
         validators: [Validators.required, Validators.maxLength(70)],
       }),
-      addressLine2: new FormControl(reconciliationRawValue.addressLine2, {
-        validators: [Validators.maxLength(70)],
+      houseNumber: new FormControl(reconciliationRawValue.houseNumber, {
+        validators: [Validators.required, Validators.maxLength(16)],
       }),
       postalCode: new FormControl(reconciliationRawValue.postalCode, {
         validators: [Validators.required, Validators.maxLength(16)],
@@ -121,6 +122,9 @@ export class ReconciliationFormService {
       }),
       remoteIp: new FormControl(reconciliationRawValue.remoteIp, {
         validators: [Validators.required, Validators.maxLength(39)],
+      }),
+      emailAddress: new FormControl(reconciliationRawValue.emailAddress, {
+        validators: [Validators.required, Validators.maxLength(255)],
       }),
       timestamp: new FormControl(reconciliationRawValue.timestamp, {
         validators: [Validators.required],

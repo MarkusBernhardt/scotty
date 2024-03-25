@@ -41,12 +41,13 @@ type PaymentFormGroupContent = {
   softDescriptor: FormControl<PaymentFormRawValue['softDescriptor']>;
   firstName: FormControl<PaymentFormRawValue['firstName']>;
   lastName: FormControl<PaymentFormRawValue['lastName']>;
-  addressLine1: FormControl<PaymentFormRawValue['addressLine1']>;
-  addressLine2: FormControl<PaymentFormRawValue['addressLine2']>;
+  streetName: FormControl<PaymentFormRawValue['streetName']>;
+  houseNumber: FormControl<PaymentFormRawValue['houseNumber']>;
   postalCode: FormControl<PaymentFormRawValue['postalCode']>;
   city: FormControl<PaymentFormRawValue['city']>;
   countryCode: FormControl<PaymentFormRawValue['countryCode']>;
   remoteIp: FormControl<PaymentFormRawValue['remoteIp']>;
+  emailAddress: FormControl<PaymentFormRawValue['emailAddress']>;
   timestamp: FormControl<PaymentFormRawValue['timestamp']>;
   state: FormControl<PaymentFormRawValue['state']>;
   message: FormControl<PaymentFormRawValue['message']>;
@@ -102,11 +103,11 @@ export class PaymentFormService {
       lastName: new FormControl(paymentRawValue.lastName, {
         validators: [Validators.required, Validators.maxLength(35)],
       }),
-      addressLine1: new FormControl(paymentRawValue.addressLine1, {
+      streetName: new FormControl(paymentRawValue.streetName, {
         validators: [Validators.required, Validators.maxLength(70)],
       }),
-      addressLine2: new FormControl(paymentRawValue.addressLine2, {
-        validators: [Validators.maxLength(70)],
+      houseNumber: new FormControl(paymentRawValue.houseNumber, {
+        validators: [Validators.required, Validators.maxLength(16)],
       }),
       postalCode: new FormControl(paymentRawValue.postalCode, {
         validators: [Validators.required, Validators.maxLength(16)],
@@ -119,6 +120,9 @@ export class PaymentFormService {
       }),
       remoteIp: new FormControl(paymentRawValue.remoteIp, {
         validators: [Validators.required, Validators.maxLength(39)],
+      }),
+      emailAddress: new FormControl(paymentRawValue.emailAddress, {
+        validators: [Validators.required, Validators.maxLength(255)],
       }),
       timestamp: new FormControl(paymentRawValue.timestamp, {
         validators: [Validators.required],

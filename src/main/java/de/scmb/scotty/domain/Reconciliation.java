@@ -77,12 +77,13 @@ public class Reconciliation implements Serializable {
 
     @NotNull
     @Size(max = 70)
-    @Column(name = "address_line_1", length = 70, nullable = false)
-    private String addressLine1;
+    @Column(name = "street_name", length = 70, nullable = false)
+    private String streetName;
 
-    @Size(max = 70)
-    @Column(name = "address_line_2", length = 70)
-    private String addressLine2;
+    @NotNull
+    @Size(max = 16)
+    @Column(name = "house_number", length = 16, nullable = false)
+    private String houseNumber;
 
     @NotNull
     @Size(max = 16)
@@ -103,6 +104,11 @@ public class Reconciliation implements Serializable {
     @Size(max = 39)
     @Column(name = "remote_ip", length = 39, nullable = false)
     private String remoteIp;
+
+    @NotNull
+    @Size(max = 255)
+    @Column(name = "email_address", length = 255, nullable = false)
+    private String emailAddress;
 
     @NotNull
     @Column(name = "timestamp", nullable = false)
@@ -284,30 +290,30 @@ public class Reconciliation implements Serializable {
         this.lastName = lastName;
     }
 
-    public String getAddressLine1() {
-        return this.addressLine1;
+    public String getStreetName() {
+        return this.streetName;
     }
 
-    public Reconciliation addressLine1(String addressLine1) {
-        this.setAddressLine1(addressLine1);
+    public Reconciliation streetName(String streetName) {
+        this.setStreetName(streetName);
         return this;
     }
 
-    public void setAddressLine1(String addressLine1) {
-        this.addressLine1 = addressLine1;
+    public void setStreetName(String streetName) {
+        this.streetName = streetName;
     }
 
-    public String getAddressLine2() {
-        return this.addressLine2;
+    public String getHouseNumber() {
+        return this.houseNumber;
     }
 
-    public Reconciliation addressLine2(String addressLine2) {
-        this.setAddressLine2(addressLine2);
+    public Reconciliation houseNumber(String houseNumber) {
+        this.setHouseNumber(houseNumber);
         return this;
     }
 
-    public void setAddressLine2(String addressLine2) {
-        this.addressLine2 = addressLine2;
+    public void setHouseNumber(String houseNumber) {
+        this.houseNumber = houseNumber;
     }
 
     public String getPostalCode() {
@@ -360,6 +366,19 @@ public class Reconciliation implements Serializable {
 
     public void setRemoteIp(String remoteIp) {
         this.remoteIp = remoteIp;
+    }
+
+    public String getEmailAddress() {
+        return this.emailAddress;
+    }
+
+    public Reconciliation emailAddress(String emailAddress) {
+        this.setEmailAddress(emailAddress);
+        return this;
+    }
+
+    public void setEmailAddress(String emailAddress) {
+        this.emailAddress = emailAddress;
     }
 
     public Instant getTimestamp() {
@@ -500,12 +519,13 @@ public class Reconciliation implements Serializable {
             ", softDescriptor='" + getSoftDescriptor() + "'" +
             ", firstName='" + getFirstName() + "'" +
             ", lastName='" + getLastName() + "'" +
-            ", addressLine1='" + getAddressLine1() + "'" +
-            ", addressLine2='" + getAddressLine2() + "'" +
+            ", streetName='" + getStreetName() + "'" +
+            ", houseNumber='" + getHouseNumber() + "'" +
             ", postalCode='" + getPostalCode() + "'" +
             ", city='" + getCity() + "'" +
             ", countryCode='" + getCountryCode() + "'" +
             ", remoteIp='" + getRemoteIp() + "'" +
+            ", emailAddress='" + getEmailAddress() + "'" +
             ", timestamp='" + getTimestamp() + "'" +
             ", state='" + getState() + "'" +
             ", reasonCode='" + getReasonCode() + "'" +

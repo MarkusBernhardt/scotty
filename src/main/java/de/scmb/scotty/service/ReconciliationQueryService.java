@@ -120,11 +120,11 @@ public class ReconciliationQueryService extends QueryService<Reconciliation> {
             if (criteria.getLastName() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getLastName(), Reconciliation_.lastName));
             }
-            if (criteria.getAddressLine1() != null) {
-                specification = specification.and(buildStringSpecification(criteria.getAddressLine1(), Reconciliation_.addressLine1));
+            if (criteria.getStreetName() != null) {
+                specification = specification.and(buildStringSpecification(criteria.getStreetName(), Reconciliation_.streetName));
             }
-            if (criteria.getAddressLine2() != null) {
-                specification = specification.and(buildStringSpecification(criteria.getAddressLine2(), Reconciliation_.addressLine2));
+            if (criteria.getHouseNumber() != null) {
+                specification = specification.and(buildStringSpecification(criteria.getHouseNumber(), Reconciliation_.houseNumber));
             }
             if (criteria.getPostalCode() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getPostalCode(), Reconciliation_.postalCode));
@@ -137,6 +137,9 @@ public class ReconciliationQueryService extends QueryService<Reconciliation> {
             }
             if (criteria.getRemoteIp() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getRemoteIp(), Reconciliation_.remoteIp));
+            }
+            if (criteria.getEmailAddress() != null) {
+                specification = specification.and(buildStringSpecification(criteria.getEmailAddress(), Reconciliation_.emailAddress));
             }
             if (criteria.getTimestamp() != null) {
                 specification = specification.and(buildRangeSpecification(criteria.getTimestamp(), Reconciliation_.timestamp));

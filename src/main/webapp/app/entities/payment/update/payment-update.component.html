@@ -223,21 +223,21 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" jhiTranslate="scottyApp.payment.addressLine1" for="field_addressLine1">Address Line 1</label>
+          <label class="form-label" jhiTranslate="scottyApp.payment.streetName" for="field_streetName">Street Name</label>
           <input
             type="text"
             class="form-control"
-            name="addressLine1"
-            id="field_addressLine1"
-            data-cy="addressLine1"
-            formControlName="addressLine1"
+            name="streetName"
+            id="field_streetName"
+            data-cy="streetName"
+            formControlName="streetName"
           />
-          @if (editForm.get('addressLine1')!.invalid && (editForm.get('addressLine1')!.dirty || editForm.get('addressLine1')!.touched)) {
+          @if (editForm.get('streetName')!.invalid && (editForm.get('streetName')!.dirty || editForm.get('streetName')!.touched)) {
             <div>
-              @if (editForm.get('addressLine1')?.errors?.required) {
+              @if (editForm.get('streetName')?.errors?.required) {
                 <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
               }
-              @if (editForm.get('addressLine1')?.errors?.maxlength) {
+              @if (editForm.get('streetName')?.errors?.maxlength) {
                 <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: 70 }"
                   >This field cannot be longer than 70 characters.</small
                 >
@@ -247,20 +247,23 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" jhiTranslate="scottyApp.payment.addressLine2" for="field_addressLine2">Address Line 2</label>
+          <label class="form-label" jhiTranslate="scottyApp.payment.houseNumber" for="field_houseNumber">House Number</label>
           <input
             type="text"
             class="form-control"
-            name="addressLine2"
-            id="field_addressLine2"
-            data-cy="addressLine2"
-            formControlName="addressLine2"
+            name="houseNumber"
+            id="field_houseNumber"
+            data-cy="houseNumber"
+            formControlName="houseNumber"
           />
-          @if (editForm.get('addressLine2')!.invalid && (editForm.get('addressLine2')!.dirty || editForm.get('addressLine2')!.touched)) {
+          @if (editForm.get('houseNumber')!.invalid && (editForm.get('houseNumber')!.dirty || editForm.get('houseNumber')!.touched)) {
             <div>
-              @if (editForm.get('addressLine2')?.errors?.maxlength) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: 70 }"
-                  >This field cannot be longer than 70 characters.</small
+              @if (editForm.get('houseNumber')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+              @if (editForm.get('houseNumber')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: 16 }"
+                  >This field cannot be longer than 16 characters.</small
                 >
               }
             </div>
@@ -348,6 +351,30 @@
               @if (editForm.get('remoteIp')?.errors?.maxlength) {
                 <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: 39 }"
                   >This field cannot be longer than 39 characters.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="scottyApp.payment.emailAddress" for="field_emailAddress">Email Address</label>
+          <input
+            type="text"
+            class="form-control"
+            name="emailAddress"
+            id="field_emailAddress"
+            data-cy="emailAddress"
+            formControlName="emailAddress"
+          />
+          @if (editForm.get('emailAddress')!.invalid && (editForm.get('emailAddress')!.dirty || editForm.get('emailAddress')!.touched)) {
+            <div>
+              @if (editForm.get('emailAddress')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+              @if (editForm.get('emailAddress')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: 255 }"
+                  >This field cannot be longer than 255 characters.</small
                 >
               }
             </div>

@@ -69,16 +69,16 @@
       "fieldValidateRulesMaxlength": "35"
     },
     {
-      "fieldName": "addressLine1",
+      "fieldName": "streetName",
       "fieldType": "String",
       "fieldValidateRules": ["required", "maxlength"],
       "fieldValidateRulesMaxlength": "70"
     },
     {
-      "fieldName": "addressLine2",
+      "fieldName": "houseNumber",
       "fieldType": "String",
-      "fieldValidateRules": ["maxlength"],
-      "fieldValidateRulesMaxlength": "70"
+      "fieldValidateRules": ["required", "maxlength"],
+      "fieldValidateRulesMaxlength": "16"
     },
     {
       "fieldName": "postalCode",
@@ -104,6 +104,12 @@
       "fieldType": "String",
       "fieldValidateRules": ["required", "maxlength"],
       "fieldValidateRulesMaxlength": "39"
+    },
+    {
+      "fieldName": "emailAddress",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "maxlength"],
+      "fieldValidateRulesMaxlength": "255"
     },
     {
       "fieldName": "timestamp",

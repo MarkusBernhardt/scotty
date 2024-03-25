@@ -14,12 +14,13 @@ export interface IReconciliation {
   softDescriptor?: string | null;
   firstName?: string | null;
   lastName?: string | null;
-  addressLine1?: string | null;
-  addressLine2?: string | null;
+  streetName?: string | null;
+  houseNumber?: string | null;
   postalCode?: string | null;
   city?: string | null;
   countryCode?: string | null;
   remoteIp?: string | null;
+  emailAddress?: string | null;
   timestamp?: dayjs.Dayjs | null;
   state?: string | null;
   reasonCode?: string | null;

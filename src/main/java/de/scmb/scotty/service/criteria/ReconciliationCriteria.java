@@ -61,9 +61,9 @@ public class ReconciliationCriteria implements Serializable, Criteria {
 
     private StringFilter lastName;
 
-    private StringFilter addressLine1;
+    private StringFilter streetName;
 
-    private StringFilter addressLine2;
+    private StringFilter houseNumber;
 
     private StringFilter postalCode;
 
@@ -72,6 +72,8 @@ public class ReconciliationCriteria implements Serializable, Criteria {
     private StringFilter countryCode;
 
     private StringFilter remoteIp;
+
+    private StringFilter emailAddress;
 
     private InstantFilter timestamp;
 
@@ -105,12 +107,13 @@ public class ReconciliationCriteria implements Serializable, Criteria {
         this.softDescriptor = other.softDescriptor == null ? null : other.softDescriptor.copy();
         this.firstName = other.firstName == null ? null : other.firstName.copy();
         this.lastName = other.lastName == null ? null : other.lastName.copy();
-        this.addressLine1 = other.addressLine1 == null ? null : other.addressLine1.copy();
-        this.addressLine2 = other.addressLine2 == null ? null : other.addressLine2.copy();
+        this.streetName = other.streetName == null ? null : other.streetName.copy();
+        this.houseNumber = other.houseNumber == null ? null : other.houseNumber.copy();
         this.postalCode = other.postalCode == null ? null : other.postalCode.copy();
         this.city = other.city == null ? null : other.city.copy();
         this.countryCode = other.countryCode == null ? null : other.countryCode.copy();
         this.remoteIp = other.remoteIp == null ? null : other.remoteIp.copy();
+        this.emailAddress = other.emailAddress == null ? null : other.emailAddress.copy();
         this.timestamp = other.timestamp == null ? null : other.timestamp.copy();
         this.state = other.state == null ? null : other.state.copy();
         this.reasonCode = other.reasonCode == null ? null : other.reasonCode.copy();
@@ -292,34 +295,34 @@ public class ReconciliationCriteria implements Serializable, Criteria {
         this.lastName = lastName;
     }
 
-    public StringFilter getAddressLine1() {
-        return addressLine1;
+    public StringFilter getStreetName() {
+        return streetName;
     }
 
-    public StringFilter addressLine1() {
-        if (addressLine1 == null) {
-            addressLine1 = new StringFilter();
+    public StringFilter streetName() {
+        if (streetName == null) {
+            streetName = new StringFilter();
         }
-        return addressLine1;
+        return streetName;
     }
 
-    public void setAddressLine1(StringFilter addressLine1) {
-        this.addressLine1 = addressLine1;
+    public void setStreetName(StringFilter streetName) {
+        this.streetName = streetName;
     }
 
-    public StringFilter getAddressLine2() {
-        return addressLine2;
+    public StringFilter getHouseNumber() {
+        return houseNumber;
     }
 
-    public StringFilter addressLine2() {
-        if (addressLine2 == null) {
-            addressLine2 = new StringFilter();
+    public StringFilter houseNumber() {
+        if (houseNumber == null) {
+            houseNumber = new StringFilter();
         }
-        return addressLine2;
+        return houseNumber;
     }
 
-    public void setAddressLine2(StringFilter addressLine2) {
-        this.addressLine2 = addressLine2;
+    public void setHouseNumber(StringFilter houseNumber) {
+        this.houseNumber = houseNumber;
     }
 
     public StringFilter getPostalCode() {
@@ -380,6 +383,21 @@ public class ReconciliationCriteria implements Serializable, Criteria {
 
     public void setRemoteIp(StringFilter remoteIp) {
         this.remoteIp = remoteIp;
+    }
+
+    public StringFilter getEmailAddress() {
+        return emailAddress;
+    }
+
+    public StringFilter emailAddress() {
+        if (emailAddress == null) {
+            emailAddress = new StringFilter();
+        }
+        return emailAddress;
+    }
+
+    public void setEmailAddress(StringFilter emailAddress) {
+        this.emailAddress = emailAddress;
     }
 
     public InstantFilter getTimestamp() {
@@ -531,12 +549,13 @@ public class ReconciliationCriteria implements Serializable, Criteria {
             Objects.equals(softDescriptor, that.softDescriptor) &&
             Objects.equals(firstName, that.firstName) &&
             Objects.equals(lastName, that.lastName) &&
-            Objects.equals(addressLine1, that.addressLine1) &&
-            Objects.equals(addressLine2, that.addressLine2) &&
+            Objects.equals(streetName, that.streetName) &&
+            Objects.equals(houseNumber, that.houseNumber) &&
             Objects.equals(postalCode, that.postalCode) &&
             Objects.equals(city, that.city) &&
             Objects.equals(countryCode, that.countryCode) &&
             Objects.equals(remoteIp, that.remoteIp) &&
+            Objects.equals(emailAddress, that.emailAddress) &&
             Objects.equals(timestamp, that.timestamp) &&
             Objects.equals(state, that.state) &&
             Objects.equals(reasonCode, that.reasonCode) &&
@@ -563,12 +582,13 @@ public class ReconciliationCriteria implements Serializable, Criteria {
             softDescriptor,
             firstName,
             lastName,
-            addressLine1,
-            addressLine2,
+            streetName,
+            houseNumber,
             postalCode,
             city,
             countryCode,
             remoteIp,
+            emailAddress,
             timestamp,
             state,
             reasonCode,
@@ -596,12 +616,13 @@ public class ReconciliationCriteria implements Serializable, Criteria {
             (softDescriptor != null ? "softDescriptor=" + softDescriptor + ", " : "") +
             (firstName != null ? "firstName=" + firstName + ", " : "") +
             (lastName != null ? "lastName=" + lastName + ", " : "") +
-            (addressLine1 != null ? "addressLine1=" + addressLine1 + ", " : "") +
-            (addressLine2 != null ? "addressLine2=" + addressLine2 + ", " : "") +
+            (streetName != null ? "streetName=" + streetName + ", " : "") +
+            (houseNumber != null ? "houseNumber=" + houseNumber + ", " : "") +
             (postalCode != null ? "postalCode=" + postalCode + ", " : "") +
             (city != null ? "city=" + city + ", " : "") +
             (countryCode != null ? "countryCode=" + countryCode + ", " : "") +
             (remoteIp != null ? "remoteIp=" + remoteIp + ", " : "") +
+            (emailAddress != null ? "emailAddress=" + emailAddress + ", " : "") +
             (timestamp != null ? "timestamp=" + timestamp + ", " : "") +
             (state != null ? "state=" + state + ", " : "") +
             (reasonCode != null ? "reasonCode=" + reasonCode + ", " : "") +

@@ -120,11 +120,11 @@ public class PaymentQueryService extends QueryService<Payment> {
             if (criteria.getLastName() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getLastName(), Payment_.lastName));
             }
-            if (criteria.getAddressLine1() != null) {
-                specification = specification.and(buildStringSpecification(criteria.getAddressLine1(), Payment_.addressLine1));
+            if (criteria.getStreetName() != null) {
+                specification = specification.and(buildStringSpecification(criteria.getStreetName(), Payment_.streetName));
             }
-            if (criteria.getAddressLine2() != null) {
-                specification = specification.and(buildStringSpecification(criteria.getAddressLine2(), Payment_.addressLine2));
+            if (criteria.getHouseNumber() != null) {
+                specification = specification.and(buildStringSpecification(criteria.getHouseNumber(), Payment_.houseNumber));
             }
             if (criteria.getPostalCode() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getPostalCode(), Payment_.postalCode));
@@ -137,6 +137,9 @@ public class PaymentQueryService extends QueryService<Payment> {
             }
             if (criteria.getRemoteIp() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getRemoteIp(), Payment_.remoteIp));
+            }
+            if (criteria.getEmailAddress() != null) {
+                specification = specification.and(buildStringSpecification(criteria.getEmailAddress(), Payment_.emailAddress));
             }
             if (criteria.getTimestamp() != null) {
                 specification = specification.and(buildRangeSpecification(criteria.getTimestamp(), Payment_.timestamp));
