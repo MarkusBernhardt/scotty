@@ -28,8 +28,6 @@ public class EmerchantpayService {
 
     private final PaymentRepository paymentRepository;
 
-    private final Logger log = LoggerFactory.getLogger(EmerchantpayService.class);
-
     public EmerchantpayService(ApplicationProperties applicationProperties, PaymentRepository paymentRepository) {
         this.applicationProperties = applicationProperties;
         this.paymentRepository = paymentRepository;
@@ -47,11 +45,12 @@ public class EmerchantpayService {
                 payment.setLastName(init.getLastName());
                 payment.setCity(init.getCity());
                 payment.setPostalCode(init.getPostalCode());
-                payment.setAddressLine1(init.getAddressLine1());
-                payment.setAddressLine2(init.getAddressLine2());
+                payment.setStreetName(init.getStreetName());
+                payment.setHouseNumber(init.getHouseNumber());
                 payment.setCountryCode(init.getCountryCode());
                 payment.setIban(init.getIban());
                 payment.setBic(init.getBic());
+                payment.setEmailAddress(init.getEmailAddress());
             }
 
             GenesisClient client = new GenesisClient(getConfiguration(), request);
@@ -104,8 +103,7 @@ public class EmerchantpayService {
         sddInitRecurringSaleRequest.setBillingLastname(payment.getLastName());
         sddInitRecurringSaleRequest.setBillingCity(payment.getCity());
         sddInitRecurringSaleRequest.setBillingZipCode(payment.getPostalCode());
-        sddInitRecurringSaleRequest.setBillingPrimaryAddress(payment.getAddressLine1());
-        sddInitRecurringSaleRequest.setBillingSecondaryAddress(payment.getAddressLine2());
+        sddInitRecurringSaleRequest.setBillingPrimaryAddress(payment.getStreetName() + " " + payment.getHouseNumber());
         sddInitRecurringSaleRequest.setBillingCountry(payment.getCountryCode());
         sddInitRecurringSaleRequest.setIban(payment.getIban());
         sddInitRecurringSaleRequest.setBic(payment.getBic());

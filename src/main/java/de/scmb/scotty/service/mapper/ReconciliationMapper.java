@@ -11,11 +11,26 @@ import org.mapstruct.*;
  */
 @Mapper(componentModel = "spring")
 public interface ReconciliationMapper extends EntityMapper<ReconciliationDTO, Reconciliation> {
+    @Override
     @Mapping(target = "scottyPayment", source = "scottyPayment", qualifiedByName = "paymentId")
     ReconciliationDTO toDto(Reconciliation s);
+
+    @Override
+    @Mapping(target = "scottyPayment", source = "scottyPayment", qualifiedByName = "reconciliationSet")
+    Reconciliation toEntity(ReconciliationDTO s);
+
+    @Override
+    @Mapping(target = "scottyPayment", source = "scottyPayment", qualifiedByName = "reconciliationSet")
+    void partialUpdate(@MappingTarget Reconciliation entity, ReconciliationDTO dto);
 
     @Named("paymentId")
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
     PaymentDTO toDtoPaymentId(Payment payment);
+
+    @Named("reconciliationSet")
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "reconciliations", ignore = true)
+    @Mapping(target = "removeReconciliation", ignore = true)
+    Payment toEntityReconciliationSet(PaymentDTO s);
 }

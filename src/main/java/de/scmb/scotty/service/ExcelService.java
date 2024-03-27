@@ -77,38 +77,57 @@ public class ExcelService {
             "Thank you for shopping at testmerchant. Your mandate is 00000001.",
             "Thank you for shopping at testmerchant. Your mandate is 00000001."
         ),
-        new ColumnDescription("firstName", ColumnLevel.mandatoryOnInit, "The customer's first name. Max 35 characters.", "Max", ""),
-        new ColumnDescription("lastName", ColumnLevel.mandatoryOnInit, "The customer's last name. Max 35 characters.", "Mustermann", ""),
+        new ColumnDescription("firstName", ColumnLevel.mandatoryOnInit, "The customer's first name. Max 35 characters.", "Max", "Max"),
         new ColumnDescription(
-            "addressLine1",
+            "lastName",
             ColumnLevel.mandatoryOnInit,
-            "The first line of the customer’s address. Max 70 characters.",
-            "Karlsplatz 1",
-            ""
+            "The customer's last name. Max 35 characters.",
+            "Mustermann",
+            "Mustermann"
         ),
         new ColumnDescription(
-            "addressLine2",
-            ColumnLevel.optionalOnInit,
-            "The second line of the customer’s address. Max 70 characters.",
-            "",
-            ""
+            "streetName",
+            ColumnLevel.mandatoryOnInit,
+            "The street name of the customer’s address. Max 70 characters.",
+            "Musterstrasse",
+            "Musterstrasse"
+        ),
+        new ColumnDescription(
+            "houseNumber",
+            ColumnLevel.mandatoryOnInit,
+            "The house number of the customer’s address. Max 70 characters.",
+            "1",
+            "1"
         ),
         new ColumnDescription(
             "postalCode",
             ColumnLevel.mandatoryOnInit,
             "The postal code of the customer’s address. Max 16 characters.",
-            "80335",
-            ""
+            "99999",
+            "99999"
         ),
-        new ColumnDescription("city", ColumnLevel.mandatoryOnInit, "The city of the customer’s address. Max 35 characters.", "München", ""),
+        new ColumnDescription(
+            "city",
+            ColumnLevel.mandatoryOnInit,
+            "The city of the customer’s address. Max 35 characters.",
+            "Musterstadt",
+            "Musterstadt"
+        ),
         new ColumnDescription(
             "countryCode",
             ColumnLevel.mandatoryOnInit,
             "The ISO 3166-1 alpha-2 country code of the customer’s address.",
             "DE",
-            ""
+            "DE"
         ),
-        new ColumnDescription("remoteIp", ColumnLevel.mandatory, "IPv4 or IPv6 address of customer.", "1.2.3.4", "1.2.3.4"),
+        new ColumnDescription("remoteIp", ColumnLevel.mandatory, "The IPv4 or IPv6 address of customer.", "1.1.1.1", "1.1.1.1"),
+        new ColumnDescription(
+            "emailAddress",
+            ColumnLevel.mandatory,
+            "The email address of customer.",
+            "max@mustermann.de",
+            "max@mustermann.de"
+        ),
         new ColumnDescription("scottyId", ColumnLevel.response, "The unique id defined by the Scotty.", "", ""),
         new ColumnDescription(
             "timestamp",
@@ -291,12 +310,12 @@ public class ExcelService {
                 cell.setCellValue(payment.getLastName());
                 cell.setCellStyle(cellStyle);
 
-                cell = row.createCell(columnIndices.get("addressLine1"));
-                cell.setCellValue(payment.getAddressLine1());
+                cell = row.createCell(columnIndices.get("streetName"));
+                cell.setCellValue(payment.getStreetName());
                 cell.setCellStyle(cellStyle);
 
-                cell = row.createCell(columnIndices.get("addressLine2"));
-                cell.setCellValue(payment.getAddressLine2());
+                cell = row.createCell(columnIndices.get("houseNumber"));
+                cell.setCellValue(payment.getHouseNumber());
                 cell.setCellStyle(cellStyle);
 
                 cell = row.createCell(columnIndices.get("postalCode"));
@@ -317,6 +336,10 @@ public class ExcelService {
 
                 cell = row.createCell(columnIndices.get("remoteIp"));
                 cell.setCellValue(payment.getRemoteIp());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("emailAddress"));
+                cell.setCellValue(payment.getEmailAddress());
                 cell.setCellStyle(cellStyle);
 
                 cell = row.createCell(columnIndices.get("scottyId"));
@@ -436,12 +459,12 @@ public class ExcelService {
                 cell.setCellValue(reconciliation.getLastName());
                 cell.setCellStyle(cellStyle);
 
-                cell = row.createCell(columnIndices.get("addressLine1"));
-                cell.setCellValue(reconciliation.getAddressLine1());
+                cell = row.createCell(columnIndices.get("streetName"));
+                cell.setCellValue(reconciliation.getStreetName());
                 cell.setCellStyle(cellStyle);
 
-                cell = row.createCell(columnIndices.get("addressLine2"));
-                cell.setCellValue(reconciliation.getAddressLine2());
+                cell = row.createCell(columnIndices.get("houseNumber"));
+                cell.setCellValue(reconciliation.getHouseNumber());
                 cell.setCellStyle(cellStyle);
 
                 cell = row.createCell(columnIndices.get("postalCode"));
@@ -462,6 +485,10 @@ public class ExcelService {
 
                 cell = row.createCell(columnIndices.get("remoteIp"));
                 cell.setCellValue(reconciliation.getRemoteIp());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("emailAddress"));
+                cell.setCellValue(reconciliation.getEmailAddress());
                 cell.setCellStyle(cellStyle);
 
                 cell = row.createCell(columnIndices.get("scottyId"));
@@ -631,14 +658,15 @@ public class ExcelService {
         payment.setLastName(cutRight(getStringCellValue(columnIndices, row, "lastName"), 35));
         payment.setCity(cutRight(getStringCellValue(columnIndices, row, "city"), 35));
         payment.setPostalCode(cutRight(getStringCellValue(columnIndices, row, "postalCode"), 16));
-        payment.setAddressLine1(cutRight(getStringCellValue(columnIndices, row, "addressLine1"), 70));
-        payment.setAddressLine2(cutRight(getStringCellValue(columnIndices, row, "addressLine2"), 70));
+        payment.setStreetName(cutRight(getStringCellValue(columnIndices, row, "streetName"), 70));
+        payment.setHouseNumber(cutRight(getStringCellValue(columnIndices, row, "houseNumber"), 16));
         payment.setCountryCode(cutRight(getStringCellValue(columnIndices, row, "countryCode"), 2));
         payment.setIban(cutRight(getStringCellValue(columnIndices, row, "iban"), 34));
         payment.setBic(cutRight(getStringCellValue(columnIndices, row, "bic"), 11));
         payment.setPaymentId(cutRight(getStringCellValue(columnIndices, row, "paymentId"), 35));
         payment.setSoftDescriptor(cutRight(getStringCellValue(columnIndices, row, "softDescriptor"), 140));
         payment.setRemoteIp(cutRight(getStringCellValue(columnIndices, row, "remoteIp"), 39));
+        payment.setEmailAddress(cutRight(getStringCellValue(columnIndices, row, "emailAddress"), 255));
         payment.setGateway(gateway);
         payment.setMandateId(cutRight(getStringCellValue(columnIndices, row, "mandateId"), 35));
         payment.setFileName(cutRight(fileName, 255));

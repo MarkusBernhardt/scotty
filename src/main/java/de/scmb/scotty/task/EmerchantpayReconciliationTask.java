@@ -151,6 +151,7 @@ public class EmerchantpayReconciliationTask implements Runnable {
         } else {
             reconciliation.setAmount(0);
         }
+        reconciliation.setReasonCode("");
         reconciliation.setCurrencyCode(cutRight(node.findString("currency"), 3));
         reconciliation.setMode(cutRight(node.findString("mode"), 35));
         reconciliation.setTimestamp(Instant.now());
