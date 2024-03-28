@@ -25,4 +25,5 @@
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
     <!-- jhipster-needle-liquibase-add-incremental-changelog - JHipster will add incremental liquibase changelogs here -->
     <include file="/config/liquibase/changelog/20240321173127_added_reasonCode_to_entity_Reconciliation.xml" relativeToChangelogFile="false"/>
+    <include file="/config/liquibase/changelog/20240328080140_changes_for_Novalnet.xml" relativeToChangelogFile="false"/>
 </databaseChangeLog>

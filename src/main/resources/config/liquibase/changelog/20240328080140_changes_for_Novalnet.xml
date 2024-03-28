@@ -1,0 +1,57 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="MarkusBernhardt (generated)" id="1711612907484-3">
+        <addColumn tableName="payment">
+            <column name="email_address" type="varchar(255)" defaultValue="max@mustermann.de">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="MarkusBernhardt (generated)" id="1711612907484-4">
+        <addColumn tableName="reconciliation">
+            <column name="email_address" type="varchar(255)" defaultValue="max@mustermann.de">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="MarkusBernhardt (generated)" id="1711612907484-5">
+        <addColumn tableName="payment">
+            <column name="house_number" type="varchar(16)" defaultValue="1">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="MarkusBernhardt (generated)" id="1711612907484-6">
+        <addColumn tableName="reconciliation">
+            <column name="house_number" type="varchar(16)" defaultValue="1">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="MarkusBernhardt (generated)" id="1711612907484-7">
+        <addColumn tableName="payment">
+            <column name="street_name" type="varchar(70)" defaultValue="Musterstrasse">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="MarkusBernhardt (generated)" id="1711612907484-8">
+        <addColumn tableName="reconciliation">
+            <column name="street_name" type="varchar(70)" defaultValue="Musterstrasse">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="MarkusBernhardt (generated)" id="1711612907484-9">
+        <dropColumn columnName="ADDRESS_LINE_1" tableName="PAYMENT"/>
+    </changeSet>
+    <changeSet author="MarkusBernhardt (generated)" id="1711612907484-10">
+        <dropColumn columnName="ADDRESS_LINE_1" tableName="RECONCILIATION"/>
+    </changeSet>
+    <changeSet author="MarkusBernhardt (generated)" id="1711612907484-11">
+        <dropColumn columnName="ADDRESS_LINE_2" tableName="PAYMENT"/>
+    </changeSet>
+    <changeSet author="MarkusBernhardt (generated)" id="1711612907484-12">
+        <dropColumn columnName="ADDRESS_LINE_2" tableName="RECONCILIATION"/>
+    </changeSet>
+</databaseChangeLog>
