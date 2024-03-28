@@ -108,6 +108,7 @@ public class EmerchantpayReconciliationTask implements Runnable {
                     Reconciliation paid = reconciliationMapper.toEntity(reconciliationMapper.toDto(reconciliation));
                     paid.setState("paid");
                     paid.setAmount(-1 * paid.getAmount());
+                    paid.setScottyPayment(reconciliation.getScottyPayment());
                     reconciliationRepository.save(paid);
                 }
                 Payment payment = reconciliation.getScottyPayment();

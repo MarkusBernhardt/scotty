@@ -132,7 +132,7 @@ application:
     # username: '5ad798f33882146de4cfdfc401950fb48f9bc0af'
     # token: '3c1fbbbf8b3e23eff60009f4ae5260297abf62ab'
     notification-url: 'https://beam-me-up-scotty-85521471-9f8f0d090a9a.herokuapp.com/webhooks/emerchantpay'
-    reconciliation-schedule: '0 35 9 * * *'
+    reconciliation-schedule: '0 10 10 * * *'
   proxy:
     host: 'eu-west-static-01.quotaguard.com'
     port: 9293
