@@ -144,6 +144,7 @@ public class ExcelService {
             "",
             ""
         ),
+        new ColumnDescription("reasonCode", ColumnLevel.response, "The reason code of a charge back", "", ""),
         new ColumnDescription("message", ColumnLevel.response, "The human readable message.", "", ""),
         new ColumnDescription("gatewayId", ColumnLevel.response, "The unique id defined by the chosen gateway.", "", ""),
         new ColumnDescription("mode", ColumnLevel.response, "The mode of the payment. Can be \"test\" of \"live\"", "", ""),
@@ -350,6 +351,10 @@ public class ExcelService {
                 cell.setCellValue(payment.getState());
                 cell.setCellStyle(cellStyle);
 
+                cell = row.createCell(columnIndices.get("reasonCode"));
+                cell.setCellValue("");
+                cell.setCellStyle(cellStyle);
+
                 cell = row.createCell(columnIndices.get("timestamp"));
                 cell.setCellValue(payment.getTimestamp().toString());
                 cell.setCellStyle(cellStyle);
@@ -497,6 +502,10 @@ public class ExcelService {
 
                 cell = row.createCell(columnIndices.get("state"));
                 cell.setCellValue(reconciliation.getState());
+                cell.setCellStyle(cellStyle);
+
+                cell = row.createCell(columnIndices.get("reasonCode"));
+                cell.setCellValue(reconciliation.getReasonCode());
                 cell.setCellStyle(cellStyle);
 
                 cell = row.createCell(columnIndices.get("timestamp"));
