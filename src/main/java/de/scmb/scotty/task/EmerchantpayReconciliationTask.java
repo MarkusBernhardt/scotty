@@ -240,7 +240,7 @@ public class EmerchantpayReconciliationTask implements Runnable {
             if (stateOnly.getReasonCode().isBlank()) {
                 Optional<Reconciliation> optionalReconciliation = reconciliationRepository.findById(stateOnly.getId());
                 if (optionalReconciliation.isPresent()) {
-                    Reconciliation reconciliation = optionalReconciliation.get();
+                    Reconciliation reconciliation = optionalReconciliation.orElseThrow();
                     reconciliation.setReasonCode(cutRight(node.findString("reason_code"), 35));
                     reconciliationRepository.save(reconciliation);
                 }
