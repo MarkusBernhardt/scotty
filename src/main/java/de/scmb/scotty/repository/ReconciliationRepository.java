@@ -26,6 +26,8 @@ public interface ReconciliationRepository extends JpaRepository<Reconciliation, 
     Page<PaymentsDownloadReconciliationsDto> findAllGroupByFileName(Pageable pageable);
 
     interface StateOnly {
+        Long getId();
         String getState();
+        String getReasonCode();
     }
 }

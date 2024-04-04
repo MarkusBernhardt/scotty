@@ -708,7 +708,7 @@ public class ExcelService {
         if (value.length() > length) {
             value = value.substring(0, length);
         }
-        return value;
+        return value.trim();
     }
 
     public enum ColumnLevel {
