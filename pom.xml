@@ -30,6 +30,7 @@
         <run.addResources>false</run.addResources>
         <jhipster-dependencies.version>8.1.0</jhipster-dependencies.version>
         <spring-boot.version>3.2.0</spring-boot.version>
+        <apache-poi.version>5.2.2</apache-poi.version>
         <archunit-junit5.version>1.2.1</archunit-junit5.version>
         <checkstyle.version>10.12.5</checkstyle.version>
         <checksum-maven-plugin.version>1.11</checksum-maven-plugin.version>
@@ -91,6 +92,16 @@
                 <groupId>com.emerchantpay.gateway</groupId>
                 <artifactId>genesis-java</artifactId>
                 <version>${emerchantpay-genesis.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi</artifactId>
+                <version>${apache-poi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml</artifactId>
+                <version>${apache-poi.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -229,6 +240,14 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
         </dependency>
         <dependency>
             <groupId>org.ehcache</groupId>
