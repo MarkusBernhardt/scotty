@@ -1,4 +1,4 @@
-package de.scmb.scotty.service;
+package de.scmb.scotty.gateway.emerchantpay;
 
 import static de.scmb.scotty.service.ExcelService.cutRight;
 
@@ -17,8 +17,6 @@ import de.scmb.scotty.domain.Payment;
 import de.scmb.scotty.repository.PaymentRepository;
 import java.math.BigDecimal;
 import java.time.Instant;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service

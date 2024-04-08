@@ -7,19 +7,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ChargebackByImportDateRequest extends Request {
+public class EmerchantpayChargebackByImportDateRequest extends Request {
 
     private String importDate;
     private Integer page;
     private HashMap<String, String> requiredParams = new HashMap();
     private GenesisValidator validator = new GenesisValidator();
 
-    public ChargebackByImportDateRequest setImportDate(String importDate) {
+    public EmerchantpayChargebackByImportDateRequest setImportDate(String importDate) {
         this.importDate = importDate;
         return this;
     }
 
-    public ChargebackByImportDateRequest setPage(Integer page) {
+    public EmerchantpayChargebackByImportDateRequest setPage(Integer page) {
         this.page = page;
         return this;
     }

@@ -1,7 +1,9 @@
 package de.scmb.scotty.gateway.novalnet;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.Objects;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class NovalnetPaymentData {
 
     private String iban;

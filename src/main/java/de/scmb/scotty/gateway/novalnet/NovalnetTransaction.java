@@ -1,9 +1,14 @@
 package de.scmb.scotty.gateway.novalnet;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class NovalnetTransaction {
+
+    @JsonProperty("payment_type")
+    private String paymentType;
 
     @JsonProperty("test_mode")
     private String testMode;
@@ -42,6 +47,7 @@ public class NovalnetTransaction {
     public NovalnetTransaction() {}
 
     public NovalnetTransaction(
+        String paymentType,
         String testMode,
         String amount,
         String currency,
@@ -55,6 +61,7 @@ public class NovalnetTransaction {
         String debitReason4,
         String debitReason5
     ) {
+        this.paymentType = paymentType;
         this.testMode = testMode;
         this.amount = amount;
         this.currency = currency;
@@ -67,6 +74,14 @@ public class NovalnetTransaction {
         this.debitReason3 = debitReason3;
         this.debitReason4 = debitReason4;
         this.debitReason5 = debitReason5;
+    }
+
+    public String getPaymentType() {
+        return paymentType;
+    }
+
+    public void setPaymentType(String paymentType) {
+        this.paymentType = paymentType;
     }
 
     public String getTestMode() {

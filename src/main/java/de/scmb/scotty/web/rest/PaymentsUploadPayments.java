@@ -1,10 +1,10 @@
 package de.scmb.scotty.web.rest;
 
 import de.scmb.scotty.domain.Payment;
+import de.scmb.scotty.gateway.emerchantpay.EmerchantpayService;
+import de.scmb.scotty.gateway.novalnet.NovalnetService;
 import de.scmb.scotty.repository.PaymentRepository;
-import de.scmb.scotty.service.EmerchantpayService;
 import de.scmb.scotty.service.ExcelService;
-import de.scmb.scotty.service.NovalnetService;
 import de.scmb.scotty.service.dto.PaymentsUploadPaymentsExecuteResponseDTO;
 import de.scmb.scotty.service.dto.PaymentsUploadPaymentsProgressResponseDTO;
 import de.scmb.scotty.service.dto.PaymentsUploadPaymentsValidateResponseDTO;

@@ -9,11 +9,11 @@ import de.scmb.scotty.domain.KeyValue;
 import de.scmb.scotty.domain.Payment;
 import de.scmb.scotty.domain.Reconciliation;
 import de.scmb.scotty.domain.enumeration.Gateway;
-import de.scmb.scotty.gateway.emerchantpay.ChargebackByImportDateRequest;
+import de.scmb.scotty.gateway.emerchantpay.EmerchantpayChargebackByImportDateRequest;
+import de.scmb.scotty.gateway.emerchantpay.EmerchantpayService;
 import de.scmb.scotty.repository.KeyValueRepository;
 import de.scmb.scotty.repository.PaymentRepository;
 import de.scmb.scotty.repository.ReconciliationRepository;
-import de.scmb.scotty.service.EmerchantpayService;
 import de.scmb.scotty.service.mapper.PaymentReconciliationMapper;
 import de.scmb.scotty.service.mapper.ReconciliationMapper;
 import java.time.Instant;
@@ -146,7 +146,7 @@ public class EmerchantpayReconciliationTask implements Runnable {
     }
 
     private int runChargebackPage(String importDate, int page) {
-        ChargebackByImportDateRequest chargebackByImportDateRequest = new ChargebackByImportDateRequest();
+        EmerchantpayChargebackByImportDateRequest chargebackByImportDateRequest = new EmerchantpayChargebackByImportDateRequest();
         chargebackByImportDateRequest.setImportDate(importDate);
         chargebackByImportDateRequest.setPage(page);
 
