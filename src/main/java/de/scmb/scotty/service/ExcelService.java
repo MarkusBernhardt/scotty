@@ -216,11 +216,14 @@ public class ExcelService {
             }
 
             switch (row.getCell(columnIndices.get("gateway")).getStringCellValue()) {
+                case "ccbill" -> {
+                    payments.add(buildPayment(columnIndices, row, Gateway.CCBILL, fileName));
+                }
                 case "emerchantpay" -> {
                     payments.add(buildPayment(columnIndices, row, Gateway.EMERCHANTPAY, fileName));
                 }
-                case "ccbill" -> {
-                    payments.add(buildPayment(columnIndices, row, Gateway.CCBILL, fileName));
+                case "novalnet" -> {
+                    payments.add(buildPayment(columnIndices, row, Gateway.NOVALNET, fileName));
                 }
                 default -> {
                     payments.add(buildPayment(columnIndices, row, Gateway.UNKNOWN, fileName));

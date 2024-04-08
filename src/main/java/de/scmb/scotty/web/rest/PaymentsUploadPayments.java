@@ -4,6 +4,7 @@ import de.scmb.scotty.domain.Payment;
 import de.scmb.scotty.repository.PaymentRepository;
 import de.scmb.scotty.service.EmerchantpayService;
 import de.scmb.scotty.service.ExcelService;
+import de.scmb.scotty.service.NovalnetService;
 import de.scmb.scotty.service.dto.PaymentsUploadPaymentsExecuteResponseDTO;
 import de.scmb.scotty.service.dto.PaymentsUploadPaymentsProgressResponseDTO;
 import de.scmb.scotty.service.dto.PaymentsUploadPaymentsValidateResponseDTO;
@@ -12,15 +13,11 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import org.apache.commons.math3.stat.inference.OneWayAnova;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -37,6 +34,7 @@ public class PaymentsUploadPayments {
 
     private final EmerchantpayService emerchantpayService;
 
+    private final NovalnetService novalnetService;
     private final PaymentRepository paymentRepository;
 
     private final TaskExecutor taskExecutor;
@@ -48,11 +46,13 @@ public class PaymentsUploadPayments {
     public PaymentsUploadPayments(
         ExcelService excelService,
         EmerchantpayService emerchantpayService,
+        NovalnetService novalnetService,
         PaymentRepository paymentRepository,
         @Qualifier("taskExecutor") TaskExecutor taskExecutor
     ) {
         this.excelService = excelService;
         this.emerchantpayService = emerchantpayService;
+        this.novalnetService = novalnetService;
         this.paymentRepository = paymentRepository;
         this.taskExecutor = taskExecutor;
     }
@@ -85,11 +85,14 @@ public class PaymentsUploadPayments {
 
                         for (Payment payment : payments) {
                             switch (payment.getGateway()) {
+                                case CCBILL -> {
+                                    executeCcbill();
+                                }
                                 case EMERCHANTPAY -> {
                                     emerchantpayService.execute(payment);
                                 }
-                                case CCBILL -> {
-                                    executeCcbill();
+                                case NOVALNET -> {
+                                    novalnetService.execute(payment);
                                 }
                                 default -> {
                                     executeUnknown(payment);
