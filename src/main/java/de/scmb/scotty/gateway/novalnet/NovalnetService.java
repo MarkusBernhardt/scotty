@@ -1,5 +1,7 @@
 package de.scmb.scotty.gateway.novalnet;
 
+import static de.scmb.scotty.service.ExcelService.cutRight;
+
 import com.emerchantpay.gateway.api.requests.financial.sdd.SDDInitRecurringSaleRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.scmb.scotty.config.ApplicationProperties;
@@ -14,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
+import kong.unirest.core.HttpResponse;
+import kong.unirest.core.Unirest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -50,29 +54,42 @@ public class NovalnetService {
                 novalnetPayment.getTransaction().setMandateDate(init.getTimestamp().toString().substring(0, 10));
             }
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setAccept(List.of(MediaType.APPLICATION_JSON));
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.set("Charset", "utf-8");
-            headers.set(
-                "X-NN-Access-Key",
-                Base64.getEncoder().encodeToString(applicationProperties.getNovalnet().getPaymentAccessKey().getBytes())
-            );
+            HttpResponse<NovalnetPayment> response = Unirest
+                .post(applicationProperties.getNovalnet().getBaseUrl() + "/payment")
+                .header(
+                    "X-NN-Access-Key",
+                    Base64.getEncoder().encodeToString(applicationProperties.getNovalnet().getPaymentAccessKey().getBytes())
+                )
+                .header("Content-Type", "application/json")
+                .header("Charset", "utf-8")
+                .header("Accept", "application/json")
+                .body(novalnetPayment)
+                .asObject(NovalnetPayment.class);
 
-            HttpEntity<NovalnetPayment> httpEntity = new HttpEntity<>(novalnetPayment, headers);
+            payment.setMessage(cutRight(response.getBody().getResult().getStatusText(), 255));
 
-            URI uri = new URI(applicationProperties.getNovalnet().getBaseUrl() + "/payment");
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            String json = objectMapper.writeValueAsString(novalnetPayment);
-            log.info(json);
-
-            ResponseEntity<String> responseEntity = restTemplate.exchange(uri, HttpMethod.POST, httpEntity, String.class);
-
-            System.out.println(responseEntity);
+            if (response.getBody().getResult().getStatusCode() == 100) {
+                payment.setState("submitted");
+                payment.setTimestamp(
+                    Instant.parse(
+                        response.getBody().getTransaction().getDate().substring(0, 10) +
+                        "T" +
+                        response.getBody().getTransaction().getDate().substring(11) +
+                        ".000Z"
+                    )
+                );
+                payment.setGatewayId(cutRight(response.getBody().getTransaction().getTid(), 35));
+                payment.setMode(cutRight(response.getBody().getTransaction().getTestMode(), 35));
+            } else {
+                payment.setState("failed");
+                payment.setTimestamp(Instant.now());
+                payment.setGatewayId("");
+                payment.setMode("");
+            }
         } catch (Throwable t) {
             payment.setState("failed");
             payment.setMessage(t.getMessage());
+            payment.setTimestamp(Instant.now());
             payment.setGatewayId("");
             payment.setMode("");
         } finally {

@@ -10,13 +10,16 @@ public class NovalnetPayment {
 
     private NovalnetCustomer customer;
 
+    private NovalnetResult result;
+
     private NovalnetTransaction transaction;
 
     public NovalnetPayment() {}
 
-    public NovalnetPayment(NovalnetMerchant merchant, NovalnetCustomer customer, NovalnetTransaction transaction) {
+    public NovalnetPayment(NovalnetMerchant merchant, NovalnetCustomer customer, NovalnetResult result, NovalnetTransaction transaction) {
         this.merchant = merchant;
         this.customer = customer;
+        this.result = result;
         this.transaction = transaction;
     }
 
@@ -36,6 +39,14 @@ public class NovalnetPayment {
         this.customer = customer;
     }
 
+    public NovalnetResult getResult() {
+        return result;
+    }
+
+    public void setResult(NovalnetResult result) {
+        this.result = result;
+    }
+
     public NovalnetTransaction getTransaction() {
         return transaction;
     }
@@ -52,17 +63,29 @@ public class NovalnetPayment {
         return (
             Objects.equals(merchant, that.merchant) &&
             Objects.equals(customer, that.customer) &&
+            Objects.equals(result, that.result) &&
             Objects.equals(transaction, that.transaction)
         );
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(merchant, customer, transaction);
+        return Objects.hash(merchant, customer, result, transaction);
     }
 
     @Override
     public String toString() {
-        return "NovalnetPayment{" + "merchant=" + merchant + ", customer=" + customer + ", transaction=" + transaction + '}';
+        return (
+            "NovalnetPayment{" +
+            "merchant=" +
+            merchant +
+            ", customer=" +
+            customer +
+            ", result=" +
+            result +
+            ", transaction=" +
+            transaction +
+            '}'
+        );
     }
 }

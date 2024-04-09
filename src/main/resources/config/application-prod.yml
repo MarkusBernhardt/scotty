@@ -132,9 +132,17 @@ application:
     # username: '5ad798f33882146de4cfdfc401950fb48f9bc0af'
     # token: '3c1fbbbf8b3e23eff60009f4ae5260297abf62ab'
     notification-url: 'https://beam-me-up-scotty-85521471-9f8f0d090a9a.herokuapp.com/webhooks/emerchantpay'
-    reconciliation-schedule: '0 45 * * * *'
+    reconciliation-schedule: '0 45 9 * * *'
+  novalnet:
+    base-url: 'https://payport.novalnet.de/v2'
+    signature: '7ibc7ob5|qxJEH3gNbeWJfIHah||nbobljbnmdli0povq|doU3HJVoym7MQ44qf7cpn7pc'
+    payment-access-key: 'a87ff679a2f3e71d9181a67b7542122c'
+    test-mode: '1'
+    tariff: '12983'
+    subscription-tariff: '12984'
   proxy:
     host: 'eu-west-static-01.quotaguard.com'
     port: 9293
     username: 'nltnshun9adjc6'
     password: 'r9h154ah4wkrbk39jgjpyugr6ft'
+    non-proxy-hosts: 'payport.novalnet.de'

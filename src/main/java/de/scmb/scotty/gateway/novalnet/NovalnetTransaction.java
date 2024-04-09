@@ -44,6 +44,15 @@ public class NovalnetTransaction {
     @JsonProperty("debit_reason_5")
     private String debitReason5;
 
+    private String date;
+
+    private String status;
+
+    @JsonProperty("status_code")
+    private int statusCode;
+
+    private String tid;
+
     public NovalnetTransaction() {}
 
     public NovalnetTransaction(
@@ -59,7 +68,11 @@ public class NovalnetTransaction {
         String debitReason2,
         String debitReason3,
         String debitReason4,
-        String debitReason5
+        String debitReason5,
+        String date,
+        String status,
+        int statusCode,
+        String tid
     ) {
         this.paymentType = paymentType;
         this.testMode = testMode;
@@ -74,6 +87,10 @@ public class NovalnetTransaction {
         this.debitReason3 = debitReason3;
         this.debitReason4 = debitReason4;
         this.debitReason5 = debitReason5;
+        this.date = date;
+        this.status = status;
+        this.statusCode = statusCode;
+        this.tid = tid;
     }
 
     public String getPaymentType() {
@@ -180,12 +197,46 @@ public class NovalnetTransaction {
         this.debitReason5 = debitReason5;
     }
 
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public int getStatusCode() {
+        return statusCode;
+    }
+
+    public void setStatusCode(int statusCode) {
+        this.statusCode = statusCode;
+    }
+
+    public String getTid() {
+        return tid;
+    }
+
+    public void setTid(String tid) {
+        this.tid = tid;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         NovalnetTransaction that = (NovalnetTransaction) o;
         return (
+            statusCode == that.statusCode &&
+            Objects.equals(paymentType, that.paymentType) &&
             Objects.equals(testMode, that.testMode) &&
             Objects.equals(amount, that.amount) &&
             Objects.equals(currency, that.currency) &&
@@ -197,13 +248,17 @@ public class NovalnetTransaction {
             Objects.equals(debitReason2, that.debitReason2) &&
             Objects.equals(debitReason3, that.debitReason3) &&
             Objects.equals(debitReason4, that.debitReason4) &&
-            Objects.equals(debitReason5, that.debitReason5)
+            Objects.equals(debitReason5, that.debitReason5) &&
+            Objects.equals(date, that.date) &&
+            Objects.equals(status, that.status) &&
+            Objects.equals(tid, that.tid)
         );
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(
+            paymentType,
             testMode,
             amount,
             currency,
@@ -215,7 +270,11 @@ public class NovalnetTransaction {
             debitReason2,
             debitReason3,
             debitReason4,
-            debitReason5
+            debitReason5,
+            date,
+            status,
+            statusCode,
+            tid
         );
     }
 
@@ -223,7 +282,10 @@ public class NovalnetTransaction {
     public String toString() {
         return (
             "NovalnetTransaction{" +
-            "testMode='" +
+            "paymentType='" +
+            paymentType +
+            '\'' +
+            ", testMode='" +
             testMode +
             '\'' +
             ", amount='" +
@@ -257,6 +319,17 @@ public class NovalnetTransaction {
             '\'' +
             ", debitReason5='" +
             debitReason5 +
+            '\'' +
+            ", date='" +
+            date +
+            '\'' +
+            ", status='" +
+            status +
+            '\'' +
+            ", statusCode=" +
+            statusCode +
+            ", tid='" +
+            tid +
             '\'' +
             '}'
         );
