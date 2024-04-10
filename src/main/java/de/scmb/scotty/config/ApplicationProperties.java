@@ -168,6 +168,8 @@ public class ApplicationProperties {
 
         private String subscriptionTariff;
 
+        private String webHookUrl;
+
         public Novalnet() {}
 
         public String getBaseUrl() {
@@ -216,6 +218,14 @@ public class ApplicationProperties {
 
         public void setSubscriptionTariff(String subscriptionTariff) {
             this.subscriptionTariff = subscriptionTariff;
+        }
+
+        public String getWebHookUrl() {
+            return webHookUrl;
+        }
+
+        public void setWebHookUrl(String webHookUrl) {
+            this.webHookUrl = webHookUrl;
         }
     }
 }

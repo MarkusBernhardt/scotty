@@ -53,6 +53,9 @@ public class NovalnetTransaction {
 
     private String tid;
 
+    @JsonProperty("hook_url")
+    private String hookUrl;
+
     public NovalnetTransaction() {}
 
     public NovalnetTransaction(
@@ -72,7 +75,8 @@ public class NovalnetTransaction {
         String date,
         String status,
         int statusCode,
-        String tid
+        String tid,
+        String hookUrl
     ) {
         this.paymentType = paymentType;
         this.testMode = testMode;
@@ -91,6 +95,7 @@ public class NovalnetTransaction {
         this.status = status;
         this.statusCode = statusCode;
         this.tid = tid;
+        this.hookUrl = hookUrl;
     }
 
     public String getPaymentType() {
@@ -229,6 +234,14 @@ public class NovalnetTransaction {
         this.tid = tid;
     }
 
+    public String getHookUrl() {
+        return hookUrl;
+    }
+
+    public void setHookUrl(String hookUrl) {
+        this.hookUrl = hookUrl;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -251,7 +264,8 @@ public class NovalnetTransaction {
             Objects.equals(debitReason5, that.debitReason5) &&
             Objects.equals(date, that.date) &&
             Objects.equals(status, that.status) &&
-            Objects.equals(tid, that.tid)
+            Objects.equals(tid, that.tid) &&
+            Objects.equals(hookUrl, that.hookUrl)
         );
     }
 
@@ -274,7 +288,8 @@ public class NovalnetTransaction {
             date,
             status,
             statusCode,
-            tid
+            tid,
+            hookUrl
         );
     }
 
@@ -330,6 +345,9 @@ public class NovalnetTransaction {
             statusCode +
             ", tid='" +
             tid +
+            '\'' +
+            ", hookUrl='" +
+            hookUrl +
             '\'' +
             '}'
         );

@@ -129,6 +129,7 @@ public class NovalnetService {
         novalnetTransaction.setMandateDate(Instant.now().toString().substring(0, 10));
         novalnetTransaction.setTestMode(applicationProperties.getNovalnet().getTestMode());
         novalnetTransaction.setPaymentData(novalnetPaymentData);
+        novalnetTransaction.setHookUrl(applicationProperties.getNovalnet().getWebHookUrl());
         if (payment.getSoftDescriptor().length() > 0) {
             novalnetTransaction.setDebitReason1(
                 payment.getSoftDescriptor().substring(0, Math.min(27, payment.getSoftDescriptor().length()))

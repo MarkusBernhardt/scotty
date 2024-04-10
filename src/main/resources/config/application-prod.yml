@@ -140,6 +140,7 @@ application:
     test-mode: '1'
     tariff: '12983'
     subscription-tariff: '12984'
+    web-hook-url: 'https://beam-me-up-scotty-85521471-9f8f0d090a9a.herokuapp.com/api/webhooks/novalnet'
   proxy:
     host: 'eu-west-static-01.quotaguard.com'
     port: 9293

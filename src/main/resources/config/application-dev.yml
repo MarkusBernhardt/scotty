@@ -125,6 +125,7 @@ application:
     test-mode: '1'
     tariff: '12983'
     subscription-tariff: '12984'
+    web-hook-url: 'https://webhook-test.com/f32033ee8d75acac16566c1dc51d13d5'
   proxy:
     host: 'eu-west-static-01.quotaguard.com'
     port: 9293
