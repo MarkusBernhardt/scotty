@@ -120,12 +120,15 @@ application:
     reconciliation-schedule: '0 0 4 * * *'
   novalnet:
     base-url: 'https://payport.novalnet.de/v2'
-    signature: '7ibc7ob5|qxJEH3gNbeWJfIHah||nbobljbnmdli0povq|doU3HJVoym7MQ44qf7cpn7pc'
-    payment-access-key: 'a87ff679a2f3e71d9181a67b7542122c'
-    test-mode: '1'
-    tariff: '12983'
-    subscription-tariff: '12984'
-    web-hook-url: 'https://webhook-test.com/f32033ee8d75acac16566c1dc51d13d5'
+    test-mode: '0'
+    signature: 'dli0ponttqqoFTxWtwJhFaoTp|uv|bobljbc7ob5f|uy|63mHqRTdlci7p1Ottq7cpn7pc'
+    payment-access-key: 'eeb358fcbf46e89566ad3fe0707820a0'
+    tariff: '14694'
+    # test-mode: '1'
+    # signature: '7ibc7ob5|qxJEH3gNbeWJfIHah||nbobljbnmdli0povq|doU3HJVoym7MQ44qf7cpn7pc'
+    # payment-access-key: 'a87ff679a2f3e71d9181a67b7542122c'
+    # tariff: '12983'
+    web-hook-url: 'https://webhook-test.com/c0ff0523a77a4ea7c6d24f7682fcefa2'
   proxy:
     host: 'eu-west-static-01.quotaguard.com'
     port: 9293
