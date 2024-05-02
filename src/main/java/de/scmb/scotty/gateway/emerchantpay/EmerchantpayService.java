@@ -52,7 +52,7 @@ public class EmerchantpayService {
             }
 
             GenesisClient client = new GenesisClient(getConfiguration(), request);
-            client.debugMode(true);
+            client.debugMode(false);
             client.execute();
 
             NodeWrapper nodeWrapper = client.getResponse();
