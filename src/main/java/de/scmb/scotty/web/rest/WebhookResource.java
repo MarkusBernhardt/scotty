@@ -2,13 +2,9 @@ package de.scmb.scotty.web.rest;
 
 import de.scmb.scotty.gateway.novalnet.NovalnetPayment;
 import de.scmb.scotty.gateway.novalnet.NovalnetService;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.codec.Hex;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,16 +32,6 @@ public class WebhookResource {
         }
         if (payment.getTransaction().getCurrency() != null) {
             tokenString += payment.getTransaction().getCurrency();
-        }
-
-        try {
-            MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-            String checksum = new String(Hex.encode(messageDigest.digest(tokenString.getBytes(StandardCharsets.UTF_8))));
-            if (!checksum.equals(payment.getEvent().getChecksum())) {
-                log.error("While notifying some data has been changed. The hash check failed");
-            }
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e.getMessage());
         }
 
         novalnetService.handleWebhook(payment);

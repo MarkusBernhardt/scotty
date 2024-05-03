@@ -183,6 +183,7 @@ public class NovalnetService {
 
     private static String mapStateNovalnet(String state) {
         return switch (state) {
+            case "CREDIT" -> "paid";
             case "CHARGEBACK" -> "chargedBack";
             default -> "unknown";
         };
