@@ -3,19 +3,24 @@ package de.scmb.scotty.gateway.novalnet;
 import static de.scmb.scotty.service.ExcelService.cutRight;
 
 import com.emerchantpay.gateway.api.requests.financial.sdd.SDDInitRecurringSaleRequest;
+import com.emerchantpay.gateway.util.NodeWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.scmb.scotty.config.ApplicationProperties;
 import de.scmb.scotty.domain.Payment;
+import de.scmb.scotty.domain.Reconciliation;
+import de.scmb.scotty.domain.enumeration.Gateway;
+import de.scmb.scotty.gateway.emerchantpay.EmerchantpayService;
 import de.scmb.scotty.repository.PaymentRepository;
+import de.scmb.scotty.repository.ReconciliationRepository;
+import de.scmb.scotty.service.mapper.PaymentReconciliationMapper;
+import de.scmb.scotty.service.mapper.ReconciliationMapper;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 import kong.unirest.core.HttpResponse;
 import kong.unirest.core.Unirest;
 import org.slf4j.Logger;
@@ -35,14 +40,26 @@ public class NovalnetService {
 
     private final PaymentRepository paymentRepository;
 
-    private final RestTemplate restTemplate;
+    private final PaymentReconciliationMapper paymentReconciliationMapper;
+
+    private final ReconciliationMapper reconciliationMapper;
+
+    private final ReconciliationRepository reconciliationRepository;
 
     private static final Logger log = LoggerFactory.getLogger(NovalnetService.class);
 
-    public NovalnetService(ApplicationProperties applicationProperties, PaymentRepository paymentRepository, RestTemplateBuilder builder) {
+    public NovalnetService(
+        ApplicationProperties applicationProperties,
+        PaymentRepository paymentRepository,
+        PaymentReconciliationMapper paymentReconciliationMapper,
+        ReconciliationMapper reconciliationMapper,
+        ReconciliationRepository reconciliationRepository
+    ) {
         this.applicationProperties = applicationProperties;
         this.paymentRepository = paymentRepository;
-        this.restTemplate = builder.build();
+        this.paymentReconciliationMapper = paymentReconciliationMapper;
+        this.reconciliationMapper = reconciliationMapper;
+        this.reconciliationRepository = reconciliationRepository;
     }
 
     public void execute(Payment payment) {
@@ -95,6 +112,80 @@ public class NovalnetService {
         } finally {
             paymentRepository.save(payment);
         }
+    }
+
+    public void handleWebhook(NovalnetPayment novalnetPayment) {
+        if (!novalnetPayment.getEvent().getType().equals("CHARGEBACK")) {
+            return;
+        }
+
+        List<ReconciliationRepository.StateOnly> stateOnlyList = reconciliationRepository.findAllByGatewayIdOrderById(
+            novalnetPayment.getEvent().getParentTid()
+        );
+        Set<String> stateOnlySet = stateOnlyList.stream().map(ReconciliationRepository.StateOnly::getState).collect(Collectors.toSet());
+
+        Reconciliation reconciliation = getReconciliationForPaymentResponse(novalnetPayment, stateOnlySet);
+        if (reconciliation == null) {
+            return;
+        }
+
+        if (
+            (reconciliation.getState().equals("chargedBack") || reconciliation.getState().equals("refunded")) &&
+            !stateOnlySet.contains("paid")
+        ) {
+            Reconciliation paid = reconciliationMapper.toEntity(reconciliationMapper.toDto(reconciliation));
+            paid.setState("paid");
+            paid.setAmount(-1 * paid.getAmount());
+            paid.setReasonCode("");
+            paid.setMessage(reconciliation.getScottyPayment().getMessage());
+            paid.setScottyPayment(reconciliation.getScottyPayment());
+            reconciliationRepository.save(paid);
+        }
+        Payment payment = reconciliation.getScottyPayment();
+        if (!reconciliation.getState().equals(payment.getState())) {
+            payment.setState(reconciliation.getState());
+            paymentRepository.save(payment);
+        }
+        reconciliationRepository.save(reconciliation);
+    }
+
+    private Reconciliation getReconciliationForPaymentResponse(NovalnetPayment novalnetPayment, Set<String> stateOnlySet) {
+        String state = mapStateNovalnet(novalnetPayment.getEvent().getType());
+        if (state.equals("unknown") || stateOnlySet.contains(state)) {
+            return null;
+        }
+
+        String gatewayId = novalnetPayment.getEvent().getParentTid();
+        Payment payment = paymentRepository.findFirstByGatewayIdOrderByIdAsc(gatewayId);
+        if (payment == null) {
+            return null;
+        }
+
+        Reconciliation reconciliation = paymentReconciliationMapper.toEntity(payment);
+
+        reconciliation.setGateway(Gateway.NOVALNET);
+        reconciliation.setState(state);
+        reconciliation.setScottyPayment(payment);
+
+        if (state.equals("chargedBack")) {
+            reconciliation.setAmount(-1 * Integer.parseInt(novalnetPayment.getTransaction().getAmount()));
+            reconciliation.setReasonCode(cutRight(novalnetPayment.getTransaction().getReasonCode(), 35));
+            reconciliation.setMessage(novalnetPayment.getTransaction().getReason());
+        }
+
+        reconciliation.setTimestamp(Instant.now());
+        reconciliation.setFileName(
+            "reconciliations-" + reconciliation.getTimestamp().toString().substring(0, 10).replace("-", "") + ".xlsx"
+        );
+
+        return reconciliation;
+    }
+
+    private static String mapStateNovalnet(String state) {
+        return switch (state) {
+            case "CHARGEBACK" -> "chargedBack";
+            default -> "unknown";
+        };
     }
 
     private NovalnetPayment getNovalnetPaymentRequest(Payment payment) {

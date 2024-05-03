@@ -10,15 +10,24 @@ public class NovalnetPayment {
 
     private NovalnetCustomer customer;
 
+    private NovalnetEvent event;
+
     private NovalnetResult result;
 
     private NovalnetTransaction transaction;
 
     public NovalnetPayment() {}
 
-    public NovalnetPayment(NovalnetMerchant merchant, NovalnetCustomer customer, NovalnetResult result, NovalnetTransaction transaction) {
+    public NovalnetPayment(
+        NovalnetMerchant merchant,
+        NovalnetCustomer customer,
+        NovalnetEvent event,
+        NovalnetResult result,
+        NovalnetTransaction transaction
+    ) {
         this.merchant = merchant;
         this.customer = customer;
+        this.event = event;
         this.result = result;
         this.transaction = transaction;
     }
@@ -37,6 +46,14 @@ public class NovalnetPayment {
 
     public void setCustomer(NovalnetCustomer customer) {
         this.customer = customer;
+    }
+
+    public NovalnetEvent getEvent() {
+        return event;
+    }
+
+    public void setEvent(NovalnetEvent event) {
+        this.event = event;
     }
 
     public NovalnetResult getResult() {
@@ -63,6 +80,7 @@ public class NovalnetPayment {
         return (
             Objects.equals(merchant, that.merchant) &&
             Objects.equals(customer, that.customer) &&
+            Objects.equals(event, that.event) &&
             Objects.equals(result, that.result) &&
             Objects.equals(transaction, that.transaction)
         );
@@ -70,7 +88,7 @@ public class NovalnetPayment {
 
     @Override
     public int hashCode() {
-        return Objects.hash(merchant, customer, result, transaction);
+        return Objects.hash(merchant, customer, event, result, transaction);
     }
 
     @Override
@@ -81,6 +99,8 @@ public class NovalnetPayment {
             merchant +
             ", customer=" +
             customer +
+            ", event=" +
+            event +
             ", result=" +
             result +
             ", transaction=" +

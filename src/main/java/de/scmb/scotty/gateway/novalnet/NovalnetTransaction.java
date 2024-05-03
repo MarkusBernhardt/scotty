@@ -51,6 +51,11 @@ public class NovalnetTransaction {
     @JsonProperty("status_code")
     private int statusCode;
 
+    private String reason;
+
+    @JsonProperty("reason_code")
+    private String reasonCode;
+
     private String tid;
 
     @JsonProperty("hook_url")
@@ -75,6 +80,8 @@ public class NovalnetTransaction {
         String date,
         String status,
         int statusCode,
+        String reason,
+        String reasonCode,
         String tid,
         String hookUrl
     ) {
@@ -94,6 +101,8 @@ public class NovalnetTransaction {
         this.date = date;
         this.status = status;
         this.statusCode = statusCode;
+        this.reason = reason;
+        this.reasonCode = reasonCode;
         this.tid = tid;
         this.hookUrl = hookUrl;
     }
@@ -226,6 +235,22 @@ public class NovalnetTransaction {
         this.statusCode = statusCode;
     }
 
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
+    public String getReasonCode() {
+        return reasonCode;
+    }
+
+    public void setReasonCode(String reasonCode) {
+        this.reasonCode = reasonCode;
+    }
+
     public String getTid() {
         return tid;
     }
@@ -249,6 +274,7 @@ public class NovalnetTransaction {
         NovalnetTransaction that = (NovalnetTransaction) o;
         return (
             statusCode == that.statusCode &&
+            reasonCode == that.reasonCode &&
             Objects.equals(paymentType, that.paymentType) &&
             Objects.equals(testMode, that.testMode) &&
             Objects.equals(amount, that.amount) &&
@@ -264,6 +290,7 @@ public class NovalnetTransaction {
             Objects.equals(debitReason5, that.debitReason5) &&
             Objects.equals(date, that.date) &&
             Objects.equals(status, that.status) &&
+            Objects.equals(reason, that.reason) &&
             Objects.equals(tid, that.tid) &&
             Objects.equals(hookUrl, that.hookUrl)
         );
@@ -288,6 +315,8 @@ public class NovalnetTransaction {
             date,
             status,
             statusCode,
+            reason,
+            reasonCode,
             tid,
             hookUrl
         );
@@ -343,6 +372,11 @@ public class NovalnetTransaction {
             '\'' +
             ", statusCode=" +
             statusCode +
+            ", reason='" +
+            reason +
+            '\'' +
+            ", reasonCode=" +
+            reasonCode +
             ", tid='" +
             tid +
             '\'' +

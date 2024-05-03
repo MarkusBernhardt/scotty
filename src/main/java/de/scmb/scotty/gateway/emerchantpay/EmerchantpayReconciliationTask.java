@@ -1,4 +1,4 @@
-package de.scmb.scotty.task;
+package de.scmb.scotty.gateway.emerchantpay;
 
 import static de.scmb.scotty.service.ExcelService.cutRight;
 
@@ -9,8 +9,6 @@ import de.scmb.scotty.domain.KeyValue;
 import de.scmb.scotty.domain.Payment;
 import de.scmb.scotty.domain.Reconciliation;
 import de.scmb.scotty.domain.enumeration.Gateway;
-import de.scmb.scotty.gateway.emerchantpay.EmerchantpayChargebackByImportDateRequest;
-import de.scmb.scotty.gateway.emerchantpay.EmerchantpayService;
 import de.scmb.scotty.repository.KeyValueRepository;
 import de.scmb.scotty.repository.PaymentRepository;
 import de.scmb.scotty.repository.ReconciliationRepository;
@@ -259,6 +257,7 @@ public class EmerchantpayReconciliationTask implements Runnable {
         reconciliation.setState(state);
         reconciliation.setScottyPayment(payment);
         reconciliation.setAmount(-1 * node.findBigDecimal("chargeback_amount").intValue());
+        reconciliation.setReasonCode(cutRight(node.findString("reason_code"), 35));
         reconciliation.setTimestamp(Instant.now());
         reconciliation.setFileName(
             "reconciliations-" + reconciliation.getTimestamp().toString().substring(0, 10).replace("-", "") + ".xlsx"

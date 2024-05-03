@@ -15,6 +15,8 @@ public class NovalnetCustomer {
 
     private String email;
 
+    private String gender;
+
     private NovalnetAddress billing;
 
     @JsonProperty("customer_ip")
@@ -22,10 +24,11 @@ public class NovalnetCustomer {
 
     public NovalnetCustomer() {}
 
-    public NovalnetCustomer(String firstName, String lastName, String email, NovalnetAddress billing, String customerIp) {
+    public NovalnetCustomer(String firstName, String lastName, String email, String gender, NovalnetAddress billing, String customerIp) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+        this.gender = gender;
         this.billing = billing;
         this.customerIp = customerIp;
     }
@@ -54,6 +57,14 @@ public class NovalnetCustomer {
         this.email = email;
     }
 
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
     public NovalnetAddress getBilling() {
         return billing;
     }
@@ -79,6 +90,7 @@ public class NovalnetCustomer {
             Objects.equals(firstName, that.firstName) &&
             Objects.equals(lastName, that.lastName) &&
             Objects.equals(email, that.email) &&
+            Objects.equals(gender, that.gender) &&
             Objects.equals(billing, that.billing) &&
             Objects.equals(customerIp, that.customerIp)
         );
@@ -86,7 +98,7 @@ public class NovalnetCustomer {
 
     @Override
     public int hashCode() {
-        return Objects.hash(firstName, lastName, email, billing, customerIp);
+        return Objects.hash(firstName, lastName, email, gender, billing, customerIp);
     }
 
     @Override
@@ -101,6 +113,9 @@ public class NovalnetCustomer {
             '\'' +
             ", email='" +
             email +
+            '\'' +
+            ", gender='" +
+            gender +
             '\'' +
             ", billing=" +
             billing +

@@ -1,6 +1,6 @@
 package de.scmb.scotty.config;
 
-import de.scmb.scotty.task.EmerchantpayReconciliationTask;
+import de.scmb.scotty.gateway.emerchantpay.EmerchantpayReconciliationTask;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 import org.springframework.context.annotation.Configuration;
