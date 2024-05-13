@@ -103,7 +103,7 @@ public class EmerchantpayReconciliationTask implements Runnable {
         reconcileByDateRequest.setPage(page);
 
         GenesisClient client = new GenesisClient(emerchantpayService.getConfiguration(), reconcileByDateRequest);
-        client.debugMode(true);
+        client.debugMode(false);
         client.execute();
 
         NodeWrapper nodeWrapper = client.getResponse();
@@ -149,7 +149,7 @@ public class EmerchantpayReconciliationTask implements Runnable {
         chargebackByImportDateRequest.setPage(page);
 
         GenesisClient client = new GenesisClient(emerchantpayService.getConfiguration(), chargebackByImportDateRequest);
-        client.debugMode(true);
+        client.debugMode(false);
         client.execute();
 
         NodeWrapper nodeWrapper = client.getResponse();
