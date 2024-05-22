@@ -14,6 +14,7 @@ import com.emerchantpay.gateway.util.Configuration;
 import com.emerchantpay.gateway.util.NodeWrapper;
 import de.scmb.scotty.config.ApplicationProperties;
 import de.scmb.scotty.domain.Payment;
+import de.scmb.scotty.domain.enumeration.Gateway;
 import de.scmb.scotty.repository.PaymentRepository;
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -34,7 +35,11 @@ public class EmerchantpayService {
     public void execute(Payment payment) {
         try {
             Request request;
-            Payment init = paymentRepository.findFirstByMandateIdAndGatewayIdNotNullAndGatewayIdNotOrderByIdAsc(payment.getMandateId(), "");
+            Payment init = paymentRepository.findFirstByMandateIdAndGatewayAndGatewayIdNotNullAndGatewayIdNotOrderByIdAsc(
+                payment.getMandateId(),
+                Gateway.EMERCHANTPAY,
+                ""
+            );
             if (init == null || init.getState().equals("submitted")) {
                 request = getSddInitRecurringSaleRequest(payment);
             } else {

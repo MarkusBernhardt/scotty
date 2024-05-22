@@ -1,6 +1,7 @@
 package de.scmb.scotty.repository;
 
 import de.scmb.scotty.domain.Payment;
+import de.scmb.scotty.domain.enumeration.Gateway;
 import de.scmb.scotty.service.dto.PaymentsDownloadPaymentsDto;
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -18,7 +19,11 @@ public interface PaymentRepository extends JpaRepository<Payment, Long>, JpaSpec
 
     Payment findFirstByGatewayIdOrderByIdAsc(String gatewayId);
 
-    Payment findFirstByMandateIdAndGatewayIdNotNullAndGatewayIdNotOrderByIdAsc(String mandateId, String gatewayId);
+    Payment findFirstByMandateIdAndGatewayAndGatewayIdNotNullAndGatewayIdNotOrderByIdAsc(
+        String mandateId,
+        Gateway gateway,
+        String gatewayId
+    );
 
     List<Payment> findAllByFileNameOrderByIdAsc(String fileName);
 

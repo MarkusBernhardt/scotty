@@ -66,7 +66,11 @@ public class NovalnetService {
         try {
             NovalnetPayment novalnetPayment = getNovalnetPaymentRequest(payment);
 
-            Payment init = paymentRepository.findFirstByMandateIdAndGatewayIdNotNullAndGatewayIdNotOrderByIdAsc(payment.getMandateId(), "");
+            Payment init = paymentRepository.findFirstByMandateIdAndGatewayAndGatewayIdNotNullAndGatewayIdNotOrderByIdAsc(
+                payment.getMandateId(),
+                Gateway.NOVALNET,
+                ""
+            );
             if (init != null) {
                 novalnetPayment.getTransaction().setMandateDate(init.getTimestamp().toString().substring(0, 10));
             }
