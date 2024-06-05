@@ -685,9 +685,9 @@ public class ExcelService {
         return payment;
     }
 
-    public static int getIntCellValue(Row row, int columnInddex) {
+    public static int getIntCellValue(Row row, int columnIndex) {
         try {
-            Cell cell = row.getCell(columnInddex);
+            Cell cell = row.getCell(columnIndex);
             return switch (cell.getCellType()) {
                 case STRING -> Integer.parseInt(cell.getStringCellValue());
                 case NUMERIC -> (int) cell.getNumericCellValue();
@@ -703,7 +703,7 @@ public class ExcelService {
             Cell cell = row.getCell(columnIndices.get(columnName));
             return switch (cell.getCellType()) {
                 case STRING -> cell.getStringCellValue();
-                case NUMERIC -> Integer.toString((int) cell.getNumericCellValue());
+                case NUMERIC -> Double.toString(cell.getNumericCellValue());
                 default -> throw new IllegalArgumentException();
             };
         } catch (Throwable t) {
