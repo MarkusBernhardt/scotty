@@ -703,7 +703,7 @@ public class ExcelService {
             Cell cell = row.getCell(columnIndices.get(columnName));
             return switch (cell.getCellType()) {
                 case STRING -> cell.getStringCellValue();
-                case NUMERIC -> Double.toString(cell.getNumericCellValue());
+                case NUMERIC -> Long.toString((long) cell.getNumericCellValue());
                 default -> throw new IllegalArgumentException();
             };
         } catch (Throwable t) {
