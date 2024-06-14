@@ -24,8 +24,6 @@ public class WebhookResource {
 
     @PostMapping("/novalnet")
     public ResponseEntity<Void> novalnet(@RequestBody NovalnetPayment payment) {
-        log.warn(payment.toString());
-
         String tokenString = payment.getEvent().getTid() + payment.getEvent().getType() + payment.getResult().getStatus();
         if (payment.getTransaction().getAmount() != null) {
             tokenString += payment.getTransaction().getAmount();
@@ -35,6 +33,13 @@ public class WebhookResource {
         }
 
         novalnetService.handleWebhook(payment);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/openpayd")
+    public ResponseEntity<Void> openpayd(@RequestBody String body) {
+        log.warn(body);
 
         return ResponseEntity.ok().build();
     }
