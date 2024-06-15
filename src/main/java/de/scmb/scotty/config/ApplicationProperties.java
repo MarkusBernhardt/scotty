@@ -18,6 +18,8 @@ public class ApplicationProperties {
 
     private final Novalnet novalnet = new Novalnet();
 
+    private final OpenPayd openPayd = new OpenPayd();
+
     private final Proxy proxy = new Proxy();
 
     // jhipster-needle-application-properties-property-getter
@@ -27,6 +29,10 @@ public class ApplicationProperties {
 
     public Novalnet getNovalnet() {
         return this.novalnet;
+    }
+
+    public OpenPayd getOpenPayd() {
+        return this.openPayd;
     }
 
     public Proxy getProxy() {
@@ -226,6 +232,51 @@ public class ApplicationProperties {
 
         public void setWebHookUrl(String webHookUrl) {
             this.webHookUrl = webHookUrl;
+        }
+    }
+
+    public static class OpenPayd {
+
+        private String baseUrl;
+
+        private String username;
+
+        private String password;
+
+        private String accountId;
+
+        public OpenPayd() {}
+
+        public String getBaseUrl() {
+            return baseUrl;
+        }
+
+        public void setBaseUrl(String baseUrl) {
+            this.baseUrl = baseUrl;
+        }
+
+        public String getUsername() {
+            return username;
+        }
+
+        public void setUsername(String username) {
+            this.username = username;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
+        }
+
+        public String getAccountId() {
+            return accountId;
+        }
+
+        public void setAccountId(String accountId) {
+            this.accountId = accountId;
         }
     }
 }
