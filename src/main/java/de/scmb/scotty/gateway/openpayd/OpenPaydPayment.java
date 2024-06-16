@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class OpenPaydDirectDebit {
+public class OpenPaydPayment {
 
     private String id;
 
@@ -15,9 +15,9 @@ public class OpenPaydDirectDebit {
 
     private String accountId;
 
-    private OpenPaydDirectDebitAmount amount;
+    private OpenPaydPaymentAmount amount;
 
-    private OpenPaydDirectDebitDebtor debtor;
+    private OpenPaydPaymentDebtor debtor;
 
     private String dueDate;
 
@@ -61,19 +61,19 @@ public class OpenPaydDirectDebit {
         this.accountId = accountId;
     }
 
-    public OpenPaydDirectDebitAmount getAmount() {
+    public OpenPaydPaymentAmount getAmount() {
         return amount;
     }
 
-    public void setAmount(OpenPaydDirectDebitAmount amount) {
+    public void setAmount(OpenPaydPaymentAmount amount) {
         this.amount = amount;
     }
 
-    public OpenPaydDirectDebitDebtor getDebtor() {
+    public OpenPaydPaymentDebtor getDebtor() {
         return debtor;
     }
 
-    public void setDebtor(OpenPaydDirectDebitDebtor debtor) {
+    public void setDebtor(OpenPaydPaymentDebtor debtor) {
         this.debtor = debtor;
     }
 

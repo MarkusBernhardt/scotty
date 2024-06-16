@@ -34,7 +34,7 @@ public class OpenPaydService {
                 loadAccessToken();
             }
 
-            OpenPaydDirectDebit request = getopenPaydDirectDebit(payment);
+            OpenPaydPayment request = getOpenPaydPayment(payment);
 
             HttpResponse<String> response = Unirest
                 .post(applicationProperties.getOpenPayd().getBaseUrl() + "/api/transactions/direct-debit")
@@ -57,8 +57,8 @@ public class OpenPaydService {
 
                 try {
                     ObjectMapper objectMapper = new ObjectMapper();
-                    OpenPaydDirectDebit directDebit = objectMapper.readValue(response.getBody(), OpenPaydDirectDebit.class);
-                    String gatewayId = directDebit.getId();
+                    OpenPaydPayment openPaydPayment = objectMapper.readValue(response.getBody(), OpenPaydPayment.class);
+                    String gatewayId = openPaydPayment.getId();
                     byte[] gatewayIdBuffer = Base64.getDecoder().decode(gatewayId);
                     payment.setGatewayId(new String(gatewayIdBuffer, StandardCharsets.UTF_8));
                 } catch (JsonProcessingException e) {
@@ -88,6 +88,8 @@ public class OpenPaydService {
         }
     }
 
+    public void handleWebhook(OpenPaydWebhook openPaydWebhook) {}
+
     private void loadAccessToken() {
         HttpResponse<OpenPaydAccessToken> response = Unirest
             .post(applicationProperties.getOpenPayd().getBaseUrl() + "/api/oauth/token?grant_type=client_credentials")
@@ -102,33 +104,32 @@ public class OpenPaydService {
         }
     }
 
-    private OpenPaydDirectDebit getopenPaydDirectDebit(Payment payment) {
-        OpenPaydDirectDebit openPaydDirectDebit = new OpenPaydDirectDebit();
-        openPaydDirectDebit.setAccountId(applicationProperties.getOpenPayd().getAccountId());
-        openPaydDirectDebit.setTransactionReference(payment.getPaymentId());
-        openPaydDirectDebit.setMandateId(payment.getMandateId());
-        openPaydDirectDebit.setFriendlyName(payment.getSoftDescriptor());
-        openPaydDirectDebit.setMandateDateOfSigning("2024-06-01");
+    private OpenPaydPayment getOpenPaydPayment(Payment payment) {
+        OpenPaydPayment openPaydPayment = new OpenPaydPayment();
+        openPaydPayment.setAccountId(applicationProperties.getOpenPayd().getAccountId());
+        openPaydPayment.setTransactionReference(payment.getPaymentId());
+        openPaydPayment.setMandateId(payment.getMandateId());
+        openPaydPayment.setFriendlyName(payment.getSoftDescriptor());
+        openPaydPayment.setMandateDateOfSigning("2024-06-01");
 
-        ZonedDateTime date = Instant.now().atZone(UTC).plusDays(1);
-        ZonedDateTime dueDate = getNextTarget2Day(date);
-        openPaydDirectDebit.setDueDate(
-            String.format("%04d-%02d-%02d", dueDate.getYear(), dueDate.getMonthValue(), dueDate.getDayOfMonth())
-        );
+        ZonedDateTime date = Instant.now().atZone(UTC);
+        date = getNextTarget2Day(date);
+        date = getNextTarget2Day(date);
+        openPaydPayment.setDueDate(String.format("%04d-%02d-%02d", date.getYear(), date.getMonthValue(), date.getDayOfMonth()));
 
-        OpenPaydDirectDebitAmount openPaydDirectDebitAmount = new OpenPaydDirectDebitAmount();
-        openPaydDirectDebitAmount.setValue(payment.getAmount() / 100d);
-        openPaydDirectDebit.setAmount(openPaydDirectDebitAmount);
+        OpenPaydPaymentAmount openPaydPaymentAmount = new OpenPaydPaymentAmount();
+        openPaydPaymentAmount.setValue(payment.getAmount() / 100d);
+        openPaydPayment.setAmount(openPaydPaymentAmount);
 
         String bankAccountHolderName = payment.getFirstName() + " " + payment.getLastName();
         bankAccountHolderName = bankAccountHolderName.trim();
 
-        OpenPaydDirectDebitDebtor openPaydDirectDebitDebtor = new OpenPaydDirectDebitDebtor();
-        openPaydDirectDebitDebtor.setIban(payment.getIban());
-        openPaydDirectDebitDebtor.setBankAccountHolderName(bankAccountHolderName);
-        openPaydDirectDebit.setDebtor(openPaydDirectDebitDebtor);
+        OpenPaydPaymentDebtor openPaydPaymentDebtor = new OpenPaydPaymentDebtor();
+        openPaydPaymentDebtor.setIban(payment.getIban());
+        openPaydPaymentDebtor.setBankAccountHolderName(bankAccountHolderName);
+        openPaydPayment.setDebtor(openPaydPaymentDebtor);
 
-        return openPaydDirectDebit;
+        return openPaydPayment;
     }
 
     public static ZonedDateTime getNextTarget2Day(ZonedDateTime date) {
