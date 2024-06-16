@@ -133,6 +133,7 @@ application:
     username: 'Aldgate_Test'
     password: 'zqCD#+335L'
     account-id: 'd2VsSno0aDVOVHM3bUMvSytSQ0VVUT09'
+    account-holder-id: 'e5de5f27-07f8-4578-9fb0-ce277feca507'
   proxy:
     host: 'eu-west-static-01.quotaguard.com'
     port: 9293

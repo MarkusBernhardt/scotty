@@ -1,12 +1,15 @@
 package de.scmb.scotty.gateway.openpayd;
 
 import static java.time.ZoneOffset.UTC;
-import static java.time.temporal.ChronoUnit.DAYS;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.scmb.scotty.config.ApplicationProperties;
 import de.scmb.scotty.domain.Payment;
-import de.scmb.scotty.gateway.novalnet.NovalnetPayment;
+import de.scmb.scotty.repository.PaymentRepository;
+import java.nio.charset.StandardCharsets;
 import java.time.*;
+import java.util.Base64;
 import kong.unirest.core.HttpResponse;
 import kong.unirest.core.Unirest;
 import org.springframework.stereotype.Service;
@@ -18,16 +21,71 @@ public class OpenPaydService {
 
     private final ApplicationProperties applicationProperties;
 
-    public OpenPaydService(ApplicationProperties applicationProperties) {
+    private final PaymentRepository paymentRepository;
+
+    public OpenPaydService(ApplicationProperties applicationProperties, PaymentRepository paymentRepository) {
         this.applicationProperties = applicationProperties;
+        this.paymentRepository = paymentRepository;
     }
 
     public void execute(Payment payment) {
-        if (openPaydAccessToken == null) {
-            loadAccessToken();
-        }
+        try {
+            if (openPaydAccessToken == null) {
+                loadAccessToken();
+            }
 
-        OpenPaydDirectDebitRequest openPaydDirectDebitRequest = getOpenPaydDirectDebitRequest(payment);
+            OpenPaydDirectDebit request = getopenPaydDirectDebit(payment);
+
+            HttpResponse<String> response = Unirest
+                .post(applicationProperties.getOpenPayd().getBaseUrl() + "/api/transactions/direct-debit")
+                .header("Authorization", "Bearer " + openPaydAccessToken.getAccessToken())
+                .header("Content-Type", "application/json")
+                .header("Charset", "utf-8")
+                .header("Accept", "application/json")
+                .header("X-ACCOUNT-HOLDER-ID", applicationProperties.getOpenPayd().getAccountHolderId())
+                .header("IDEMPOTENCY-KEY", payment.getPaymentId())
+                .body(request)
+                .asString();
+
+            payment.setTimestamp(Instant.now());
+            payment.setMode("");
+            payment.setGatewayId("");
+            payment.setMessage("");
+
+            if (response.getStatus() == 200) {
+                payment.setState("submitted");
+
+                try {
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    OpenPaydDirectDebit directDebit = objectMapper.readValue(response.getBody(), OpenPaydDirectDebit.class);
+                    String gatewayId = directDebit.getId();
+                    byte[] gatewayIdBuffer = Base64.getDecoder().decode(gatewayId);
+                    payment.setGatewayId(new String(gatewayIdBuffer, StandardCharsets.UTF_8));
+                } catch (JsonProcessingException e) {
+                    payment.setMessage("Cannot parse response");
+                }
+            } else {
+                payment.setState("failed");
+
+                try {
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    OpenPaydErrors errors = objectMapper.readValue(response.getBody(), OpenPaydErrors.class);
+                    if (!errors.getErrors().isEmpty()) {
+                        payment.setMessage(errors.getErrors().get(0).getDefaultMessage());
+                    }
+                } catch (JsonProcessingException e) {
+                    payment.setMessage("Cannot parse error");
+                }
+            }
+        } catch (Throwable t) {
+            payment.setState("failed");
+            payment.setMessage(t.getMessage());
+            payment.setTimestamp(Instant.now());
+            payment.setGatewayId("");
+            payment.setMode("");
+        } finally {
+            paymentRepository.save(payment);
+        }
     }
 
     private void loadAccessToken() {
@@ -35,6 +93,8 @@ public class OpenPaydService {
             .post(applicationProperties.getOpenPayd().getBaseUrl() + "/api/oauth/token?grant_type=client_credentials")
             .basicAuth(applicationProperties.getOpenPayd().getUsername(), applicationProperties.getOpenPayd().getPassword())
             .header("Content-Type", "application/json")
+            .header("Charset", "utf-8")
+            .header("Accept", "application/json")
             .asObject(OpenPaydAccessToken.class);
 
         if (response.getStatus() == 200) {
@@ -42,36 +102,37 @@ public class OpenPaydService {
         }
     }
 
-    private OpenPaydDirectDebitRequest getOpenPaydDirectDebitRequest(Payment payment) {
-        OpenPaydDirectDebitRequest openPaydDirectDebitRequest = new OpenPaydDirectDebitRequest();
-        openPaydDirectDebitRequest.setAccountId(applicationProperties.getOpenPayd().getAccountId());
-        openPaydDirectDebitRequest.setTransactionReference(payment.getPaymentId());
-        openPaydDirectDebitRequest.setMandateId(payment.getMandateId());
-        openPaydDirectDebitRequest.setFriendlyName(payment.getSoftDescriptor());
-        openPaydDirectDebitRequest.setMandateDateOfSigning("2024-06-01");
+    private OpenPaydDirectDebit getopenPaydDirectDebit(Payment payment) {
+        OpenPaydDirectDebit openPaydDirectDebit = new OpenPaydDirectDebit();
+        openPaydDirectDebit.setAccountId(applicationProperties.getOpenPayd().getAccountId());
+        openPaydDirectDebit.setTransactionReference(payment.getPaymentId());
+        openPaydDirectDebit.setMandateId(payment.getMandateId());
+        openPaydDirectDebit.setFriendlyName(payment.getSoftDescriptor());
+        openPaydDirectDebit.setMandateDateOfSigning("2024-06-01");
 
-        ZonedDateTime dueDate = getNextTarget2Day();
-        openPaydDirectDebitRequest.setDueDate(
-            String.format("%4d-%2d-%2d", dueDate.getYear(), dueDate.getMonthValue(), dueDate.getDayOfMonth())
+        ZonedDateTime date = Instant.now().atZone(UTC).plusDays(1);
+        ZonedDateTime dueDate = getNextTarget2Day(date);
+        openPaydDirectDebit.setDueDate(
+            String.format("%04d-%02d-%02d", dueDate.getYear(), dueDate.getMonthValue(), dueDate.getDayOfMonth())
         );
 
-        OpenPaydDirectDebitRequestAmount openPaydDirectDebitRequestAmount = new OpenPaydDirectDebitRequestAmount();
-        openPaydDirectDebitRequestAmount.setValue(payment.getAmount() / 100d);
-        openPaydDirectDebitRequest.setAmount(openPaydDirectDebitRequestAmount);
+        OpenPaydDirectDebitAmount openPaydDirectDebitAmount = new OpenPaydDirectDebitAmount();
+        openPaydDirectDebitAmount.setValue(payment.getAmount() / 100d);
+        openPaydDirectDebit.setAmount(openPaydDirectDebitAmount);
 
         String bankAccountHolderName = payment.getFirstName() + " " + payment.getLastName();
         bankAccountHolderName = bankAccountHolderName.trim();
 
-        OpenPaydDirectDebitRequestDebtor openPaydDirectDebitRequestDebtor = new OpenPaydDirectDebitRequestDebtor();
-        openPaydDirectDebitRequestDebtor.setIban(payment.getIban());
-        openPaydDirectDebitRequestDebtor.setBankAccountHolderName(bankAccountHolderName);
-        openPaydDirectDebitRequest.setDebtor(openPaydDirectDebitRequestDebtor);
+        OpenPaydDirectDebitDebtor openPaydDirectDebitDebtor = new OpenPaydDirectDebitDebtor();
+        openPaydDirectDebitDebtor.setIban(payment.getIban());
+        openPaydDirectDebitDebtor.setBankAccountHolderName(bankAccountHolderName);
+        openPaydDirectDebit.setDebtor(openPaydDirectDebitDebtor);
 
-        return openPaydDirectDebitRequest;
+        return openPaydDirectDebit;
     }
 
-    public static ZonedDateTime getNextTarget2Day() {
-        ZonedDateTime date = Instant.now().atZone(UTC).plusDays(1);
+    public static ZonedDateTime getNextTarget2Day(ZonedDateTime date) {
+        date = date.plusDays(1);
         while (!isTarget2Date(date)) {
             date = date.plusDays(1);
         }
@@ -84,22 +145,10 @@ public class OpenPaydService {
             // Sunday
                 date.getDayOfWeek() ==
                 DayOfWeek.SUNDAY ||
-            (// 1st of January
-                    date.getDayOfMonth() ==
-                    1 &&
-                date.getMonth() == Month.JANUARY) ||
-            (// 1st of May
-                    date.getDayOfMonth() ==
-                    1 &&
-                date.getMonth() == Month.MAY) ||
-            (// 25th of December
-                    date.getDayOfMonth() ==
-                    25 &&
-                date.getMonth() == Month.DECEMBER) ||
-            (// 26th of December
-                    date.getDayOfMonth() ==
-                    26 &&
-                date.getMonth() == Month.DECEMBER) ||
+            (date.getDayOfMonth() == 1 && date.getMonth() == Month.JANUARY) || // 1st of January
+            (date.getDayOfMonth() == 1 && date.getMonth() == Month.MAY) || // 1st of May
+            (date.getDayOfMonth() == 25 && date.getMonth() == Month.DECEMBER) || // 25th of December
+            (date.getDayOfMonth() == 26 && date.getMonth() == Month.DECEMBER) || // 26th of December
             // Good Friday
             isSameDateAs(date, calcEasterSunday(date.getYear()).minusDays(2)) ||
             // Easter Monday

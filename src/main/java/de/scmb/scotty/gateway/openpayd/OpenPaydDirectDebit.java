@@ -1,9 +1,13 @@
 package de.scmb.scotty.gateway.openpayd;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class OpenPaydDirectDebitRequest {
+public class OpenPaydDirectDebit {
+
+    private String id;
 
     private String type = "RECURRING";
 
@@ -11,9 +15,9 @@ public class OpenPaydDirectDebitRequest {
 
     private String accountId;
 
-    private OpenPaydDirectDebitRequestAmount amount;
+    private OpenPaydDirectDebitAmount amount;
 
-    private OpenPaydDirectDebitRequestDebtor debtor;
+    private OpenPaydDirectDebitDebtor debtor;
 
     private String dueDate;
 
@@ -24,6 +28,14 @@ public class OpenPaydDirectDebitRequest {
     private String mandateId;
 
     private String friendlyName;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getType() {
         return type;
@@ -49,19 +61,19 @@ public class OpenPaydDirectDebitRequest {
         this.accountId = accountId;
     }
 
-    public OpenPaydDirectDebitRequestAmount getAmount() {
+    public OpenPaydDirectDebitAmount getAmount() {
         return amount;
     }
 
-    public void setAmount(OpenPaydDirectDebitRequestAmount amount) {
+    public void setAmount(OpenPaydDirectDebitAmount amount) {
         this.amount = amount;
     }
 
-    public OpenPaydDirectDebitRequestDebtor getDebtor() {
+    public OpenPaydDirectDebitDebtor getDebtor() {
         return debtor;
     }
 
-    public void setDebtor(OpenPaydDirectDebitRequestDebtor debtor) {
+    public void setDebtor(OpenPaydDirectDebitDebtor debtor) {
         this.debtor = debtor;
     }
 

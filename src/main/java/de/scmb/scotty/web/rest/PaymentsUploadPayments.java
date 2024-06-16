@@ -3,6 +3,7 @@ package de.scmb.scotty.web.rest;
 import de.scmb.scotty.domain.Payment;
 import de.scmb.scotty.gateway.emerchantpay.EmerchantpayService;
 import de.scmb.scotty.gateway.novalnet.NovalnetService;
+import de.scmb.scotty.gateway.openpayd.OpenPaydService;
 import de.scmb.scotty.repository.PaymentRepository;
 import de.scmb.scotty.service.ExcelService;
 import de.scmb.scotty.service.dto.PaymentsUploadPaymentsExecuteResponseDTO;
@@ -35,6 +36,9 @@ public class PaymentsUploadPayments {
     private final EmerchantpayService emerchantpayService;
 
     private final NovalnetService novalnetService;
+
+    private final OpenPaydService openPaydService;
+
     private final PaymentRepository paymentRepository;
 
     private final TaskExecutor taskExecutor;
@@ -47,12 +51,14 @@ public class PaymentsUploadPayments {
         ExcelService excelService,
         EmerchantpayService emerchantpayService,
         NovalnetService novalnetService,
+        OpenPaydService openPaydService,
         PaymentRepository paymentRepository,
         @Qualifier("taskExecutor") TaskExecutor taskExecutor
     ) {
         this.excelService = excelService;
         this.emerchantpayService = emerchantpayService;
         this.novalnetService = novalnetService;
+        this.openPaydService = openPaydService;
         this.paymentRepository = paymentRepository;
         this.taskExecutor = taskExecutor;
     }
@@ -85,14 +91,14 @@ public class PaymentsUploadPayments {
 
                         for (Payment payment : payments) {
                             switch (payment.getGateway()) {
-                                case CCBILL -> {
-                                    executeCcbill();
-                                }
                                 case EMERCHANTPAY -> {
                                     emerchantpayService.execute(payment);
                                 }
                                 case NOVALNET -> {
                                     novalnetService.execute(payment);
+                                }
+                                case OPENPAYD -> {
+                                    openPaydService.execute(payment);
                                 }
                                 default -> {
                                     executeUnknown(payment);
@@ -130,8 +136,6 @@ public class PaymentsUploadPayments {
         }
         return ResponseEntity.ok().body(new PaymentsUploadPaymentsProgressResponseDTO(success, count, executionTasks.contains(fileName)));
     }
-
-    private void executeCcbill() {}
 
     private void executeUnknown(Payment payment) {
         try {

@@ -225,6 +225,9 @@ public class ExcelService {
                 case "novalnet" -> {
                     payments.add(buildPayment(columnIndices, row, Gateway.NOVALNET, fileName));
                 }
+                case "openpayd" -> {
+                    payments.add(buildPayment(columnIndices, row, Gateway.OPENPAYD, fileName));
+                }
                 default -> {
                     payments.add(buildPayment(columnIndices, row, Gateway.UNKNOWN, fileName));
                 }

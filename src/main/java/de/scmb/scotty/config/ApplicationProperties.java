@@ -245,6 +245,8 @@ public class ApplicationProperties {
 
         private String accountId;
 
+        private String accountHolderId;
+
         public OpenPayd() {}
 
         public String getBaseUrl() {
@@ -277,6 +279,14 @@ public class ApplicationProperties {
 
         public void setAccountId(String accountId) {
             this.accountId = accountId;
+        }
+
+        public String getAccountHolderId() {
+            return accountHolderId;
+        }
+
+        public void setAccountHolderId(String accountHolderId) {
+            this.accountHolderId = accountHolderId;
         }
     }
 }
