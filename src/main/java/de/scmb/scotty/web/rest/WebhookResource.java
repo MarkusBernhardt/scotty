@@ -31,8 +31,16 @@ public class WebhookResource {
     }
 
     @PostMapping("/novalnet")
-    public ResponseEntity<Void> novalnet(@RequestBody NovalnetPayment payment) {
-        novalnetService.handleWebhook(payment);
+    public ResponseEntity<Void> novalnet(@RequestBody String body) {
+        log.warn(body);
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            NovalnetPayment novalnetPayment = objectMapper.readValue(body, NovalnetPayment.class);
+            novalnetService.handleWebhook(novalnetPayment);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
 
         return ResponseEntity.ok().build();
     }
