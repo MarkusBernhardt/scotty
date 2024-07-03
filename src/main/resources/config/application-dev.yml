@@ -128,6 +128,7 @@ application:
     signature: '7ibc7ob5|qxJEH3gNbeWJfIHah||nbobljbnmdli0povq|doU3HJVoym7MQ44qf7cpn7pc'
     payment-access-key: 'a87ff679a2f3e71d9181a67b7542122c'
     tariff: '12983'
+    web-hook-url: 'https://beam-me-up-scotty-85521471-9f8f0d090a9a.herokuapp.com/api/webhooks/novalnet'
   openpayd:
     base-url: 'https://sandbox-mt.openpayd.com'
     username: 'Aldgate_Test'
