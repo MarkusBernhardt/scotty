@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
@@ -43,6 +44,8 @@ public class PaymentsUploadPayments {
 
     private final TaskExecutor taskExecutor;
 
+    private final Map<String, String> deBlz2Bic;
+
     private final Logger log = LoggerFactory.getLogger(PaymentsUploadPayments.class);
 
     private static final Set<String> executionTasks = ConcurrentHashMap.newKeySet();
@@ -53,7 +56,8 @@ public class PaymentsUploadPayments {
         NovalnetService novalnetService,
         OpenPaydService openPaydService,
         PaymentRepository paymentRepository,
-        @Qualifier("taskExecutor") TaskExecutor taskExecutor
+        @Qualifier("taskExecutor") TaskExecutor taskExecutor,
+        @Qualifier("deBlz2Bic") Map<String, String> deBlz2Bic
     ) {
         this.excelService = excelService;
         this.emerchantpayService = emerchantpayService;
@@ -61,6 +65,7 @@ public class PaymentsUploadPayments {
         this.openPaydService = openPaydService;
         this.paymentRepository = paymentRepository;
         this.taskExecutor = taskExecutor;
+        this.deBlz2Bic = deBlz2Bic;
     }
 
     @PostMapping("/validate")
@@ -90,6 +95,17 @@ public class PaymentsUploadPayments {
                         List<Payment> payments = excelService.readPaymentsFromStream(file.getInputStream(), fileName);
 
                         for (Payment payment : payments) {
+                            String iban = payment.getIban();
+                            if (payment.getBic().trim().isEmpty() && iban.startsWith("DE") && iban.length() == 22) {
+                                String bic = deBlz2Bic.get(iban.substring(4, 12));
+                                if (bic == null) {
+                                    payment.setBic("NOTFOUNDXXX");
+                                    executeUnknownBic(payment);
+                                    continue;
+                                }
+                                payment.setBic(bic);
+                            }
+
                             switch (payment.getGateway()) {
                                 case EMERCHANTPAY -> {
                                     emerchantpayService.execute(payment);
@@ -101,7 +117,7 @@ public class PaymentsUploadPayments {
                                     openPaydService.execute(payment);
                                 }
                                 default -> {
-                                    executeUnknown(payment);
+                                    executeUnknowngateway(payment);
                                 }
                             }
                         }
@@ -137,10 +153,22 @@ public class PaymentsUploadPayments {
         return ResponseEntity.ok().body(new PaymentsUploadPaymentsProgressResponseDTO(success, count, executionTasks.contains(fileName)));
     }
 
-    private void executeUnknown(Payment payment) {
+    private void executeUnknowngateway(Payment payment) {
         try {
             payment.setState("failed");
             payment.setMessage("Unknown gateway");
+            payment.setTimestamp(Instant.now());
+            payment.setGatewayId("");
+            payment.setMode("");
+        } finally {
+            paymentRepository.save(payment);
+        }
+    }
+
+    private void executeUnknownBic(Payment payment) {
+        try {
+            payment.setState("failed");
+            payment.setMessage("BIC not provided and not found by IBAN");
             payment.setTimestamp(Instant.now());
             payment.setGatewayId("");
             payment.setMode("");

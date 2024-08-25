@@ -5,7 +5,7 @@
 
     <groupId>de.scmb.scotty</groupId>
     <artifactId>scotty</artifactId>
-    <version>0.8.2</version>
+    <version>0.9.0</version>
     <packaging>jar</packaging>
     <name>Scotty</name>
     <description>Description for Scotty</description>
@@ -78,6 +78,7 @@
         <spotless-maven-plugin.version>2.41.1</spotless-maven-plugin.version>
         <validation-api.version>3.0.2</validation-api.version>
         <unirest.version>4.3.1</unirest.version>
+        <opencsv.version>5.9</opencsv.version>
     </properties>
 
     <dependencyManagement>
@@ -119,6 +120,11 @@
                 <groupId>com.konghq</groupId>
                 <artifactId>unirest-modules-jackson</artifactId>
                 <version>${unirest.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.opencsv</groupId>
+                <artifactId>opencsv</artifactId>
+                <version>${opencsv.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -323,6 +329,10 @@
             <groupId>org.testcontainers</groupId>
             <artifactId>postgresql</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
         </dependency>
     </dependencies>
 
