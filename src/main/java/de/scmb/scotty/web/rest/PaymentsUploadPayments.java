@@ -99,11 +99,15 @@ public class PaymentsUploadPayments {
                             if (payment.getBic().trim().isEmpty() && iban.startsWith("DE") && iban.length() == 22) {
                                 String bic = deBlz2Bic.get(iban.substring(4, 12));
                                 if (bic == null) {
-                                    payment.setBic("NOTFOUNDXXX");
-                                    executeUnknownBic(payment);
-                                    continue;
+                                    bic = "";
                                 }
                                 payment.setBic(bic);
+                            }
+
+                            if (payment.getBic().trim().isEmpty()) {
+                                payment.setBic("NOTFOUNDXXX");
+                                executeUnknownBic(payment);
+                                continue;
                             }
 
                             switch (payment.getGateway()) {
