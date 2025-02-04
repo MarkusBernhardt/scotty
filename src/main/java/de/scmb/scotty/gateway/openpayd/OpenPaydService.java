@@ -110,7 +110,7 @@ public class OpenPaydService {
         openPaydPayment.setTransactionReference(payment.getPaymentId());
         openPaydPayment.setMandateId(payment.getMandateId());
         openPaydPayment.setFriendlyName(payment.getSoftDescriptor());
-        openPaydPayment.setMandateDateOfSigning("2024-06-01");
+        openPaydPayment.setMandateDateOfSigning("2025-02-01");
 
         ZonedDateTime date = Instant.now().atZone(UTC);
         date = getNextTarget2Day(date);
