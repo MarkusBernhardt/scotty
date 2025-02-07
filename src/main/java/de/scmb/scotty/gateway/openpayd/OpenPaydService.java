@@ -10,12 +10,18 @@ import de.scmb.scotty.repository.PaymentRepository;
 import java.nio.charset.StandardCharsets;
 import java.time.*;
 import java.util.Base64;
+
 import kong.unirest.core.HttpResponse;
+import kong.unirest.core.RequestBodyEntity;
 import kong.unirest.core.Unirest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class OpenPaydService {
+
+    private final Logger log = LoggerFactory.getLogger(OpenPaydService.class);
 
     private OpenPaydAccessToken openPaydAccessToken;
 
@@ -36,7 +42,7 @@ public class OpenPaydService {
 
             OpenPaydPayment request = getOpenPaydPayment(payment);
 
-            HttpResponse<String> response = Unirest
+            RequestBodyEntity requestBodyEntity = Unirest
                 .post(applicationProperties.getOpenPayd().getBaseUrl() + "/api/transactions/direct-debit")
                 .header("Authorization", "Bearer " + openPaydAccessToken.getAccessToken())
                 .header("Content-Type", "application/json")
@@ -44,8 +50,9 @@ public class OpenPaydService {
                 .header("Accept", "application/json")
                 .header("X-ACCOUNT-HOLDER-ID", applicationProperties.getOpenPayd().getAccountHolderId())
                 .header("IDEMPOTENCY-KEY", payment.getPaymentId())
-                .body(request)
-                .asString();
+                .body(request);
+
+            HttpResponse<String> response = requestBodyEntity.asString();
 
             payment.setTimestamp(Instant.now());
             payment.setMode("");
@@ -70,7 +77,11 @@ public class OpenPaydService {
                 try {
                     ObjectMapper objectMapper = new ObjectMapper();
                     OpenPaydErrors errors = objectMapper.readValue(response.getBody(), OpenPaydErrors.class);
-                    if (!errors.getErrors().isEmpty()) {
+                    payment.setMessage(errors.getErrorCode());
+                    if (errors.getMessage() != null && !errors.getMessage().isEmpty()) {
+                        payment.setMessage(errors.getMessage());
+                    }
+                    if (errors.getErrors() != null && !errors.getErrors().isEmpty()) {
                         payment.setMessage(errors.getErrors().get(0).getDefaultMessage());
                     }
                 } catch (JsonProcessingException e) {

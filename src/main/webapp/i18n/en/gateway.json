@@ -4,6 +4,7 @@
       "null": "",
       "EMERCHANTPAY": "emerchantpay",
       "CCBILL": "ccbill",
+      "OPENPAYD": "openpayd",
       "UNKNOWN": "unknown"
     }
   }
