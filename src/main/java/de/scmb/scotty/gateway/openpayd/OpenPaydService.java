@@ -123,11 +123,6 @@ public class OpenPaydService {
         openPaydPayment.setFriendlyName(payment.getSoftDescriptor());
         openPaydPayment.setMandateDateOfSigning("2025-02-01");
 
-        ZonedDateTime date = Instant.now().atZone(UTC);
-        date = getNextTarget2Day(date);
-        date = getNextTarget2Day(date);
-        openPaydPayment.setDueDate(String.format("%04d-%02d-%02d", date.getYear(), date.getMonthValue(), date.getDayOfMonth()));
-
         OpenPaydPaymentAmount openPaydPaymentAmount = new OpenPaydPaymentAmount();
         openPaydPaymentAmount.setValue(payment.getAmount() / 100d);
         openPaydPayment.setAmount(openPaydPaymentAmount);
