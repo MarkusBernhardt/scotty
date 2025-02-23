@@ -54,7 +54,7 @@ public class ApplicationProperties {
 
         private String notificationUrl;
 
-        private CronExpression reconciliationSchedule;
+        private String reconciliationSchedule;
 
         public Emerchantpay() {}
 
@@ -106,12 +106,12 @@ public class ApplicationProperties {
             this.notificationUrl = notificationUrl;
         }
 
-        public CronExpression getReconciliationSchedule() {
+        public String getReconciliationSchedule() {
             return reconciliationSchedule;
         }
 
         public void setReconciliationSchedule(String reconciliationSchedule) {
-            this.reconciliationSchedule = CronExpression.parse(reconciliationSchedule);
+            this.reconciliationSchedule = reconciliationSchedule;
         }
     }
 

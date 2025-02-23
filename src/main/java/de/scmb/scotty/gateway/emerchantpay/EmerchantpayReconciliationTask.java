@@ -5,6 +5,7 @@ import static de.scmb.scotty.service.ExcelService.cutRight;
 import com.emerchantpay.gateway.GenesisClient;
 import com.emerchantpay.gateway.api.requests.nonfinancial.reconcile.ReconcileByDateRequest;
 import com.emerchantpay.gateway.util.NodeWrapper;
+import de.scmb.scotty.config.ApplicationProperties;
 import de.scmb.scotty.domain.KeyValue;
 import de.scmb.scotty.domain.Payment;
 import de.scmb.scotty.domain.Reconciliation;
@@ -29,6 +30,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class EmerchantpayReconciliationTask implements Runnable {
 
+    private final ApplicationProperties applicationProperties;
+
     private final EmerchantpayService emerchantpayService;
 
     private final KeyValueRepository keyValueRepository;
@@ -46,13 +49,14 @@ public class EmerchantpayReconciliationTask implements Runnable {
     public static final String LAST_READ_TIMESTAMP_KEY = "emerchantpay.reconciliation.lastReadTimestamp";
 
     public EmerchantpayReconciliationTask(
-        EmerchantpayService emerchantpayService,
+        ApplicationProperties applicationProperties, EmerchantpayService emerchantpayService,
         KeyValueRepository keyValueRepository,
         PaymentReconciliationMapper paymentReconciliationMapper,
         PaymentRepository paymentRepository,
         ReconciliationMapper reconciliationMapper,
         ReconciliationRepository reconciliationRepository
     ) {
+        this.applicationProperties = applicationProperties;
         this.emerchantpayService = emerchantpayService;
         this.keyValueRepository = keyValueRepository;
         this.paymentReconciliationMapper = paymentReconciliationMapper;
@@ -63,6 +67,10 @@ public class EmerchantpayReconciliationTask implements Runnable {
 
     @Override
     public void run() {
+        if(!applicationProperties.getEmerchantpay().isEnabled()) {
+            return;
+        }
+
         KeyValue lastExecution = keyValueRepository.findFirstByKvKeyOrderById(LAST_READ_TIMESTAMP_KEY);
         if (lastExecution == null) {
             lastExecution = new KeyValue();
