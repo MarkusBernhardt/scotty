@@ -36,6 +36,10 @@ public class OpenPaydService {
 
     public void execute(Payment payment) {
         try {
+            if(!applicationProperties.getOpenPayd().isEnabled()) {
+                throw new IllegalArgumentException("Openpayd is not enabled");
+            }
+
             if (openPaydAccessToken == null) {
                 loadAccessToken();
             }

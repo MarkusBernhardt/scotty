@@ -42,6 +42,8 @@ public class ApplicationProperties {
     // jhipster-needle-application-properties-property-class
     public static class Emerchantpay {
 
+        private boolean enabled;
+
         private String username;
 
         private String password;
@@ -55,6 +57,14 @@ public class ApplicationProperties {
         private CronExpression reconciliationSchedule;
 
         public Emerchantpay() {}
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
 
         public String getUsername() {
             return username;
@@ -162,6 +172,8 @@ public class ApplicationProperties {
 
     public static class Novalnet {
 
+        private boolean enabled;
+
         private String baseUrl;
 
         private String signature;
@@ -174,9 +186,17 @@ public class ApplicationProperties {
 
         private String subscriptionTariff;
 
-        private String webHookUrl;
+        private String webhookUrl;
 
         public Novalnet() {}
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
 
         public String getBaseUrl() {
             return baseUrl;
@@ -226,16 +246,18 @@ public class ApplicationProperties {
             this.subscriptionTariff = subscriptionTariff;
         }
 
-        public String getWebHookUrl() {
-            return webHookUrl;
+        public String getWebhookUrl() {
+            return webhookUrl;
         }
 
-        public void setWebHookUrl(String webHookUrl) {
-            this.webHookUrl = webHookUrl;
+        public void setWebhookUrl(String webhookUrl) {
+            this.webhookUrl = webhookUrl;
         }
     }
 
     public static class OpenPayd {
+
+        private boolean enabled;
 
         private String baseUrl;
 
@@ -248,6 +270,14 @@ public class ApplicationProperties {
         private String accountHolderId;
 
         public OpenPayd() {}
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
 
         public String getBaseUrl() {
             return baseUrl;

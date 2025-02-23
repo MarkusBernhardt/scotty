@@ -10,12 +10,6 @@
 # http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
 # ===================================================================
 
-eureka:
-  instance:
-    hostname: beam-me-up-scotty-85521471.herokuapp.com
-    non-secure-port: 80
-    prefer-ip-address: false
-
 spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
@@ -26,3 +20,28 @@ spring:
       maximumPoolSize: 8
 server:
   port: ${PORT:8080}
+
+application:
+  emerchantpay:
+    enabled: ${EMERCHANTPAY_ENABLED}
+    environment: ${EMERCHANTPAY_ENVIRONMENT}
+    password: ${EMERCHANTPAY_PASSWORD}
+    username: ${EMERCHANTPAY_USERNAME}
+    token: ${EMERCHANTPAY_TOKEN}
+    notification-url: ${EMERCHANTPAY_NOTIFICATION_URL}
+    reconciliation-schedule: ${EMERCHANTPAY_RECONCILIATION_SCHEDULE}
+  novalnet:
+    enabled: ${NOVALNET_ENABLED}
+    base-url: ${NOVALNET_BASE_URL}
+    test-mode: ${NOVALNET_TEST_MODE}
+    signature: ${NOVALNET_SIGNATURE}
+    payment-access-key: ${NOVALNET_PAYMENT_ACCESS_KEY}
+    tariff: ${NOVALNET_TARIFF}
+    web-hook-url: ${NOVALNET_WEBHOOK_URL}
+  openpayd:
+    enabled: ${OPENPAYD_ENABLED}
+    base-url: ${OPENPAYD_BASE_URL}
+    username: ${OPENPAYD_USERNAME}
+    password: ${OPENPAYD_PASSWORD}
+    account-id: ${OPENPAYD_ACCOUNT_ID}
+    account-holder-id: ${OPENPAYD_ACCOUNT_HOLDER_ID}

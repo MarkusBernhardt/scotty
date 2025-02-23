@@ -123,33 +123,11 @@ jhipster:
 
 application:
   emerchantpay:
-    environment: 'production'
-    password: 'd8b68a25643baee9fa42aa785be1d13dea52e824'
-    username: '3091957bcd0e1c4b83152e7ca3832530953a4833'
-    token: '211db50061148b993717e9d57e65314dbcdf865f'
-    # environment: 'staging'
-    # password: '966c0b1b25b0208020df14703edfb36b9207829d'
-    # username: '5ad798f33882146de4cfdfc401950fb48f9bc0af'
-    # token: '3c1fbbbf8b3e23eff60009f4ae5260297abf62ab'
-    notification-url: 'https://beam-me-up-scotty-85521471-9f8f0d090a9a.herokuapp.com/webhooks/emerchantpay'
-    reconciliation-schedule: '0 45 9 * * *'
+    enabled: false
   novalnet:
-    base-url: 'https://payport.novalnet.de/v2'
-    test-mode: '0'
-    signature: 'dli0ponttqqoFTxWtwJhFaoTp|uv|bobljbc7ob5f|uy|63mHqRTdlci7p1Ottq7cpn7pc'
-    payment-access-key: 'eeb358fcbf46e89566ad3fe0707820a0'
-    tariff: '14694'
-    # test-mode: '1'
-    # signature: '7ibc7ob5|qxJEH3gNbeWJfIHah||nbobljbnmdli0povq|doU3HJVoym7MQ44qf7cpn7pc'
-    # payment-access-key: 'a87ff679a2f3e71d9181a67b7542122c'
-    # tariff: '12983'
-    web-hook-url: 'https://beam-me-up-scotty-85521471-9f8f0d090a9a.herokuapp.com/api/webhooks/novalnet'
+    enabled: false
   openpayd:
-    base-url: 'https://secure-mt.openpayd.com'
-    username: 'npa_Nexus'
-    password: '5*RKkH1Z$a'
-    account-id: 'NG5wTElNZ1RhN3hveDNtNG82V1IxQT09'
-    account-holder-id: '16df62ec-541e-461e-9c21-10838ecb8d93'
+    enabled: false
   proxy:
     host: 'eu-west-static-01.quotaguard.com'
     port: 9293

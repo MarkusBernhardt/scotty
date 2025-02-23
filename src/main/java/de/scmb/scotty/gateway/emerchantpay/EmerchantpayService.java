@@ -34,6 +34,10 @@ public class EmerchantpayService {
 
     public void execute(Payment payment) {
         try {
+            if(!applicationProperties.getEmerchantpay().isEnabled()) {
+                throw new IllegalArgumentException("Emerchantpay is not enabled");
+            }
+
             Request request;
             Payment init = paymentRepository.findFirstByMandateIdAndGatewayAndGatewayIdNotNullAndGatewayIdNotOrderByIdAsc(
                 payment.getMandateId(),

@@ -2,36 +2,20 @@ package de.scmb.scotty.gateway.novalnet;
 
 import static de.scmb.scotty.service.ExcelService.cutRight;
 
-import com.emerchantpay.gateway.api.requests.financial.sdd.SDDInitRecurringSaleRequest;
-import com.emerchantpay.gateway.util.NodeWrapper;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.scmb.scotty.config.ApplicationProperties;
 import de.scmb.scotty.domain.Payment;
 import de.scmb.scotty.domain.Reconciliation;
 import de.scmb.scotty.domain.enumeration.Gateway;
-import de.scmb.scotty.gateway.emerchantpay.EmerchantpayService;
 import de.scmb.scotty.repository.PaymentRepository;
 import de.scmb.scotty.repository.ReconciliationRepository;
 import de.scmb.scotty.service.mapper.PaymentReconciliationMapper;
 import de.scmb.scotty.service.mapper.ReconciliationMapper;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 import kong.unirest.core.HttpResponse;
 import kong.unirest.core.Unirest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.*;
-import org.springframework.http.client.ClientHttpRequestExecution;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 @Service
 public class NovalnetService {
@@ -45,8 +29,6 @@ public class NovalnetService {
     private final ReconciliationMapper reconciliationMapper;
 
     private final ReconciliationRepository reconciliationRepository;
-
-    private static final Logger log = LoggerFactory.getLogger(NovalnetService.class);
 
     public NovalnetService(
         ApplicationProperties applicationProperties,
@@ -64,6 +46,10 @@ public class NovalnetService {
 
     public void execute(Payment payment) {
         try {
+            if(!applicationProperties.getNovalnet().isEnabled()) {
+                throw new IllegalArgumentException("Novalnet is not enabled");
+            }
+
             NovalnetPayment novalnetPayment = getNovalnetPaymentRequest(payment);
 
             Payment init = paymentRepository.findFirstByMandateIdAndGatewayAndGatewayIdNotNullAndGatewayIdNotOrderByIdAsc(
@@ -225,8 +211,8 @@ public class NovalnetService {
         novalnetTransaction.setMandateDate(Instant.now().toString().substring(0, 10));
         novalnetTransaction.setTestMode(applicationProperties.getNovalnet().getTestMode());
         novalnetTransaction.setPaymentData(novalnetPaymentData);
-        novalnetTransaction.setHookUrl(applicationProperties.getNovalnet().getWebHookUrl());
-        if (payment.getSoftDescriptor().length() > 0) {
+        novalnetTransaction.setHookUrl(applicationProperties.getNovalnet().getWebhookUrl());
+        if (!payment.getSoftDescriptor().isEmpty()) {
             novalnetTransaction.setDebitReason1(
                 payment.getSoftDescriptor().substring(0, Math.min(27, payment.getSoftDescriptor().length()))
             );
