@@ -10,7 +10,6 @@ import de.scmb.scotty.repository.PaymentRepository;
 import java.nio.charset.StandardCharsets;
 import java.time.*;
 import java.util.Base64;
-
 import kong.unirest.core.HttpResponse;
 import kong.unirest.core.RequestBodyEntity;
 import kong.unirest.core.Unirest;
@@ -36,7 +35,7 @@ public class OpenPaydService {
 
     public void execute(Payment payment) {
         try {
-            if(!applicationProperties.getOpenPayd().isEnabled()) {
+            if (!applicationProperties.getOpenPayd().isEnabled()) {
                 throw new IllegalArgumentException("Openpayd is not enabled");
             }
 
@@ -44,53 +43,10 @@ public class OpenPaydService {
                 loadAccessToken();
             }
 
-            OpenPaydPayment request = getOpenPaydPayment(payment);
-
-            RequestBodyEntity requestBodyEntity = Unirest
-                .post(applicationProperties.getOpenPayd().getBaseUrl() + "/api/transactions/direct-debit")
-                .header("Authorization", "Bearer " + openPaydAccessToken.getAccessToken())
-                .header("Content-Type", "application/json")
-                .header("Charset", "utf-8")
-                .header("Accept", "application/json")
-                .header("X-ACCOUNT-HOLDER-ID", applicationProperties.getOpenPayd().getAccountHolderId())
-                .header("IDEMPOTENCY-KEY", payment.getPaymentId())
-                .body(request);
-
-            HttpResponse<String> response = requestBodyEntity.asString();
-
-            payment.setTimestamp(Instant.now());
-            payment.setMode("");
-            payment.setGatewayId("");
-            payment.setMessage("");
-
-            if (response.getStatus() == 200) {
-                payment.setState("submitted");
-
-                try {
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    OpenPaydPayment openPaydPayment = objectMapper.readValue(response.getBody(), OpenPaydPayment.class);
-                    String gatewayId = openPaydPayment.getId();
-                    byte[] gatewayIdBuffer = Base64.getDecoder().decode(gatewayId);
-                    payment.setGatewayId(new String(gatewayIdBuffer, StandardCharsets.UTF_8));
-                } catch (JsonProcessingException e) {
-                    payment.setMessage("Cannot parse response");
-                }
+            if (payment.getAmount() >= 0) {
+                executeSdd(payment);
             } else {
-                payment.setState("failed");
-
-                try {
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    OpenPaydErrors errors = objectMapper.readValue(response.getBody(), OpenPaydErrors.class);
-                    payment.setMessage(errors.getErrorCode());
-                    if (errors.getMessage() != null && !errors.getMessage().isEmpty()) {
-                        payment.setMessage(errors.getMessage());
-                    }
-                    if (errors.getErrors() != null && !errors.getErrors().isEmpty()) {
-                        payment.setMessage(errors.getErrors().get(0).getDefaultMessage());
-                    }
-                } catch (JsonProcessingException e) {
-                    payment.setMessage("Cannot parse error");
-                }
+                executeSct(payment);
             }
         } catch (Throwable t) {
             payment.setState("failed");
@@ -100,6 +56,110 @@ public class OpenPaydService {
             payment.setMode("");
         } finally {
             paymentRepository.save(payment);
+        }
+    }
+
+    private void executeSct(Payment payment) {
+        OpenPaydBeneficiaryPayout request = getOpenPaydBeneficiaryPayout(payment);
+
+        RequestBodyEntity requestBodyEntity = Unirest
+            .post(applicationProperties.getOpenPayd().getBaseUrl() + "/api/transactions/beneficiaryPayout")
+            .header("Authorization", "Bearer " + openPaydAccessToken.getAccessToken())
+            .header("Content-Type", "application/json")
+            .header("Charset", "utf-8")
+            .header("Accept", "application/json")
+            .header("X-ACCOUNT-HOLDER-ID", applicationProperties.getOpenPayd().getAccountHolderId())
+            .header("IDEMPOTENCY-KEY", payment.getPaymentId())
+            .body(request);
+
+        HttpResponse<String> response = requestBodyEntity.asString();
+
+        payment.setTimestamp(Instant.now());
+        payment.setMode("");
+        payment.setGatewayId("");
+        payment.setMessage("");
+
+        if (response.getStatus() == 200) {
+            payment.setState("submitted");
+
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                OpenPaydBeneficiaryPayoutResponse openPaydBeneficiaryPayoutResponse = objectMapper.readValue(
+                    response.getBody(),
+                    OpenPaydBeneficiaryPayoutResponse.class
+                );
+                String gatewayId = openPaydBeneficiaryPayoutResponse.transactionId;
+                payment.setGatewayId(gatewayId);
+            } catch (JsonProcessingException e) {
+                payment.setMessage("Cannot parse response");
+            }
+        } else {
+            payment.setState("failed");
+
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                OpenPaydErrors errors = objectMapper.readValue(response.getBody(), OpenPaydErrors.class);
+                payment.setMessage(errors.getErrorCode());
+                if (errors.getMessage() != null && !errors.getMessage().isEmpty()) {
+                    payment.setMessage(errors.getMessage());
+                }
+                if (errors.getErrors() != null && !errors.getErrors().isEmpty()) {
+                    payment.setMessage(errors.getErrors().get(0).getDefaultMessage());
+                }
+            } catch (JsonProcessingException e) {
+                payment.setMessage("Cannot parse error");
+            }
+        }
+    }
+
+    private void executeSdd(Payment payment) {
+        OpenPaydPayment request = getOpenPaydPayment(payment);
+
+        RequestBodyEntity requestBodyEntity = Unirest
+            .post(applicationProperties.getOpenPayd().getBaseUrl() + "/api/transactions/direct-debit")
+            .header("Authorization", "Bearer " + openPaydAccessToken.getAccessToken())
+            .header("Content-Type", "application/json")
+            .header("Charset", "utf-8")
+            .header("Accept", "application/json")
+            .header("X-ACCOUNT-HOLDER-ID", applicationProperties.getOpenPayd().getAccountHolderId())
+            .header("IDEMPOTENCY-KEY", payment.getPaymentId())
+            .body(request);
+
+        HttpResponse<String> response = requestBodyEntity.asString();
+
+        payment.setTimestamp(Instant.now());
+        payment.setMode("");
+        payment.setGatewayId("");
+        payment.setMessage("");
+
+        if (response.getStatus() == 200) {
+            payment.setState("submitted");
+
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                OpenPaydPayment openPaydPayment = objectMapper.readValue(response.getBody(), OpenPaydPayment.class);
+                String gatewayId = openPaydPayment.getId();
+                byte[] gatewayIdBuffer = Base64.getDecoder().decode(gatewayId);
+                payment.setGatewayId(new String(gatewayIdBuffer, StandardCharsets.UTF_8));
+            } catch (JsonProcessingException e) {
+                payment.setMessage("Cannot parse response");
+            }
+        } else {
+            payment.setState("failed");
+
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                OpenPaydErrors errors = objectMapper.readValue(response.getBody(), OpenPaydErrors.class);
+                payment.setMessage(errors.getErrorCode());
+                if (errors.getMessage() != null && !errors.getMessage().isEmpty()) {
+                    payment.setMessage(errors.getMessage());
+                }
+                if (errors.getErrors() != null && !errors.getErrors().isEmpty()) {
+                    payment.setMessage(errors.getErrors().get(0).getDefaultMessage());
+                }
+            } catch (JsonProcessingException e) {
+                payment.setMessage("Cannot parse error");
+            }
         }
     }
 
@@ -117,6 +177,29 @@ public class OpenPaydService {
         if (response.getStatus() == 200) {
             openPaydAccessToken = response.getBody();
         }
+    }
+
+    private OpenPaydBeneficiaryPayout getOpenPaydBeneficiaryPayout(Payment payment) {
+        OpenPaydBeneficiaryPayout openPaydBeneficiaryPayout = new OpenPaydBeneficiaryPayout();
+        openPaydBeneficiaryPayout.setAccountId(applicationProperties.getOpenPayd().getAccountId());
+        openPaydBeneficiaryPayout.setPaymentType("SEPA");
+        openPaydBeneficiaryPayout.setReference(payment.getSoftDescriptor());
+        openPaydBeneficiaryPayout.setExternalCustomerId(payment.getPaymentId());
+
+        OpenPaydBeneficiaryPayoutAmount openPaydBeneficiaryPayoutAmount = new OpenPaydBeneficiaryPayoutAmount();
+        openPaydBeneficiaryPayoutAmount.setValue(payment.getAmount() / -100d);
+        openPaydBeneficiaryPayoutAmount.setCurrency("EUR");
+        openPaydBeneficiaryPayout.setAmount(openPaydBeneficiaryPayoutAmount);
+
+        OpenPaydBeneficiaryPayoutBeneficiary openPaydBeneficiaryPayoutBeneficiary = new OpenPaydBeneficiaryPayoutBeneficiary();
+        openPaydBeneficiaryPayoutBeneficiary.setBankAccountCountry(payment.getIban().substring(0, 2));
+        openPaydBeneficiaryPayoutBeneficiary.setCustomerType("RETAIL");
+        openPaydBeneficiaryPayoutBeneficiary.setFirstName(payment.getFirstName());
+        openPaydBeneficiaryPayoutBeneficiary.setLastName(payment.getLastName());
+        openPaydBeneficiaryPayoutBeneficiary.setIban(payment.getIban());
+        openPaydBeneficiaryPayout.setBeneficiary(openPaydBeneficiaryPayoutBeneficiary);
+
+        return openPaydBeneficiaryPayout;
     }
 
     private OpenPaydPayment getOpenPaydPayment(Payment payment) {
