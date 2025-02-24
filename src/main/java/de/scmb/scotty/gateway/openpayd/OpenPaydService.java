@@ -182,7 +182,7 @@ public class OpenPaydService {
     private OpenPaydBeneficiaryPayout getOpenPaydBeneficiaryPayout(Payment payment) {
         OpenPaydBeneficiaryPayout openPaydBeneficiaryPayout = new OpenPaydBeneficiaryPayout();
         openPaydBeneficiaryPayout.setAccountId(applicationProperties.getOpenPayd().getAccountId());
-        openPaydBeneficiaryPayout.setPaymentType("SEPA");
+        openPaydBeneficiaryPayout.setPaymentType("SEPA_INSTANT");
         openPaydBeneficiaryPayout.setReference(payment.getSoftDescriptor());
         openPaydBeneficiaryPayout.setExternalCustomerId(payment.getPaymentId());
 
