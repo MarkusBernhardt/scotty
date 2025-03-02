@@ -1,15 +1,24 @@
 package de.scmb.scotty.gateway.openpayd;
 
+import static de.scmb.scotty.service.ExcelService.cutRight;
 import static java.time.ZoneOffset.UTC;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.scmb.scotty.config.ApplicationProperties;
 import de.scmb.scotty.domain.Payment;
+import de.scmb.scotty.domain.Reconciliation;
+import de.scmb.scotty.domain.enumeration.Gateway;
 import de.scmb.scotty.repository.PaymentRepository;
+import de.scmb.scotty.repository.ReconciliationRepository;
+import de.scmb.scotty.service.mapper.PaymentReconciliationMapper;
+import de.scmb.scotty.service.mapper.ReconciliationMapper;
 import java.nio.charset.StandardCharsets;
 import java.time.*;
 import java.util.Base64;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import kong.unirest.core.HttpResponse;
 import kong.unirest.core.RequestBodyEntity;
 import kong.unirest.core.Unirest;
@@ -28,9 +37,24 @@ public class OpenPaydService {
 
     private final PaymentRepository paymentRepository;
 
-    public OpenPaydService(ApplicationProperties applicationProperties, PaymentRepository paymentRepository) {
+    private final PaymentReconciliationMapper paymentReconciliationMapper;
+
+    private final ReconciliationMapper reconciliationMapper;
+
+    private final ReconciliationRepository reconciliationRepository;
+
+    public OpenPaydService(
+        ApplicationProperties applicationProperties,
+        PaymentRepository paymentRepository,
+        PaymentReconciliationMapper paymentReconciliationMapper,
+        ReconciliationMapper reconciliationMapper,
+        ReconciliationRepository reconciliationRepository
+    ) {
         this.applicationProperties = applicationProperties;
         this.paymentRepository = paymentRepository;
+        this.paymentReconciliationMapper = paymentReconciliationMapper;
+        this.reconciliationMapper = reconciliationMapper;
+        this.reconciliationRepository = reconciliationRepository;
     }
 
     public void execute(Payment payment) {
@@ -163,7 +187,80 @@ public class OpenPaydService {
         }
     }
 
-    public void handleWebhook(OpenPaydWebhook openPaydWebhook) {}
+    public void handleWebhook(OpenPaydWebhook openPaydWebhook) {
+        if (openPaydWebhook == null) {
+            return;
+        }
+
+        List<ReconciliationRepository.StateOnly> stateOnlyList = reconciliationRepository.findAllByGatewayIdOrderById(
+            openPaydWebhook.getTransactionId()
+        );
+        Set<String> stateOnlySet = stateOnlyList.stream().map(ReconciliationRepository.StateOnly::getState).collect(Collectors.toSet());
+
+        Reconciliation reconciliation = getReconciliationForPaymentResponse(openPaydWebhook, stateOnlySet);
+        if (reconciliation == null) {
+            return;
+        }
+
+        if (
+            (reconciliation.getState().equals("chargedBack") || reconciliation.getState().equals("refunded")) &&
+            !stateOnlySet.contains("paid")
+        ) {
+            Reconciliation paid = reconciliationMapper.toEntity(reconciliationMapper.toDto(reconciliation));
+            paid.setState("paid");
+            paid.setAmount(-1 * paid.getAmount());
+            paid.setReasonCode("");
+            paid.setMessage(reconciliation.getScottyPayment().getMessage());
+            paid.setScottyPayment(reconciliation.getScottyPayment());
+            reconciliationRepository.save(paid);
+        }
+        Payment payment = reconciliation.getScottyPayment();
+        if (!reconciliation.getState().equals(payment.getState())) {
+            payment.setState(reconciliation.getState());
+            paymentRepository.save(payment);
+        }
+        reconciliationRepository.save(reconciliation);
+    }
+
+    private Reconciliation getReconciliationForPaymentResponse(OpenPaydWebhook openPaydWebhook, Set<String> stateOnlySet) {
+        String state = mapStateOpenPayd(openPaydWebhook.getStatus());
+        if (state.equals("unknown") || stateOnlySet.contains(state)) {
+            return null;
+        }
+
+        String gatewayId = openPaydWebhook.getTransactionId();
+        Payment payment = paymentRepository.findFirstByGatewayIdOrderByIdAsc(gatewayId);
+        if (payment == null) {
+            return null;
+        }
+
+        Reconciliation reconciliation = paymentReconciliationMapper.toEntity(payment);
+
+        reconciliation.setGateway(Gateway.OPENPAYD);
+        reconciliation.setState(state);
+        reconciliation.setScottyPayment(payment);
+
+        if (state.equals("chargedBack")) {
+            reconciliation.setAmount(-1 * reconciliation.getAmount());
+            //reconciliation.setReasonCode(cutRight(openPaydWebhook., 35));
+            //reconciliation.setMessage(novalnetPayment.getTransaction().getReason());
+        }
+
+        reconciliation.setTimestamp(Instant.now());
+        reconciliation.setFileName(
+            "reconciliations-" + reconciliation.getTimestamp().toString().substring(0, 10).replace("-", "") + ".xlsx"
+        );
+
+        return reconciliation;
+    }
+
+    public static String mapStateOpenPayd(String state) {
+        return switch (state) {
+            case "COMPLETED", "RELEASED" -> "paid";
+            case "FAILED" -> "chargedBack";
+            default -> "unknown";
+        };
+    }
 
     private void loadAccessToken() {
         HttpResponse<OpenPaydAccessToken> response = Unirest
