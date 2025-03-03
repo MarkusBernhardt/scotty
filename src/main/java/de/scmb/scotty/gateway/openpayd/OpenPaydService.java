@@ -239,6 +239,7 @@ public class OpenPaydService {
         reconciliation.setGateway(Gateway.OPENPAYD);
         reconciliation.setState(state);
         reconciliation.setScottyPayment(payment);
+        reconciliation.setReasonCode("");
 
         if (state.equals("chargedBack")) {
             reconciliation.setAmount(-1 * reconciliation.getAmount());

@@ -129,8 +129,8 @@ public class Reconciliation implements Serializable {
     @Column(name = "message", length = 255, nullable = false)
     private String message;
 
-    @Size(max = 35)
-    @Column(name = "gateway_id", length = 35)
+    @Size(max = 255)
+    @Column(name = "gateway_id", length = 255)
     private String gatewayId;
 
     @Size(max = 35)
