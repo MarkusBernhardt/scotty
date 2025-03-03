@@ -129,7 +129,7 @@ public class OpenPaydWebhook {
     private Object feeReference;
 
     @JsonProperty("failureReason")
-    private Object failureReason;
+    private String failureReason;
 
     @JsonProperty("midMarketRate")
     private Object midMarketRate;
@@ -418,12 +418,12 @@ public class OpenPaydWebhook {
     }
 
     @JsonProperty("failureReason")
-    public Object getFailureReason() {
+    public String getFailureReason() {
         return failureReason;
     }
 
     @JsonProperty("failureReason")
-    public void setFailureReason(Object failureReason) {
+    public void setFailureReason(String failureReason) {
         this.failureReason = failureReason;
     }
 

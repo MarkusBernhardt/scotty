@@ -241,10 +241,14 @@ public class OpenPaydService {
         reconciliation.setScottyPayment(payment);
         reconciliation.setReasonCode("");
 
-        if (state.equals("chargedBack")) {
+        if (state.equals("failed")) {
+            reconciliation.setAmount(0);
+            reconciliation.setReasonCode(cutRight(openPaydWebhook.getFailureReason(), 35));
+            reconciliation.setMessage(openPaydWebhook.getFailureReason());
+        } else if (state.equals("chargedBack")) {
             reconciliation.setAmount(-1 * reconciliation.getAmount());
-            //reconciliation.setReasonCode(cutRight(openPaydWebhook., 35));
-            //reconciliation.setMessage(novalnetPayment.getTransaction().getReason());
+            reconciliation.setReasonCode(cutRight(openPaydWebhook.getFailureReason(), 35));
+            reconciliation.setMessage(openPaydWebhook.getFailureReason());
         }
 
         reconciliation.setTimestamp(Instant.now());
@@ -258,7 +262,7 @@ public class OpenPaydService {
     public static String mapStateOpenPayd(String state) {
         return switch (state) {
             case "COMPLETED", "RELEASED" -> "paid";
-            case "FAILED" -> "chargedBack";
+            case "FAILED" -> "failed";
             default -> "unknown";
         };
     }
