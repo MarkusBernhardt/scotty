@@ -38,7 +38,8 @@ public class WebhookResource {
             ObjectMapper objectMapper = new ObjectMapper();
             NovalnetPayment novalnetPayment = objectMapper.readValue(body, NovalnetPayment.class);
             novalnetService.handleWebhook(novalnetPayment);
-        } catch (JsonProcessingException e) {
+        } catch (Throwable e) {
+            log.error(e.getMessage(), e);
             throw new RuntimeException(e);
         }
 
@@ -53,7 +54,8 @@ public class WebhookResource {
             ObjectMapper objectMapper = new ObjectMapper();
             OpenPaydWebhook openPaydWebhook = objectMapper.readValue(body, OpenPaydWebhook.class);
             openPaydService.handleWebhook(openPaydWebhook);
-        } catch (JsonProcessingException e) {
+        } catch (Throwable e) {
+            log.error(e.getMessage(), e);
             throw new RuntimeException(e);
         }
 
