@@ -37,6 +37,7 @@ import java.util.Map;
         "totalAmount",
         "updatedDate",
         "feeReference",
+        "refundReason",
         "failureReason",
         "midMarketRate",
         "transactionId",
@@ -128,6 +129,9 @@ public class OpenPaydWebhook {
     @JsonProperty("feeReference")
     private Object feeReference;
 
+    @JsonProperty("refundReason")
+    private String refundReason;
+
     @JsonProperty("failureReason")
     private String failureReason;
 
@@ -162,7 +166,7 @@ public class OpenPaydWebhook {
     private Object transactionReference;
 
     @JsonProperty("originalTransactionId")
-    private Object originalTransactionId;
+    private String originalTransactionId;
 
     @JsonIgnore
     private final Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
@@ -417,6 +421,16 @@ public class OpenPaydWebhook {
         this.feeReference = feeReference;
     }
 
+    @JsonProperty("refundReason")
+    public String getRefundReason() {
+        return refundReason;
+    }
+
+    @JsonProperty("refundReason")
+    public void setRefundReason(String refundReason) {
+        this.refundReason = refundReason;
+    }
+
     @JsonProperty("failureReason")
     public String getFailureReason() {
         return failureReason;
@@ -528,12 +542,12 @@ public class OpenPaydWebhook {
     }
 
     @JsonProperty("originalTransactionId")
-    public Object getOriginalTransactionId() {
+    public String getOriginalTransactionId() {
         return originalTransactionId;
     }
 
     @JsonProperty("originalTransactionId")
-    public void setOriginalTransactionId(Object originalTransactionId) {
+    public void setOriginalTransactionId(String originalTransactionId) {
         this.originalTransactionId = originalTransactionId;
     }
 

@@ -223,12 +223,15 @@ public class OpenPaydService {
     }
 
     private Reconciliation getReconciliationForPaymentResponse(OpenPaydWebhook openPaydWebhook, Set<String> stateOnlySet) {
-        String state = mapStateOpenPayd(openPaydWebhook.getStatus());
+        String state = mapStateOpenPayd(openPaydWebhook.getType(), openPaydWebhook.getStatus());
         if (state.equals("unknown") || stateOnlySet.contains(state)) {
             return null;
         }
 
         String gatewayId = openPaydWebhook.getTransactionId();
+        if (openPaydWebhook.getType().equals("DIRECT_DEBIT_REFUND")) {
+            gatewayId = openPaydWebhook.getOriginalTransactionId();
+        }
         Payment payment = paymentRepository.findFirstByGatewayIdOrderByIdAsc(gatewayId);
         if (payment == null) {
             return null;
@@ -244,11 +247,9 @@ public class OpenPaydService {
         if (state.equals("failed")) {
             reconciliation.setAmount(0);
             reconciliation.setReasonCode(cutRight(openPaydWebhook.getFailureReason(), 35));
-            reconciliation.setMessage(openPaydWebhook.getFailureReason());
         } else if (state.equals("chargedBack")) {
-            reconciliation.setAmount(-1 * reconciliation.getAmount());
-            reconciliation.setReasonCode(cutRight(openPaydWebhook.getFailureReason(), 35));
-            reconciliation.setMessage(openPaydWebhook.getFailureReason());
+            reconciliation.setAmount((int) (openPaydWebhook.getAmount().getValue() * 100));
+            reconciliation.setReasonCode(cutRight(openPaydWebhook.getRefundReason(), 35));
         }
 
         reconciliation.setTimestamp(Instant.now());
@@ -259,10 +260,17 @@ public class OpenPaydService {
         return reconciliation;
     }
 
-    public static String mapStateOpenPayd(String state) {
-        return switch (state) {
-            case "COMPLETED", "RELEASED" -> "paid";
-            case "FAILED" -> "failed";
+    public static String mapStateOpenPayd(String type, String state) {
+        return switch (type) {
+            case "PAYOUT", "DIRECT_DEBIT" -> switch (state) {
+                case "COMPLETED", "RELEASED" -> "paid";
+                case "FAILED" -> "failed";
+                default -> "unknown";
+            };
+            case "DIRECT_DEBIT_REFUND" -> switch (state) {
+                case "COMPLETED" -> "chargedBack";
+                default -> "unknown";
+            };
             default -> "unknown";
         };
     }
