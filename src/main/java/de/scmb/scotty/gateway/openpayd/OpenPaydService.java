@@ -112,7 +112,7 @@ public class OpenPaydService {
                     response.getBody(),
                     OpenPaydBeneficiaryPayoutResponse.class
                 );
-                String gatewayId = openPaydBeneficiaryPayoutResponse.transactionId;
+                String gatewayId = openPaydBeneficiaryPayoutResponse.getTransactionId();
                 payment.setGatewayId(gatewayId);
             } catch (JsonProcessingException e) {
                 payment.setMessage("Cannot parse response");
