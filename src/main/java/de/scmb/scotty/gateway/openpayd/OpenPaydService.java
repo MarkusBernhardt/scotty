@@ -165,7 +165,7 @@ public class OpenPaydService {
                 String gatewayId = openPaydPayment.getTransactionId();
                 payment.setGatewayId(gatewayId);
             } catch (JsonProcessingException e) {
-                payment.setMessage("Cannot parse response");
+                payment.setMessage(e.getMessage());
             }
         } else {
             payment.setState("failed");
@@ -181,7 +181,7 @@ public class OpenPaydService {
                     payment.setMessage(errors.getErrors().get(0).getDefaultMessage());
                 }
             } catch (JsonProcessingException e) {
-                payment.setMessage("Cannot parse error");
+                payment.setMessage(e.getMessage());
             }
         }
     }
