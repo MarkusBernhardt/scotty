@@ -2,6 +2,7 @@ package de.scmb.scotty.gateway.openpayd;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -28,6 +29,10 @@ public class OpenPaydPayment {
     private String mandateId;
 
     private String friendlyName;
+
+    private Object endToEndReference;
+
+    private String transactionId;
 
     public String getId() {
         return id;
@@ -115,5 +120,65 @@ public class OpenPaydPayment {
 
     public void setFriendlyName(String friendlyName) {
         this.friendlyName = friendlyName;
+    }
+
+    public Object getEndToEndReference() {
+        return endToEndReference;
+    }
+
+    public void setEndToEndReference(Object endToEndReference) {
+        this.endToEndReference = endToEndReference;
+    }
+
+    public String getTransactionId() {
+        return transactionId;
+    }
+
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
+    }
+
+    @Override
+    public String toString() {
+        return (
+            "OpenPaydPayment{" +
+            "id='" +
+            id +
+            '\'' +
+            ", type='" +
+            type +
+            '\'' +
+            ", paymentType='" +
+            paymentType +
+            '\'' +
+            ", accountId='" +
+            accountId +
+            '\'' +
+            ", amount=" +
+            amount +
+            ", debtor=" +
+            debtor +
+            ", dueDate='" +
+            dueDate +
+            '\'' +
+            ", transactionReference='" +
+            transactionReference +
+            '\'' +
+            ", mandateDateOfSigning='" +
+            mandateDateOfSigning +
+            '\'' +
+            ", mandateId='" +
+            mandateId +
+            '\'' +
+            ", friendlyName='" +
+            friendlyName +
+            '\'' +
+            ", endToEndReference=" +
+            endToEndReference +
+            ", transactionId='" +
+            transactionId +
+            '\'' +
+            '}'
+        );
     }
 }

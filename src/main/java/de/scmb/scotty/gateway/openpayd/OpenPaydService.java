@@ -162,9 +162,8 @@ public class OpenPaydService {
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 OpenPaydPayment openPaydPayment = objectMapper.readValue(response.getBody(), OpenPaydPayment.class);
-                String gatewayId = openPaydPayment.getId();
-                byte[] gatewayIdBuffer = Base64.getDecoder().decode(gatewayId);
-                payment.setGatewayId(new String(gatewayIdBuffer, StandardCharsets.UTF_8));
+                String gatewayId = openPaydPayment.getTransactionId();
+                payment.setGatewayId(gatewayId);
             } catch (JsonProcessingException e) {
                 payment.setMessage("Cannot parse response");
             }
