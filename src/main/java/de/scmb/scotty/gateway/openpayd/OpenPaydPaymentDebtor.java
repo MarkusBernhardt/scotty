@@ -56,4 +56,27 @@ public class OpenPaydPaymentDebtor {
     public void setCountry(String country) {
         this.country = country;
     }
+
+    @Override
+    public String toString() {
+        return (
+            "OpenPaydPaymentDebtor{" +
+            "bankAccountHolderName='" +
+            bankAccountHolderName +
+            '\'' +
+            ", iban='" +
+            iban +
+            '\'' +
+            ", bic='" +
+            bic +
+            '\'' +
+            ", addressLine='" +
+            addressLine +
+            '\'' +
+            ", country='" +
+            country +
+            '\'' +
+            '}'
+        );
+    }
 }

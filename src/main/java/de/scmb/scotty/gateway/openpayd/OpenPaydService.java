@@ -96,7 +96,13 @@ public class OpenPaydService {
             .header("IDEMPOTENCY-KEY", payment.getPaymentId())
             .body(request);
 
+        try {
+            log.info(new ObjectMapper().writeValueAsString(request));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
         HttpResponse<String> response = requestBodyEntity.asString();
+        log.info(response.getBody());
 
         payment.setTimestamp(Instant.now());
         payment.setMode("");
@@ -151,7 +157,13 @@ public class OpenPaydService {
             .header("IDEMPOTENCY-KEY", payment.getPaymentId())
             .body(request);
 
+        try {
+            log.info(new ObjectMapper().writeValueAsString(request));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
         HttpResponse<String> response = requestBodyEntity.asString();
+        log.info(response.getBody());
 
         payment.setTimestamp(Instant.now());
         payment.setMode("");
@@ -220,6 +232,7 @@ public class OpenPaydService {
         Payment payment = reconciliation.getScottyPayment();
         if (!reconciliation.getState().equals(payment.getState())) {
             payment.setState(reconciliation.getState());
+            payment.setMessage(reconciliation.getMessage());
             paymentRepository.save(payment);
         }
         reconciliationRepository.save(reconciliation);
@@ -237,7 +250,7 @@ public class OpenPaydService {
         }
         Payment payment = paymentRepository.findFirstByGatewayIdOrderByIdAsc(gatewayId);
         if (payment == null) {
-            return null;
+            throw new RuntimeException("Payment not found for gateway id " + gatewayId);
         }
 
         Reconciliation reconciliation = paymentReconciliationMapper.toEntity(payment);
@@ -249,10 +262,10 @@ public class OpenPaydService {
 
         if (state.equals("failed")) {
             reconciliation.setAmount(0);
-            reconciliation.setReasonCode(cutRight(openPaydWebhook.getFailureReason(), 35));
+            reconciliation.setMessage(cutRight(openPaydWebhook.getFailureReason(), 255));
         } else if (state.equals("chargedBack")) {
             reconciliation.setAmount((int) (openPaydWebhook.getAmount().getValue() * 100));
-            reconciliation.setReasonCode(cutRight(openPaydWebhook.getRefundReason(), 35));
+            reconciliation.setMessage(cutRight(openPaydWebhook.getRefundReason(), 255));
         }
 
         reconciliation.setTimestamp(Instant.now());

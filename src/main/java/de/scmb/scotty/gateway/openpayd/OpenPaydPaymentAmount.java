@@ -26,4 +26,9 @@ public class OpenPaydPaymentAmount {
     public void setValue(double value) {
         this.value = value;
     }
+
+    @Override
+    public String toString() {
+        return "OpenPaydPaymentAmount{" + "currency='" + currency + '\'' + ", value=" + value + '}';
+    }
 }
