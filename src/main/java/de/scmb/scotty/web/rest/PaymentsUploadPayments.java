@@ -126,7 +126,7 @@ public class PaymentsUploadPayments {
                             }
                         }
                     } catch (Throwable t) {
-                        log.warn(t.getMessage());
+                        log.error(t.getMessage(), t);
                     } finally {
                         executionTasks.remove(fileName);
                     }
