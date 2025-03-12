@@ -1,6 +1,7 @@
 package de.scmb.scotty.gateway.openpayd;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -11,6 +12,11 @@ public class OpenPaydErrors {
     private List<OpenPaydError> errors;
 
     private String message;
+
+    private String error;
+
+    @JsonProperty("error_description")
+    private String errorDescription;
 
     public String getErrorCode() {
         return errorCode;
@@ -34,5 +40,21 @@ public class OpenPaydErrors {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
+    }
+
+    public String getErrorDescription() {
+        return errorDescription;
+    }
+
+    public void setErrorDescription(String errorDescription) {
+        this.errorDescription = errorDescription;
     }
 }

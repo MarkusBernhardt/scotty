@@ -131,6 +131,12 @@ public class OpenPaydService {
                 ObjectMapper objectMapper = new ObjectMapper();
                 OpenPaydErrors errors = objectMapper.readValue(response.getBody(), OpenPaydErrors.class);
                 payment.setMessage(errors.getErrorCode());
+                if (errors.getError() != null && !errors.getError().isEmpty()) {
+                    payment.setMessage(errors.getError());
+                }
+                if (errors.getErrorDescription() != null && !errors.getErrorDescription().isEmpty()) {
+                    payment.setMessage(errors.getError());
+                }
                 if (errors.getMessage() != null && !errors.getMessage().isEmpty()) {
                     payment.setMessage(errors.getMessage());
                 }
@@ -189,6 +195,12 @@ public class OpenPaydService {
                 ObjectMapper objectMapper = new ObjectMapper();
                 OpenPaydErrors errors = objectMapper.readValue(response.getBody(), OpenPaydErrors.class);
                 payment.setMessage(errors.getErrorCode());
+                if (errors.getError() != null && !errors.getError().isEmpty()) {
+                    payment.setMessage(errors.getError());
+                }
+                if (errors.getErrorDescription() != null && !errors.getErrorDescription().isEmpty()) {
+                    payment.setMessage(errors.getError());
+                }
                 if (errors.getMessage() != null && !errors.getMessage().isEmpty()) {
                     payment.setMessage(errors.getMessage());
                 }
