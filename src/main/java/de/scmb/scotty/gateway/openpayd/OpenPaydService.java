@@ -15,6 +15,7 @@ import de.scmb.scotty.service.mapper.PaymentReconciliationMapper;
 import de.scmb.scotty.service.mapper.ReconciliationMapper;
 import java.nio.charset.StandardCharsets;
 import java.time.*;
+import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.List;
 import java.util.Set;
@@ -63,7 +64,7 @@ public class OpenPaydService {
                 throw new IllegalArgumentException("Openpayd is not enabled");
             }
 
-            if (openPaydAccessToken == null) {
+            if (openPaydAccessToken == null || openPaydAccessToken.getCreatedAt().isBefore(Instant.now().minus(600, ChronoUnit.SECONDS))) {
                 loadAccessToken();
             }
 

@@ -3,10 +3,13 @@ package de.scmb.scotty.gateway.openpayd;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
+import java.time.Instant;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class OpenPaydAccessToken {
+
+    private Instant createdAt = Instant.now();
 
     @JsonProperty("access_token")
     private String accessToken;
@@ -42,6 +45,10 @@ public class OpenPaydAccessToken {
     private String jti;
 
     private String accountHolderType;
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
 
     public String getAccessToken() {
         return accessToken;
