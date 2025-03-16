@@ -6,7 +6,6 @@ import de.scmb.scotty.repository.KeyValueRepository;
 import de.scmb.scotty.service.criteria.KeyValueCriteria;
 import de.scmb.scotty.service.dto.KeyValueDTO;
 import de.scmb.scotty.service.mapper.KeyValueMapper;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -20,13 +19,13 @@ import tech.jhipster.service.QueryService;
  * Service for executing complex queries for {@link KeyValue} entities in the database.
  * The main input is a {@link KeyValueCriteria} which gets converted to {@link Specification},
  * in a way that all the filters must apply.
- * It returns a {@link List} of {@link KeyValueDTO} or a {@link Page} of {@link KeyValueDTO} which fulfills the criteria.
+ * It returns a {@link Page} of {@link KeyValueDTO} which fulfills the criteria.
  */
 @Service
 @Transactional(readOnly = true)
 public class KeyValueQueryService extends QueryService<KeyValue> {
 
-    private final Logger log = LoggerFactory.getLogger(KeyValueQueryService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(KeyValueQueryService.class);
 
     private final KeyValueRepository keyValueRepository;
 
@@ -38,18 +37,6 @@ public class KeyValueQueryService extends QueryService<KeyValue> {
     }
 
     /**
-     * Return a {@link List} of {@link KeyValueDTO} which matches the criteria from the database.
-     * @param criteria The object which holds all the filters, which the entities should match.
-     * @return the matching entities.
-     */
-    @Transactional(readOnly = true)
-    public List<KeyValueDTO> findByCriteria(KeyValueCriteria criteria) {
-        log.debug("find by criteria : {}", criteria);
-        final Specification<KeyValue> specification = createSpecification(criteria);
-        return keyValueMapper.toDto(keyValueRepository.findAll(specification));
-    }
-
-    /**
      * Return a {@link Page} of {@link KeyValueDTO} which matches the criteria from the database.
      * @param criteria The object which holds all the filters, which the entities should match.
      * @param page The page, which should be returned.
@@ -57,7 +44,7 @@ public class KeyValueQueryService extends QueryService<KeyValue> {
      */
     @Transactional(readOnly = true)
     public Page<KeyValueDTO> findByCriteria(KeyValueCriteria criteria, Pageable page) {
-        log.debug("find by criteria : {}, page: {}", criteria, page);
+        LOG.debug("find by criteria : {}, page: {}", criteria, page);
         final Specification<KeyValue> specification = createSpecification(criteria);
         return keyValueRepository.findAll(specification, page).map(keyValueMapper::toDto);
     }
@@ -69,7 +56,7 @@ public class KeyValueQueryService extends QueryService<KeyValue> {
      */
     @Transactional(readOnly = true)
     public long countByCriteria(KeyValueCriteria criteria) {
-        log.debug("count by criteria : {}", criteria);
+        LOG.debug("count by criteria : {}", criteria);
         final Specification<KeyValue> specification = createSpecification(criteria);
         return keyValueRepository.count(specification);
     }

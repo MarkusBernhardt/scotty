@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -12,7 +12,7 @@ import { PaymentService } from 'app/entities/payment/service/payment.service';
 import { Gateway } from 'app/entities/enumerations/gateway.model';
 import { ReconciliationService } from '../service/reconciliation.service';
 import { IReconciliation } from '../reconciliation.model';
-import { ReconciliationFormService, ReconciliationFormGroup } from './reconciliation-form.service';
+import { ReconciliationFormGroup, ReconciliationFormService } from './reconciliation-form.service';
 
 @Component({
   standalone: true,
@@ -27,14 +27,13 @@ export class ReconciliationUpdateComponent implements OnInit {
 
   paymentsSharedCollection: IPayment[] = [];
 
-  editForm: ReconciliationFormGroup = this.reconciliationFormService.createReconciliationFormGroup();
+  protected reconciliationService = inject(ReconciliationService);
+  protected reconciliationFormService = inject(ReconciliationFormService);
+  protected paymentService = inject(PaymentService);
+  protected activatedRoute = inject(ActivatedRoute);
 
-  constructor(
-    protected reconciliationService: ReconciliationService,
-    protected reconciliationFormService: ReconciliationFormService,
-    protected paymentService: PaymentService,
-    protected activatedRoute: ActivatedRoute,
-  ) {}
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  editForm: ReconciliationFormGroup = this.reconciliationFormService.createReconciliationFormGroup();
 
   comparePayment = (o1: IPayment | null, o2: IPayment | null): boolean => this.paymentService.comparePayment(o1, o2);
 

@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { sampleWithRequiredData, sampleWithNewData } from '../key-value.test-samples';
+import { sampleWithNewData, sampleWithRequiredData } from '../key-value.test-samples';
 
 import { KeyValueFormService } from './key-value-form.service';
 

@@ -1,5 +1,4 @@
 import dayjs from 'dayjs/esm';
-import { IReconciliation } from 'app/entities/reconciliation/reconciliation.model';
 import { Gateway } from 'app/entities/enumerations/gateway.model';
 
 export interface IPayment {
@@ -27,7 +26,6 @@ export interface IPayment {
   gatewayId?: string | null;
   mode?: string | null;
   fileName?: string | null;
-  reconciliations?: Pick<IReconciliation, 'id'>[] | null;
 }
 
 export type NewPayment = Omit<IPayment, 'id'> & { id: null };

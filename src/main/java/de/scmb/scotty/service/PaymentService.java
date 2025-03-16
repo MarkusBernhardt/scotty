@@ -2,8 +2,6 @@ package de.scmb.scotty.service;
 
 import de.scmb.scotty.service.dto.PaymentDTO;
 import java.util.Optional;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 /**
  * Service Interface for managing {@link de.scmb.scotty.domain.Payment}.
@@ -32,14 +30,6 @@ public interface PaymentService {
      * @return the persisted entity.
      */
     Optional<PaymentDTO> partialUpdate(PaymentDTO paymentDTO);
-
-    /**
-     * Get all the payments.
-     *
-     * @param pageable the pagination information.
-     * @return the list of entities.
-     */
-    Page<PaymentDTO> findAll(Pageable pageable);
 
     /**
      * Get the "id" payment.

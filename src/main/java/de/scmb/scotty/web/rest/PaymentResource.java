@@ -33,7 +33,7 @@ import tech.jhipster.web.util.ResponseUtil;
 @RequestMapping("/api/payments")
 public class PaymentResource {
 
-    private final Logger log = LoggerFactory.getLogger(PaymentResource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PaymentResource.class);
 
     private static final String ENTITY_NAME = "payment";
 
@@ -61,15 +61,14 @@ public class PaymentResource {
      */
     @PostMapping("")
     public ResponseEntity<PaymentDTO> createPayment(@Valid @RequestBody PaymentDTO paymentDTO) throws URISyntaxException {
-        log.debug("REST request to save Payment : {}", paymentDTO);
+        LOG.debug("REST request to save Payment : {}", paymentDTO);
         if (paymentDTO.getId() != null) {
             throw new BadRequestAlertException("A new payment cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        PaymentDTO result = paymentService.save(paymentDTO);
-        return ResponseEntity
-            .created(new URI("/api/payments/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
-            .body(result);
+        paymentDTO = paymentService.save(paymentDTO);
+        return ResponseEntity.created(new URI("/api/payments/" + paymentDTO.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, paymentDTO.getId().toString()))
+            .body(paymentDTO);
     }
 
     /**
@@ -87,7 +86,7 @@ public class PaymentResource {
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody PaymentDTO paymentDTO
     ) throws URISyntaxException {
-        log.debug("REST request to update Payment : {}, {}", id, paymentDTO);
+        LOG.debug("REST request to update Payment : {}, {}", id, paymentDTO);
         if (paymentDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -99,11 +98,10 @@ public class PaymentResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        PaymentDTO result = paymentService.update(paymentDTO);
-        return ResponseEntity
-            .ok()
+        paymentDTO = paymentService.update(paymentDTO);
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, paymentDTO.getId().toString()))
-            .body(result);
+            .body(paymentDTO);
     }
 
     /**
@@ -122,7 +120,7 @@ public class PaymentResource {
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody PaymentDTO paymentDTO
     ) throws URISyntaxException {
-        log.debug("REST request to partial update Payment partially : {}, {}", id, paymentDTO);
+        LOG.debug("REST request to partial update Payment partially : {}, {}", id, paymentDTO);
         if (paymentDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -154,7 +152,7 @@ public class PaymentResource {
         PaymentCriteria criteria,
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
-        log.debug("REST request to get Payments by criteria: {}", criteria);
+        LOG.debug("REST request to get Payments by criteria: {}", criteria);
 
         Page<PaymentDTO> page = paymentQueryService.findByCriteria(criteria, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
@@ -169,7 +167,7 @@ public class PaymentResource {
      */
     @GetMapping("/count")
     public ResponseEntity<Long> countPayments(PaymentCriteria criteria) {
-        log.debug("REST request to count Payments by criteria: {}", criteria);
+        LOG.debug("REST request to count Payments by criteria: {}", criteria);
         return ResponseEntity.ok().body(paymentQueryService.countByCriteria(criteria));
     }
 
@@ -181,7 +179,7 @@ public class PaymentResource {
      */
     @GetMapping("/{id}")
     public ResponseEntity<PaymentDTO> getPayment(@PathVariable("id") Long id) {
-        log.debug("REST request to get Payment : {}", id);
+        LOG.debug("REST request to get Payment : {}", id);
         Optional<PaymentDTO> paymentDTO = paymentService.findOne(id);
         return ResponseUtil.wrapOrNotFound(paymentDTO);
     }
@@ -194,10 +192,9 @@ public class PaymentResource {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePayment(@PathVariable("id") Long id) {
-        log.debug("REST request to delete Payment : {}", id);
+        LOG.debug("REST request to delete Payment : {}", id);
         paymentService.delete(id);
-        return ResponseEntity
-            .noContent()
+        return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
     }

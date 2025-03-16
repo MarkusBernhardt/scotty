@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { sampleWithRequiredData, sampleWithNewData } from '../reconciliation.test-samples';
+import { sampleWithNewData, sampleWithRequiredData } from '../reconciliation.test-samples';
 
 import { ReconciliationFormService } from './reconciliation-form.service';
 

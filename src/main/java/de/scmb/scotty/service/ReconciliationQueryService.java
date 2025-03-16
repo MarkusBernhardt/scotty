@@ -7,7 +7,6 @@ import de.scmb.scotty.service.criteria.ReconciliationCriteria;
 import de.scmb.scotty.service.dto.ReconciliationDTO;
 import de.scmb.scotty.service.mapper.ReconciliationMapper;
 import jakarta.persistence.criteria.JoinType;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -21,13 +20,13 @@ import tech.jhipster.service.QueryService;
  * Service for executing complex queries for {@link Reconciliation} entities in the database.
  * The main input is a {@link ReconciliationCriteria} which gets converted to {@link Specification},
  * in a way that all the filters must apply.
- * It returns a {@link List} of {@link ReconciliationDTO} or a {@link Page} of {@link ReconciliationDTO} which fulfills the criteria.
+ * It returns a {@link Page} of {@link ReconciliationDTO} which fulfills the criteria.
  */
 @Service
 @Transactional(readOnly = true)
 public class ReconciliationQueryService extends QueryService<Reconciliation> {
 
-    private final Logger log = LoggerFactory.getLogger(ReconciliationQueryService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ReconciliationQueryService.class);
 
     private final ReconciliationRepository reconciliationRepository;
 
@@ -39,18 +38,6 @@ public class ReconciliationQueryService extends QueryService<Reconciliation> {
     }
 
     /**
-     * Return a {@link List} of {@link ReconciliationDTO} which matches the criteria from the database.
-     * @param criteria The object which holds all the filters, which the entities should match.
-     * @return the matching entities.
-     */
-    @Transactional(readOnly = true)
-    public List<ReconciliationDTO> findByCriteria(ReconciliationCriteria criteria) {
-        log.debug("find by criteria : {}", criteria);
-        final Specification<Reconciliation> specification = createSpecification(criteria);
-        return reconciliationMapper.toDto(reconciliationRepository.findAll(specification));
-    }
-
-    /**
      * Return a {@link Page} of {@link ReconciliationDTO} which matches the criteria from the database.
      * @param criteria The object which holds all the filters, which the entities should match.
      * @param page The page, which should be returned.
@@ -58,7 +45,7 @@ public class ReconciliationQueryService extends QueryService<Reconciliation> {
      */
     @Transactional(readOnly = true)
     public Page<ReconciliationDTO> findByCriteria(ReconciliationCriteria criteria, Pageable page) {
-        log.debug("find by criteria : {}, page: {}", criteria, page);
+        LOG.debug("find by criteria : {}, page: {}", criteria, page);
         final Specification<Reconciliation> specification = createSpecification(criteria);
         return reconciliationRepository.findAll(specification, page).map(reconciliationMapper::toDto);
     }
@@ -70,7 +57,7 @@ public class ReconciliationQueryService extends QueryService<Reconciliation> {
      */
     @Transactional(readOnly = true)
     public long countByCriteria(ReconciliationCriteria criteria) {
-        log.debug("count by criteria : {}", criteria);
+        LOG.debug("count by criteria : {}", criteria);
         final Specification<Reconciliation> specification = createSpecification(criteria);
         return reconciliationRepository.count(specification);
     }
@@ -163,13 +150,11 @@ public class ReconciliationQueryService extends QueryService<Reconciliation> {
                 specification = specification.and(buildStringSpecification(criteria.getFileName(), Reconciliation_.fileName));
             }
             if (criteria.getScottyPaymentId() != null) {
-                specification =
-                    specification.and(
-                        buildSpecification(
-                            criteria.getScottyPaymentId(),
-                            root -> root.join(Reconciliation_.scottyPayment, JoinType.LEFT).get(Payment_.id)
-                        )
-                    );
+                specification = specification.and(
+                    buildSpecification(criteria.getScottyPaymentId(), root ->
+                        root.join(Reconciliation_.scottyPayment, JoinType.LEFT).get(Payment_.id)
+                    )
+                );
             }
         }
         return specification;

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -10,7 +10,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Gateway } from 'app/entities/enumerations/gateway.model';
 import { IPayment } from '../payment.model';
 import { PaymentService } from '../service/payment.service';
-import { PaymentFormService, PaymentFormGroup } from './payment-form.service';
+import { PaymentFormGroup, PaymentFormService } from './payment-form.service';
 
 @Component({
   standalone: true,
@@ -23,13 +23,12 @@ export class PaymentUpdateComponent implements OnInit {
   payment: IPayment | null = null;
   gatewayValues = Object.keys(Gateway);
 
-  editForm: PaymentFormGroup = this.paymentFormService.createPaymentFormGroup();
+  protected paymentService = inject(PaymentService);
+  protected paymentFormService = inject(PaymentFormService);
+  protected activatedRoute = inject(ActivatedRoute);
 
-  constructor(
-    protected paymentService: PaymentService,
-    protected paymentFormService: PaymentFormService,
-    protected activatedRoute: ActivatedRoute,
-  ) {}
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  editForm: PaymentFormGroup = this.paymentFormService.createPaymentFormGroup();
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ payment }) => {

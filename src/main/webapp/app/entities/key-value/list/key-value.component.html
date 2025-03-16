@@ -4,7 +4,7 @@
 
     <div class="d-flex justify-content-end">
       <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
-        <fa-icon icon="sync" [spin]="isLoading"></fa-icon>
+        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
         <span jhiTranslate="scottyApp.keyValue.home.refreshListLabel">Refresh list</span>
       </button>
 
@@ -36,7 +36,7 @@
     <div class="table-responsive table-entities" id="entities">
       <table class="table table-striped" aria-describedby="page-heading">
         <thead>
-          <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="navigateToWithComponentValues()">
+          <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
             <th scope="col" jhiSortBy="id">
               <div class="d-flex">
                 <span jhiTranslate="global.field.id">ID</span>
@@ -62,7 +62,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (keyValue of keyValues; track trackId) {
+          @for (keyValue of keyValues; track trackId(keyValue)) {
             <tr data-cy="entityTable">
               <td>
                 <a [routerLink]="['/key-value', keyValue.id, 'view']">{{ keyValue.id }}</a>

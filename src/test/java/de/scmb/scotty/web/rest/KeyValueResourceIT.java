@@ -1,19 +1,22 @@
 package de.scmb.scotty.web.rest;
 
+import static de.scmb.scotty.domain.KeyValueAsserts.*;
+import static de.scmb.scotty.web.rest.TestUtil.createUpdateProxyForBean;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.scmb.scotty.IntegrationTest;
 import de.scmb.scotty.domain.KeyValue;
 import de.scmb.scotty.repository.KeyValueRepository;
 import de.scmb.scotty.service.dto.KeyValueDTO;
 import de.scmb.scotty.service.mapper.KeyValueMapper;
 import jakarta.persistence.EntityManager;
-import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +47,9 @@ class KeyValueResourceIT {
     private static AtomicLong longCount = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
 
     @Autowired
+    private ObjectMapper om;
+
+    @Autowired
     private KeyValueRepository keyValueRepository;
 
     @Autowired
@@ -57,15 +63,16 @@ class KeyValueResourceIT {
 
     private KeyValue keyValue;
 
+    private KeyValue insertedKeyValue;
+
     /**
      * Create an entity for this test.
      *
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which requires the current entity.
      */
-    public static KeyValue createEntity(EntityManager em) {
-        KeyValue keyValue = new KeyValue().kvKey(DEFAULT_KV_KEY).kvValue(DEFAULT_KV_VALUE);
-        return keyValue;
+    public static KeyValue createEntity() {
+        return new KeyValue().kvKey(DEFAULT_KV_KEY).kvValue(DEFAULT_KV_VALUE);
     }
 
     /**
@@ -74,32 +81,45 @@ class KeyValueResourceIT {
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which requires the current entity.
      */
-    public static KeyValue createUpdatedEntity(EntityManager em) {
-        KeyValue keyValue = new KeyValue().kvKey(UPDATED_KV_KEY).kvValue(UPDATED_KV_VALUE);
-        return keyValue;
+    public static KeyValue createUpdatedEntity() {
+        return new KeyValue().kvKey(UPDATED_KV_KEY).kvValue(UPDATED_KV_VALUE);
     }
 
     @BeforeEach
     public void initTest() {
-        keyValue = createEntity(em);
+        keyValue = createEntity();
+    }
+
+    @AfterEach
+    public void cleanup() {
+        if (insertedKeyValue != null) {
+            keyValueRepository.delete(insertedKeyValue);
+            insertedKeyValue = null;
+        }
     }
 
     @Test
     @Transactional
     void createKeyValue() throws Exception {
-        int databaseSizeBeforeCreate = keyValueRepository.findAll().size();
+        long databaseSizeBeforeCreate = getRepositoryCount();
         // Create the KeyValue
         KeyValueDTO keyValueDTO = keyValueMapper.toDto(keyValue);
-        restKeyValueMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(keyValueDTO)))
-            .andExpect(status().isCreated());
+        var returnedKeyValueDTO = om.readValue(
+            restKeyValueMockMvc
+                .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(keyValueDTO)))
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse()
+                .getContentAsString(),
+            KeyValueDTO.class
+        );
 
         // Validate the KeyValue in the database
-        List<KeyValue> keyValueList = keyValueRepository.findAll();
-        assertThat(keyValueList).hasSize(databaseSizeBeforeCreate + 1);
-        KeyValue testKeyValue = keyValueList.get(keyValueList.size() - 1);
-        assertThat(testKeyValue.getKvKey()).isEqualTo(DEFAULT_KV_KEY);
-        assertThat(testKeyValue.getKvValue()).isEqualTo(DEFAULT_KV_VALUE);
+        assertIncrementedRepositoryCount(databaseSizeBeforeCreate);
+        var returnedKeyValue = keyValueMapper.toEntity(returnedKeyValueDTO);
+        assertKeyValueUpdatableFieldsEquals(returnedKeyValue, getPersistedKeyValue(returnedKeyValue));
+
+        insertedKeyValue = returnedKeyValue;
     }
 
     @Test
@@ -109,22 +129,21 @@ class KeyValueResourceIT {
         keyValue.setId(1L);
         KeyValueDTO keyValueDTO = keyValueMapper.toDto(keyValue);
 
-        int databaseSizeBeforeCreate = keyValueRepository.findAll().size();
+        long databaseSizeBeforeCreate = getRepositoryCount();
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restKeyValueMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(keyValueDTO)))
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(keyValueDTO)))
             .andExpect(status().isBadRequest());
 
         // Validate the KeyValue in the database
-        List<KeyValue> keyValueList = keyValueRepository.findAll();
-        assertThat(keyValueList).hasSize(databaseSizeBeforeCreate);
+        assertSameRepositoryCount(databaseSizeBeforeCreate);
     }
 
     @Test
     @Transactional
     void checkKvKeyIsRequired() throws Exception {
-        int databaseSizeBeforeTest = keyValueRepository.findAll().size();
+        long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
         keyValue.setKvKey(null);
 
@@ -132,18 +151,17 @@ class KeyValueResourceIT {
         KeyValueDTO keyValueDTO = keyValueMapper.toDto(keyValue);
 
         restKeyValueMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(keyValueDTO)))
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(keyValueDTO)))
             .andExpect(status().isBadRequest());
 
-        List<KeyValue> keyValueList = keyValueRepository.findAll();
-        assertThat(keyValueList).hasSize(databaseSizeBeforeTest);
+        assertSameRepositoryCount(databaseSizeBeforeTest);
     }
 
     @Test
     @Transactional
     void getAllKeyValues() throws Exception {
         // Initialize the database
-        keyValueRepository.saveAndFlush(keyValue);
+        insertedKeyValue = keyValueRepository.saveAndFlush(keyValue);
 
         // Get all the keyValueList
         restKeyValueMockMvc
@@ -159,7 +177,7 @@ class KeyValueResourceIT {
     @Transactional
     void getKeyValue() throws Exception {
         // Initialize the database
-        keyValueRepository.saveAndFlush(keyValue);
+        insertedKeyValue = keyValueRepository.saveAndFlush(keyValue);
 
         // Get the keyValue
         restKeyValueMockMvc
@@ -175,148 +193,120 @@ class KeyValueResourceIT {
     @Transactional
     void getKeyValuesByIdFiltering() throws Exception {
         // Initialize the database
-        keyValueRepository.saveAndFlush(keyValue);
+        insertedKeyValue = keyValueRepository.saveAndFlush(keyValue);
 
         Long id = keyValue.getId();
 
-        defaultKeyValueShouldBeFound("id.equals=" + id);
-        defaultKeyValueShouldNotBeFound("id.notEquals=" + id);
+        defaultKeyValueFiltering("id.equals=" + id, "id.notEquals=" + id);
 
-        defaultKeyValueShouldBeFound("id.greaterThanOrEqual=" + id);
-        defaultKeyValueShouldNotBeFound("id.greaterThan=" + id);
+        defaultKeyValueFiltering("id.greaterThanOrEqual=" + id, "id.greaterThan=" + id);
 
-        defaultKeyValueShouldBeFound("id.lessThanOrEqual=" + id);
-        defaultKeyValueShouldNotBeFound("id.lessThan=" + id);
+        defaultKeyValueFiltering("id.lessThanOrEqual=" + id, "id.lessThan=" + id);
     }
 
     @Test
     @Transactional
     void getAllKeyValuesByKvKeyIsEqualToSomething() throws Exception {
         // Initialize the database
-        keyValueRepository.saveAndFlush(keyValue);
+        insertedKeyValue = keyValueRepository.saveAndFlush(keyValue);
 
-        // Get all the keyValueList where kvKey equals to DEFAULT_KV_KEY
-        defaultKeyValueShouldBeFound("kvKey.equals=" + DEFAULT_KV_KEY);
-
-        // Get all the keyValueList where kvKey equals to UPDATED_KV_KEY
-        defaultKeyValueShouldNotBeFound("kvKey.equals=" + UPDATED_KV_KEY);
+        // Get all the keyValueList where kvKey equals to
+        defaultKeyValueFiltering("kvKey.equals=" + DEFAULT_KV_KEY, "kvKey.equals=" + UPDATED_KV_KEY);
     }
 
     @Test
     @Transactional
     void getAllKeyValuesByKvKeyIsInShouldWork() throws Exception {
         // Initialize the database
-        keyValueRepository.saveAndFlush(keyValue);
+        insertedKeyValue = keyValueRepository.saveAndFlush(keyValue);
 
-        // Get all the keyValueList where kvKey in DEFAULT_KV_KEY or UPDATED_KV_KEY
-        defaultKeyValueShouldBeFound("kvKey.in=" + DEFAULT_KV_KEY + "," + UPDATED_KV_KEY);
-
-        // Get all the keyValueList where kvKey equals to UPDATED_KV_KEY
-        defaultKeyValueShouldNotBeFound("kvKey.in=" + UPDATED_KV_KEY);
+        // Get all the keyValueList where kvKey in
+        defaultKeyValueFiltering("kvKey.in=" + DEFAULT_KV_KEY + "," + UPDATED_KV_KEY, "kvKey.in=" + UPDATED_KV_KEY);
     }
 
     @Test
     @Transactional
     void getAllKeyValuesByKvKeyIsNullOrNotNull() throws Exception {
         // Initialize the database
-        keyValueRepository.saveAndFlush(keyValue);
+        insertedKeyValue = keyValueRepository.saveAndFlush(keyValue);
 
         // Get all the keyValueList where kvKey is not null
-        defaultKeyValueShouldBeFound("kvKey.specified=true");
-
-        // Get all the keyValueList where kvKey is null
-        defaultKeyValueShouldNotBeFound("kvKey.specified=false");
+        defaultKeyValueFiltering("kvKey.specified=true", "kvKey.specified=false");
     }
 
     @Test
     @Transactional
     void getAllKeyValuesByKvKeyContainsSomething() throws Exception {
         // Initialize the database
-        keyValueRepository.saveAndFlush(keyValue);
+        insertedKeyValue = keyValueRepository.saveAndFlush(keyValue);
 
-        // Get all the keyValueList where kvKey contains DEFAULT_KV_KEY
-        defaultKeyValueShouldBeFound("kvKey.contains=" + DEFAULT_KV_KEY);
-
-        // Get all the keyValueList where kvKey contains UPDATED_KV_KEY
-        defaultKeyValueShouldNotBeFound("kvKey.contains=" + UPDATED_KV_KEY);
+        // Get all the keyValueList where kvKey contains
+        defaultKeyValueFiltering("kvKey.contains=" + DEFAULT_KV_KEY, "kvKey.contains=" + UPDATED_KV_KEY);
     }
 
     @Test
     @Transactional
     void getAllKeyValuesByKvKeyNotContainsSomething() throws Exception {
         // Initialize the database
-        keyValueRepository.saveAndFlush(keyValue);
+        insertedKeyValue = keyValueRepository.saveAndFlush(keyValue);
 
-        // Get all the keyValueList where kvKey does not contain DEFAULT_KV_KEY
-        defaultKeyValueShouldNotBeFound("kvKey.doesNotContain=" + DEFAULT_KV_KEY);
-
-        // Get all the keyValueList where kvKey does not contain UPDATED_KV_KEY
-        defaultKeyValueShouldBeFound("kvKey.doesNotContain=" + UPDATED_KV_KEY);
+        // Get all the keyValueList where kvKey does not contain
+        defaultKeyValueFiltering("kvKey.doesNotContain=" + UPDATED_KV_KEY, "kvKey.doesNotContain=" + DEFAULT_KV_KEY);
     }
 
     @Test
     @Transactional
     void getAllKeyValuesByKvValueIsEqualToSomething() throws Exception {
         // Initialize the database
-        keyValueRepository.saveAndFlush(keyValue);
+        insertedKeyValue = keyValueRepository.saveAndFlush(keyValue);
 
-        // Get all the keyValueList where kvValue equals to DEFAULT_KV_VALUE
-        defaultKeyValueShouldBeFound("kvValue.equals=" + DEFAULT_KV_VALUE);
-
-        // Get all the keyValueList where kvValue equals to UPDATED_KV_VALUE
-        defaultKeyValueShouldNotBeFound("kvValue.equals=" + UPDATED_KV_VALUE);
+        // Get all the keyValueList where kvValue equals to
+        defaultKeyValueFiltering("kvValue.equals=" + DEFAULT_KV_VALUE, "kvValue.equals=" + UPDATED_KV_VALUE);
     }
 
     @Test
     @Transactional
     void getAllKeyValuesByKvValueIsInShouldWork() throws Exception {
         // Initialize the database
-        keyValueRepository.saveAndFlush(keyValue);
+        insertedKeyValue = keyValueRepository.saveAndFlush(keyValue);
 
-        // Get all the keyValueList where kvValue in DEFAULT_KV_VALUE or UPDATED_KV_VALUE
-        defaultKeyValueShouldBeFound("kvValue.in=" + DEFAULT_KV_VALUE + "," + UPDATED_KV_VALUE);
-
-        // Get all the keyValueList where kvValue equals to UPDATED_KV_VALUE
-        defaultKeyValueShouldNotBeFound("kvValue.in=" + UPDATED_KV_VALUE);
+        // Get all the keyValueList where kvValue in
+        defaultKeyValueFiltering("kvValue.in=" + DEFAULT_KV_VALUE + "," + UPDATED_KV_VALUE, "kvValue.in=" + UPDATED_KV_VALUE);
     }
 
     @Test
     @Transactional
     void getAllKeyValuesByKvValueIsNullOrNotNull() throws Exception {
         // Initialize the database
-        keyValueRepository.saveAndFlush(keyValue);
+        insertedKeyValue = keyValueRepository.saveAndFlush(keyValue);
 
         // Get all the keyValueList where kvValue is not null
-        defaultKeyValueShouldBeFound("kvValue.specified=true");
-
-        // Get all the keyValueList where kvValue is null
-        defaultKeyValueShouldNotBeFound("kvValue.specified=false");
+        defaultKeyValueFiltering("kvValue.specified=true", "kvValue.specified=false");
     }
 
     @Test
     @Transactional
     void getAllKeyValuesByKvValueContainsSomething() throws Exception {
         // Initialize the database
-        keyValueRepository.saveAndFlush(keyValue);
+        insertedKeyValue = keyValueRepository.saveAndFlush(keyValue);
 
-        // Get all the keyValueList where kvValue contains DEFAULT_KV_VALUE
-        defaultKeyValueShouldBeFound("kvValue.contains=" + DEFAULT_KV_VALUE);
-
-        // Get all the keyValueList where kvValue contains UPDATED_KV_VALUE
-        defaultKeyValueShouldNotBeFound("kvValue.contains=" + UPDATED_KV_VALUE);
+        // Get all the keyValueList where kvValue contains
+        defaultKeyValueFiltering("kvValue.contains=" + DEFAULT_KV_VALUE, "kvValue.contains=" + UPDATED_KV_VALUE);
     }
 
     @Test
     @Transactional
     void getAllKeyValuesByKvValueNotContainsSomething() throws Exception {
         // Initialize the database
-        keyValueRepository.saveAndFlush(keyValue);
+        insertedKeyValue = keyValueRepository.saveAndFlush(keyValue);
 
-        // Get all the keyValueList where kvValue does not contain DEFAULT_KV_VALUE
-        defaultKeyValueShouldNotBeFound("kvValue.doesNotContain=" + DEFAULT_KV_VALUE);
+        // Get all the keyValueList where kvValue does not contain
+        defaultKeyValueFiltering("kvValue.doesNotContain=" + UPDATED_KV_VALUE, "kvValue.doesNotContain=" + DEFAULT_KV_VALUE);
+    }
 
-        // Get all the keyValueList where kvValue does not contain UPDATED_KV_VALUE
-        defaultKeyValueShouldBeFound("kvValue.doesNotContain=" + UPDATED_KV_VALUE);
+    private void defaultKeyValueFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {
+        defaultKeyValueShouldBeFound(shouldBeFound);
+        defaultKeyValueShouldNotBeFound(shouldNotBeFound);
     }
 
     /**
@@ -369,9 +359,9 @@ class KeyValueResourceIT {
     @Transactional
     void putExistingKeyValue() throws Exception {
         // Initialize the database
-        keyValueRepository.saveAndFlush(keyValue);
+        insertedKeyValue = keyValueRepository.saveAndFlush(keyValue);
 
-        int databaseSizeBeforeUpdate = keyValueRepository.findAll().size();
+        long databaseSizeBeforeUpdate = getRepositoryCount();
 
         // Update the keyValue
         KeyValue updatedKeyValue = keyValueRepository.findById(keyValue.getId()).orElseThrow();
@@ -384,22 +374,19 @@ class KeyValueResourceIT {
             .perform(
                 put(ENTITY_API_URL_ID, keyValueDTO.getId())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(keyValueDTO))
+                    .content(om.writeValueAsBytes(keyValueDTO))
             )
             .andExpect(status().isOk());
 
         // Validate the KeyValue in the database
-        List<KeyValue> keyValueList = keyValueRepository.findAll();
-        assertThat(keyValueList).hasSize(databaseSizeBeforeUpdate);
-        KeyValue testKeyValue = keyValueList.get(keyValueList.size() - 1);
-        assertThat(testKeyValue.getKvKey()).isEqualTo(UPDATED_KV_KEY);
-        assertThat(testKeyValue.getKvValue()).isEqualTo(UPDATED_KV_VALUE);
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        assertPersistedKeyValueToMatchAllProperties(updatedKeyValue);
     }
 
     @Test
     @Transactional
     void putNonExistingKeyValue() throws Exception {
-        int databaseSizeBeforeUpdate = keyValueRepository.findAll().size();
+        long databaseSizeBeforeUpdate = getRepositoryCount();
         keyValue.setId(longCount.incrementAndGet());
 
         // Create the KeyValue
@@ -410,19 +397,18 @@ class KeyValueResourceIT {
             .perform(
                 put(ENTITY_API_URL_ID, keyValueDTO.getId())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(keyValueDTO))
+                    .content(om.writeValueAsBytes(keyValueDTO))
             )
             .andExpect(status().isBadRequest());
 
         // Validate the KeyValue in the database
-        List<KeyValue> keyValueList = keyValueRepository.findAll();
-        assertThat(keyValueList).hasSize(databaseSizeBeforeUpdate);
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchKeyValue() throws Exception {
-        int databaseSizeBeforeUpdate = keyValueRepository.findAll().size();
+        long databaseSizeBeforeUpdate = getRepositoryCount();
         keyValue.setId(longCount.incrementAndGet());
 
         // Create the KeyValue
@@ -433,19 +419,18 @@ class KeyValueResourceIT {
             .perform(
                 put(ENTITY_API_URL_ID, longCount.incrementAndGet())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(keyValueDTO))
+                    .content(om.writeValueAsBytes(keyValueDTO))
             )
             .andExpect(status().isBadRequest());
 
         // Validate the KeyValue in the database
-        List<KeyValue> keyValueList = keyValueRepository.findAll();
-        assertThat(keyValueList).hasSize(databaseSizeBeforeUpdate);
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamKeyValue() throws Exception {
-        int databaseSizeBeforeUpdate = keyValueRepository.findAll().size();
+        long databaseSizeBeforeUpdate = getRepositoryCount();
         keyValue.setId(longCount.incrementAndGet());
 
         // Create the KeyValue
@@ -453,21 +438,20 @@ class KeyValueResourceIT {
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restKeyValueMockMvc
-            .perform(put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(keyValueDTO)))
+            .perform(put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(keyValueDTO)))
             .andExpect(status().isMethodNotAllowed());
 
         // Validate the KeyValue in the database
-        List<KeyValue> keyValueList = keyValueRepository.findAll();
-        assertThat(keyValueList).hasSize(databaseSizeBeforeUpdate);
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
     }
 
     @Test
     @Transactional
     void partialUpdateKeyValueWithPatch() throws Exception {
         // Initialize the database
-        keyValueRepository.saveAndFlush(keyValue);
+        insertedKeyValue = keyValueRepository.saveAndFlush(keyValue);
 
-        int databaseSizeBeforeUpdate = keyValueRepository.findAll().size();
+        long databaseSizeBeforeUpdate = getRepositoryCount();
 
         // Update the keyValue using partial update
         KeyValue partialUpdatedKeyValue = new KeyValue();
@@ -477,25 +461,23 @@ class KeyValueResourceIT {
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedKeyValue.getId())
                     .contentType("application/merge-patch+json")
-                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedKeyValue))
+                    .content(om.writeValueAsBytes(partialUpdatedKeyValue))
             )
             .andExpect(status().isOk());
 
         // Validate the KeyValue in the database
-        List<KeyValue> keyValueList = keyValueRepository.findAll();
-        assertThat(keyValueList).hasSize(databaseSizeBeforeUpdate);
-        KeyValue testKeyValue = keyValueList.get(keyValueList.size() - 1);
-        assertThat(testKeyValue.getKvKey()).isEqualTo(DEFAULT_KV_KEY);
-        assertThat(testKeyValue.getKvValue()).isEqualTo(DEFAULT_KV_VALUE);
+
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        assertKeyValueUpdatableFieldsEquals(createUpdateProxyForBean(partialUpdatedKeyValue, keyValue), getPersistedKeyValue(keyValue));
     }
 
     @Test
     @Transactional
     void fullUpdateKeyValueWithPatch() throws Exception {
         // Initialize the database
-        keyValueRepository.saveAndFlush(keyValue);
+        insertedKeyValue = keyValueRepository.saveAndFlush(keyValue);
 
-        int databaseSizeBeforeUpdate = keyValueRepository.findAll().size();
+        long databaseSizeBeforeUpdate = getRepositoryCount();
 
         // Update the keyValue using partial update
         KeyValue partialUpdatedKeyValue = new KeyValue();
@@ -507,22 +489,20 @@ class KeyValueResourceIT {
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedKeyValue.getId())
                     .contentType("application/merge-patch+json")
-                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedKeyValue))
+                    .content(om.writeValueAsBytes(partialUpdatedKeyValue))
             )
             .andExpect(status().isOk());
 
         // Validate the KeyValue in the database
-        List<KeyValue> keyValueList = keyValueRepository.findAll();
-        assertThat(keyValueList).hasSize(databaseSizeBeforeUpdate);
-        KeyValue testKeyValue = keyValueList.get(keyValueList.size() - 1);
-        assertThat(testKeyValue.getKvKey()).isEqualTo(UPDATED_KV_KEY);
-        assertThat(testKeyValue.getKvValue()).isEqualTo(UPDATED_KV_VALUE);
+
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        assertKeyValueUpdatableFieldsEquals(partialUpdatedKeyValue, getPersistedKeyValue(partialUpdatedKeyValue));
     }
 
     @Test
     @Transactional
     void patchNonExistingKeyValue() throws Exception {
-        int databaseSizeBeforeUpdate = keyValueRepository.findAll().size();
+        long databaseSizeBeforeUpdate = getRepositoryCount();
         keyValue.setId(longCount.incrementAndGet());
 
         // Create the KeyValue
@@ -533,19 +513,18 @@ class KeyValueResourceIT {
             .perform(
                 patch(ENTITY_API_URL_ID, keyValueDTO.getId())
                     .contentType("application/merge-patch+json")
-                    .content(TestUtil.convertObjectToJsonBytes(keyValueDTO))
+                    .content(om.writeValueAsBytes(keyValueDTO))
             )
             .andExpect(status().isBadRequest());
 
         // Validate the KeyValue in the database
-        List<KeyValue> keyValueList = keyValueRepository.findAll();
-        assertThat(keyValueList).hasSize(databaseSizeBeforeUpdate);
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchKeyValue() throws Exception {
-        int databaseSizeBeforeUpdate = keyValueRepository.findAll().size();
+        long databaseSizeBeforeUpdate = getRepositoryCount();
         keyValue.setId(longCount.incrementAndGet());
 
         // Create the KeyValue
@@ -556,19 +535,18 @@ class KeyValueResourceIT {
             .perform(
                 patch(ENTITY_API_URL_ID, longCount.incrementAndGet())
                     .contentType("application/merge-patch+json")
-                    .content(TestUtil.convertObjectToJsonBytes(keyValueDTO))
+                    .content(om.writeValueAsBytes(keyValueDTO))
             )
             .andExpect(status().isBadRequest());
 
         // Validate the KeyValue in the database
-        List<KeyValue> keyValueList = keyValueRepository.findAll();
-        assertThat(keyValueList).hasSize(databaseSizeBeforeUpdate);
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamKeyValue() throws Exception {
-        int databaseSizeBeforeUpdate = keyValueRepository.findAll().size();
+        long databaseSizeBeforeUpdate = getRepositoryCount();
         keyValue.setId(longCount.incrementAndGet());
 
         // Create the KeyValue
@@ -576,23 +554,20 @@ class KeyValueResourceIT {
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restKeyValueMockMvc
-            .perform(
-                patch(ENTITY_API_URL).contentType("application/merge-patch+json").content(TestUtil.convertObjectToJsonBytes(keyValueDTO))
-            )
+            .perform(patch(ENTITY_API_URL).contentType("application/merge-patch+json").content(om.writeValueAsBytes(keyValueDTO)))
             .andExpect(status().isMethodNotAllowed());
 
         // Validate the KeyValue in the database
-        List<KeyValue> keyValueList = keyValueRepository.findAll();
-        assertThat(keyValueList).hasSize(databaseSizeBeforeUpdate);
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
     }
 
     @Test
     @Transactional
     void deleteKeyValue() throws Exception {
         // Initialize the database
-        keyValueRepository.saveAndFlush(keyValue);
+        insertedKeyValue = keyValueRepository.saveAndFlush(keyValue);
 
-        int databaseSizeBeforeDelete = keyValueRepository.findAll().size();
+        long databaseSizeBeforeDelete = getRepositoryCount();
 
         // Delete the keyValue
         restKeyValueMockMvc
@@ -600,7 +575,34 @@ class KeyValueResourceIT {
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item
-        List<KeyValue> keyValueList = keyValueRepository.findAll();
-        assertThat(keyValueList).hasSize(databaseSizeBeforeDelete - 1);
+        assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
+    }
+
+    protected long getRepositoryCount() {
+        return keyValueRepository.count();
+    }
+
+    protected void assertIncrementedRepositoryCount(long countBefore) {
+        assertThat(countBefore + 1).isEqualTo(getRepositoryCount());
+    }
+
+    protected void assertDecrementedRepositoryCount(long countBefore) {
+        assertThat(countBefore - 1).isEqualTo(getRepositoryCount());
+    }
+
+    protected void assertSameRepositoryCount(long countBefore) {
+        assertThat(countBefore).isEqualTo(getRepositoryCount());
+    }
+
+    protected KeyValue getPersistedKeyValue(KeyValue keyValue) {
+        return keyValueRepository.findById(keyValue.getId()).orElseThrow();
+    }
+
+    protected void assertPersistedKeyValueToMatchAllProperties(KeyValue expectedKeyValue) {
+        assertKeyValueAllPropertiesEquals(expectedKeyValue, getPersistedKeyValue(expectedKeyValue));
+    }
+
+    protected void assertPersistedKeyValueToMatchUpdatableProperties(KeyValue expectedKeyValue) {
+        assertKeyValueAllUpdatablePropertiesEquals(expectedKeyValue, getPersistedKeyValue(expectedKeyValue));
     }
 }

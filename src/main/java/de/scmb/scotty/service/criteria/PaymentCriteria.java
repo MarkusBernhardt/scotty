@@ -3,6 +3,7 @@ package de.scmb.scotty.service.criteria;
 import de.scmb.scotty.domain.enumeration.Gateway;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.Optional;
 import org.springdoc.core.annotations.ParameterObject;
 import tech.jhipster.service.Criteria;
 import tech.jhipster.service.filter.*;
@@ -94,31 +95,31 @@ public class PaymentCriteria implements Serializable, Criteria {
     public PaymentCriteria() {}
 
     public PaymentCriteria(PaymentCriteria other) {
-        this.id = other.id == null ? null : other.id.copy();
-        this.mandateId = other.mandateId == null ? null : other.mandateId.copy();
-        this.paymentId = other.paymentId == null ? null : other.paymentId.copy();
-        this.gateway = other.gateway == null ? null : other.gateway.copy();
-        this.iban = other.iban == null ? null : other.iban.copy();
-        this.bic = other.bic == null ? null : other.bic.copy();
-        this.amount = other.amount == null ? null : other.amount.copy();
-        this.currencyCode = other.currencyCode == null ? null : other.currencyCode.copy();
-        this.softDescriptor = other.softDescriptor == null ? null : other.softDescriptor.copy();
-        this.firstName = other.firstName == null ? null : other.firstName.copy();
-        this.lastName = other.lastName == null ? null : other.lastName.copy();
-        this.streetName = other.streetName == null ? null : other.streetName.copy();
-        this.houseNumber = other.houseNumber == null ? null : other.houseNumber.copy();
-        this.postalCode = other.postalCode == null ? null : other.postalCode.copy();
-        this.city = other.city == null ? null : other.city.copy();
-        this.countryCode = other.countryCode == null ? null : other.countryCode.copy();
-        this.remoteIp = other.remoteIp == null ? null : other.remoteIp.copy();
-        this.emailAddress = other.emailAddress == null ? null : other.emailAddress.copy();
-        this.timestamp = other.timestamp == null ? null : other.timestamp.copy();
-        this.state = other.state == null ? null : other.state.copy();
-        this.message = other.message == null ? null : other.message.copy();
-        this.gatewayId = other.gatewayId == null ? null : other.gatewayId.copy();
-        this.mode = other.mode == null ? null : other.mode.copy();
-        this.fileName = other.fileName == null ? null : other.fileName.copy();
-        this.reconciliationId = other.reconciliationId == null ? null : other.reconciliationId.copy();
+        this.id = other.optionalId().map(LongFilter::copy).orElse(null);
+        this.mandateId = other.optionalMandateId().map(StringFilter::copy).orElse(null);
+        this.paymentId = other.optionalPaymentId().map(StringFilter::copy).orElse(null);
+        this.gateway = other.optionalGateway().map(GatewayFilter::copy).orElse(null);
+        this.iban = other.optionalIban().map(StringFilter::copy).orElse(null);
+        this.bic = other.optionalBic().map(StringFilter::copy).orElse(null);
+        this.amount = other.optionalAmount().map(IntegerFilter::copy).orElse(null);
+        this.currencyCode = other.optionalCurrencyCode().map(StringFilter::copy).orElse(null);
+        this.softDescriptor = other.optionalSoftDescriptor().map(StringFilter::copy).orElse(null);
+        this.firstName = other.optionalFirstName().map(StringFilter::copy).orElse(null);
+        this.lastName = other.optionalLastName().map(StringFilter::copy).orElse(null);
+        this.streetName = other.optionalStreetName().map(StringFilter::copy).orElse(null);
+        this.houseNumber = other.optionalHouseNumber().map(StringFilter::copy).orElse(null);
+        this.postalCode = other.optionalPostalCode().map(StringFilter::copy).orElse(null);
+        this.city = other.optionalCity().map(StringFilter::copy).orElse(null);
+        this.countryCode = other.optionalCountryCode().map(StringFilter::copy).orElse(null);
+        this.remoteIp = other.optionalRemoteIp().map(StringFilter::copy).orElse(null);
+        this.emailAddress = other.optionalEmailAddress().map(StringFilter::copy).orElse(null);
+        this.timestamp = other.optionalTimestamp().map(InstantFilter::copy).orElse(null);
+        this.state = other.optionalState().map(StringFilter::copy).orElse(null);
+        this.message = other.optionalMessage().map(StringFilter::copy).orElse(null);
+        this.gatewayId = other.optionalGatewayId().map(StringFilter::copy).orElse(null);
+        this.mode = other.optionalMode().map(StringFilter::copy).orElse(null);
+        this.fileName = other.optionalFileName().map(StringFilter::copy).orElse(null);
+        this.reconciliationId = other.optionalReconciliationId().map(LongFilter::copy).orElse(null);
         this.distinct = other.distinct;
     }
 
@@ -131,9 +132,13 @@ public class PaymentCriteria implements Serializable, Criteria {
         return id;
     }
 
+    public Optional<LongFilter> optionalId() {
+        return Optional.ofNullable(id);
+    }
+
     public LongFilter id() {
         if (id == null) {
-            id = new LongFilter();
+            setId(new LongFilter());
         }
         return id;
     }
@@ -146,9 +151,13 @@ public class PaymentCriteria implements Serializable, Criteria {
         return mandateId;
     }
 
+    public Optional<StringFilter> optionalMandateId() {
+        return Optional.ofNullable(mandateId);
+    }
+
     public StringFilter mandateId() {
         if (mandateId == null) {
-            mandateId = new StringFilter();
+            setMandateId(new StringFilter());
         }
         return mandateId;
     }
@@ -161,9 +170,13 @@ public class PaymentCriteria implements Serializable, Criteria {
         return paymentId;
     }
 
+    public Optional<StringFilter> optionalPaymentId() {
+        return Optional.ofNullable(paymentId);
+    }
+
     public StringFilter paymentId() {
         if (paymentId == null) {
-            paymentId = new StringFilter();
+            setPaymentId(new StringFilter());
         }
         return paymentId;
     }
@@ -176,9 +189,13 @@ public class PaymentCriteria implements Serializable, Criteria {
         return gateway;
     }
 
+    public Optional<GatewayFilter> optionalGateway() {
+        return Optional.ofNullable(gateway);
+    }
+
     public GatewayFilter gateway() {
         if (gateway == null) {
-            gateway = new GatewayFilter();
+            setGateway(new GatewayFilter());
         }
         return gateway;
     }
@@ -191,9 +208,13 @@ public class PaymentCriteria implements Serializable, Criteria {
         return iban;
     }
 
+    public Optional<StringFilter> optionalIban() {
+        return Optional.ofNullable(iban);
+    }
+
     public StringFilter iban() {
         if (iban == null) {
-            iban = new StringFilter();
+            setIban(new StringFilter());
         }
         return iban;
     }
@@ -206,9 +227,13 @@ public class PaymentCriteria implements Serializable, Criteria {
         return bic;
     }
 
+    public Optional<StringFilter> optionalBic() {
+        return Optional.ofNullable(bic);
+    }
+
     public StringFilter bic() {
         if (bic == null) {
-            bic = new StringFilter();
+            setBic(new StringFilter());
         }
         return bic;
     }
@@ -221,9 +246,13 @@ public class PaymentCriteria implements Serializable, Criteria {
         return amount;
     }
 
+    public Optional<IntegerFilter> optionalAmount() {
+        return Optional.ofNullable(amount);
+    }
+
     public IntegerFilter amount() {
         if (amount == null) {
-            amount = new IntegerFilter();
+            setAmount(new IntegerFilter());
         }
         return amount;
     }
@@ -236,9 +265,13 @@ public class PaymentCriteria implements Serializable, Criteria {
         return currencyCode;
     }
 
+    public Optional<StringFilter> optionalCurrencyCode() {
+        return Optional.ofNullable(currencyCode);
+    }
+
     public StringFilter currencyCode() {
         if (currencyCode == null) {
-            currencyCode = new StringFilter();
+            setCurrencyCode(new StringFilter());
         }
         return currencyCode;
     }
@@ -251,9 +284,13 @@ public class PaymentCriteria implements Serializable, Criteria {
         return softDescriptor;
     }
 
+    public Optional<StringFilter> optionalSoftDescriptor() {
+        return Optional.ofNullable(softDescriptor);
+    }
+
     public StringFilter softDescriptor() {
         if (softDescriptor == null) {
-            softDescriptor = new StringFilter();
+            setSoftDescriptor(new StringFilter());
         }
         return softDescriptor;
     }
@@ -266,9 +303,13 @@ public class PaymentCriteria implements Serializable, Criteria {
         return firstName;
     }
 
+    public Optional<StringFilter> optionalFirstName() {
+        return Optional.ofNullable(firstName);
+    }
+
     public StringFilter firstName() {
         if (firstName == null) {
-            firstName = new StringFilter();
+            setFirstName(new StringFilter());
         }
         return firstName;
     }
@@ -281,9 +322,13 @@ public class PaymentCriteria implements Serializable, Criteria {
         return lastName;
     }
 
+    public Optional<StringFilter> optionalLastName() {
+        return Optional.ofNullable(lastName);
+    }
+
     public StringFilter lastName() {
         if (lastName == null) {
-            lastName = new StringFilter();
+            setLastName(new StringFilter());
         }
         return lastName;
     }
@@ -296,9 +341,13 @@ public class PaymentCriteria implements Serializable, Criteria {
         return streetName;
     }
 
+    public Optional<StringFilter> optionalStreetName() {
+        return Optional.ofNullable(streetName);
+    }
+
     public StringFilter streetName() {
         if (streetName == null) {
-            streetName = new StringFilter();
+            setStreetName(new StringFilter());
         }
         return streetName;
     }
@@ -311,9 +360,13 @@ public class PaymentCriteria implements Serializable, Criteria {
         return houseNumber;
     }
 
+    public Optional<StringFilter> optionalHouseNumber() {
+        return Optional.ofNullable(houseNumber);
+    }
+
     public StringFilter houseNumber() {
         if (houseNumber == null) {
-            houseNumber = new StringFilter();
+            setHouseNumber(new StringFilter());
         }
         return houseNumber;
     }
@@ -326,9 +379,13 @@ public class PaymentCriteria implements Serializable, Criteria {
         return postalCode;
     }
 
+    public Optional<StringFilter> optionalPostalCode() {
+        return Optional.ofNullable(postalCode);
+    }
+
     public StringFilter postalCode() {
         if (postalCode == null) {
-            postalCode = new StringFilter();
+            setPostalCode(new StringFilter());
         }
         return postalCode;
     }
@@ -341,9 +398,13 @@ public class PaymentCriteria implements Serializable, Criteria {
         return city;
     }
 
+    public Optional<StringFilter> optionalCity() {
+        return Optional.ofNullable(city);
+    }
+
     public StringFilter city() {
         if (city == null) {
-            city = new StringFilter();
+            setCity(new StringFilter());
         }
         return city;
     }
@@ -356,9 +417,13 @@ public class PaymentCriteria implements Serializable, Criteria {
         return countryCode;
     }
 
+    public Optional<StringFilter> optionalCountryCode() {
+        return Optional.ofNullable(countryCode);
+    }
+
     public StringFilter countryCode() {
         if (countryCode == null) {
-            countryCode = new StringFilter();
+            setCountryCode(new StringFilter());
         }
         return countryCode;
     }
@@ -371,9 +436,13 @@ public class PaymentCriteria implements Serializable, Criteria {
         return remoteIp;
     }
 
+    public Optional<StringFilter> optionalRemoteIp() {
+        return Optional.ofNullable(remoteIp);
+    }
+
     public StringFilter remoteIp() {
         if (remoteIp == null) {
-            remoteIp = new StringFilter();
+            setRemoteIp(new StringFilter());
         }
         return remoteIp;
     }
@@ -386,9 +455,13 @@ public class PaymentCriteria implements Serializable, Criteria {
         return emailAddress;
     }
 
+    public Optional<StringFilter> optionalEmailAddress() {
+        return Optional.ofNullable(emailAddress);
+    }
+
     public StringFilter emailAddress() {
         if (emailAddress == null) {
-            emailAddress = new StringFilter();
+            setEmailAddress(new StringFilter());
         }
         return emailAddress;
     }
@@ -401,9 +474,13 @@ public class PaymentCriteria implements Serializable, Criteria {
         return timestamp;
     }
 
+    public Optional<InstantFilter> optionalTimestamp() {
+        return Optional.ofNullable(timestamp);
+    }
+
     public InstantFilter timestamp() {
         if (timestamp == null) {
-            timestamp = new InstantFilter();
+            setTimestamp(new InstantFilter());
         }
         return timestamp;
     }
@@ -416,9 +493,13 @@ public class PaymentCriteria implements Serializable, Criteria {
         return state;
     }
 
+    public Optional<StringFilter> optionalState() {
+        return Optional.ofNullable(state);
+    }
+
     public StringFilter state() {
         if (state == null) {
-            state = new StringFilter();
+            setState(new StringFilter());
         }
         return state;
     }
@@ -431,9 +512,13 @@ public class PaymentCriteria implements Serializable, Criteria {
         return message;
     }
 
+    public Optional<StringFilter> optionalMessage() {
+        return Optional.ofNullable(message);
+    }
+
     public StringFilter message() {
         if (message == null) {
-            message = new StringFilter();
+            setMessage(new StringFilter());
         }
         return message;
     }
@@ -446,9 +531,13 @@ public class PaymentCriteria implements Serializable, Criteria {
         return gatewayId;
     }
 
+    public Optional<StringFilter> optionalGatewayId() {
+        return Optional.ofNullable(gatewayId);
+    }
+
     public StringFilter gatewayId() {
         if (gatewayId == null) {
-            gatewayId = new StringFilter();
+            setGatewayId(new StringFilter());
         }
         return gatewayId;
     }
@@ -461,9 +550,13 @@ public class PaymentCriteria implements Serializable, Criteria {
         return mode;
     }
 
+    public Optional<StringFilter> optionalMode() {
+        return Optional.ofNullable(mode);
+    }
+
     public StringFilter mode() {
         if (mode == null) {
-            mode = new StringFilter();
+            setMode(new StringFilter());
         }
         return mode;
     }
@@ -476,9 +569,13 @@ public class PaymentCriteria implements Serializable, Criteria {
         return fileName;
     }
 
+    public Optional<StringFilter> optionalFileName() {
+        return Optional.ofNullable(fileName);
+    }
+
     public StringFilter fileName() {
         if (fileName == null) {
-            fileName = new StringFilter();
+            setFileName(new StringFilter());
         }
         return fileName;
     }
@@ -491,9 +588,13 @@ public class PaymentCriteria implements Serializable, Criteria {
         return reconciliationId;
     }
 
+    public Optional<LongFilter> optionalReconciliationId() {
+        return Optional.ofNullable(reconciliationId);
+    }
+
     public LongFilter reconciliationId() {
         if (reconciliationId == null) {
-            reconciliationId = new LongFilter();
+            setReconciliationId(new LongFilter());
         }
         return reconciliationId;
     }
@@ -503,6 +604,17 @@ public class PaymentCriteria implements Serializable, Criteria {
     }
 
     public Boolean getDistinct() {
+        return distinct;
+    }
+
+    public Optional<Boolean> optionalDistinct() {
+        return Optional.ofNullable(distinct);
+    }
+
+    public Boolean distinct() {
+        if (distinct == null) {
+            setDistinct(true);
+        }
         return distinct;
     }
 
@@ -585,32 +697,32 @@ public class PaymentCriteria implements Serializable, Criteria {
     @Override
     public String toString() {
         return "PaymentCriteria{" +
-            (id != null ? "id=" + id + ", " : "") +
-            (mandateId != null ? "mandateId=" + mandateId + ", " : "") +
-            (paymentId != null ? "paymentId=" + paymentId + ", " : "") +
-            (gateway != null ? "gateway=" + gateway + ", " : "") +
-            (iban != null ? "iban=" + iban + ", " : "") +
-            (bic != null ? "bic=" + bic + ", " : "") +
-            (amount != null ? "amount=" + amount + ", " : "") +
-            (currencyCode != null ? "currencyCode=" + currencyCode + ", " : "") +
-            (softDescriptor != null ? "softDescriptor=" + softDescriptor + ", " : "") +
-            (firstName != null ? "firstName=" + firstName + ", " : "") +
-            (lastName != null ? "lastName=" + lastName + ", " : "") +
-            (streetName != null ? "streetName=" + streetName + ", " : "") +
-            (houseNumber != null ? "houseNumber=" + houseNumber + ", " : "") +
-            (postalCode != null ? "postalCode=" + postalCode + ", " : "") +
-            (city != null ? "city=" + city + ", " : "") +
-            (countryCode != null ? "countryCode=" + countryCode + ", " : "") +
-            (remoteIp != null ? "remoteIp=" + remoteIp + ", " : "") +
-            (emailAddress != null ? "emailAddress=" + emailAddress + ", " : "") +
-            (timestamp != null ? "timestamp=" + timestamp + ", " : "") +
-            (state != null ? "state=" + state + ", " : "") +
-            (message != null ? "message=" + message + ", " : "") +
-            (gatewayId != null ? "gatewayId=" + gatewayId + ", " : "") +
-            (mode != null ? "mode=" + mode + ", " : "") +
-            (fileName != null ? "fileName=" + fileName + ", " : "") +
-            (reconciliationId != null ? "reconciliationId=" + reconciliationId + ", " : "") +
-            (distinct != null ? "distinct=" + distinct + ", " : "") +
-            "}";
+            optionalId().map(f -> "id=" + f + ", ").orElse("") +
+            optionalMandateId().map(f -> "mandateId=" + f + ", ").orElse("") +
+            optionalPaymentId().map(f -> "paymentId=" + f + ", ").orElse("") +
+            optionalGateway().map(f -> "gateway=" + f + ", ").orElse("") +
+            optionalIban().map(f -> "iban=" + f + ", ").orElse("") +
+            optionalBic().map(f -> "bic=" + f + ", ").orElse("") +
+            optionalAmount().map(f -> "amount=" + f + ", ").orElse("") +
+            optionalCurrencyCode().map(f -> "currencyCode=" + f + ", ").orElse("") +
+            optionalSoftDescriptor().map(f -> "softDescriptor=" + f + ", ").orElse("") +
+            optionalFirstName().map(f -> "firstName=" + f + ", ").orElse("") +
+            optionalLastName().map(f -> "lastName=" + f + ", ").orElse("") +
+            optionalStreetName().map(f -> "streetName=" + f + ", ").orElse("") +
+            optionalHouseNumber().map(f -> "houseNumber=" + f + ", ").orElse("") +
+            optionalPostalCode().map(f -> "postalCode=" + f + ", ").orElse("") +
+            optionalCity().map(f -> "city=" + f + ", ").orElse("") +
+            optionalCountryCode().map(f -> "countryCode=" + f + ", ").orElse("") +
+            optionalRemoteIp().map(f -> "remoteIp=" + f + ", ").orElse("") +
+            optionalEmailAddress().map(f -> "emailAddress=" + f + ", ").orElse("") +
+            optionalTimestamp().map(f -> "timestamp=" + f + ", ").orElse("") +
+            optionalState().map(f -> "state=" + f + ", ").orElse("") +
+            optionalMessage().map(f -> "message=" + f + ", ").orElse("") +
+            optionalGatewayId().map(f -> "gatewayId=" + f + ", ").orElse("") +
+            optionalMode().map(f -> "mode=" + f + ", ").orElse("") +
+            optionalFileName().map(f -> "fileName=" + f + ", ").orElse("") +
+            optionalReconciliationId().map(f -> "reconciliationId=" + f + ", ").orElse("") +
+            optionalDistinct().map(f -> "distinct=" + f + ", ").orElse("") +
+        "}";
     }
 }

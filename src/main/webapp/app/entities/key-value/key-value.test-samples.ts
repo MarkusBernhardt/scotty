@@ -1,23 +1,24 @@
 import { IKeyValue, NewKeyValue } from './key-value.model';
 
 export const sampleWithRequiredData: IKeyValue = {
-  id: 16853,
-  kvKey: 'uh-huh',
+  id: 10995,
+  kvKey: 'verbally wealthy',
 };
 
 export const sampleWithPartialData: IKeyValue = {
-  id: 3534,
-  kvKey: 'whoever',
+  id: 5671,
+  kvKey: 'ignorant meanwhile on',
+  kvValue: 'slather disappointment oof',
 };
 
 export const sampleWithFullData: IKeyValue = {
-  id: 16058,
-  kvKey: 'from insecure',
-  kvValue: 'likewise back',
+  id: 12528,
+  kvKey: 'blissfully likewise',
+  kvValue: 'woot suddenly',
 };
 
 export const sampleWithNewData: NewKeyValue = {
-  kvKey: 'roundabout ack',
+  kvKey: 'scarper',
   id: null,
 };
 
