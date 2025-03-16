@@ -1,0 +1,101 @@
+diff --git b/src/main/java/de/scmb/scotty/service/mapper/PaymentMapper.java a/src/main/java/de/scmb/scotty/service/mapper/PaymentMapper.java
+index dd066bb..fa2e5ca 100644
+--- b/src/main/java/de/scmb/scotty/service/mapper/PaymentMapper.java
++++ a/src/main/java/de/scmb/scotty/service/mapper/PaymentMapper.java
+@@ -8,4 +8,14 @@ import org.mapstruct.*;
+  * Mapper for the entity {@link Payment} and its DTO {@link PaymentDTO}.
+  */
+ @Mapper(componentModel = "spring")
+-public interface PaymentMapper extends EntityMapper<PaymentDTO, Payment> {}
++public interface PaymentMapper extends EntityMapper<PaymentDTO, Payment> {
++    @Override
++    @Mapping(target = "reconciliations", ignore = true)
++    @Mapping(target = "removeReconciliation", ignore = true)
++    Payment toEntity(PaymentDTO p);
++
++    @Override
++    @Mapping(target = "reconciliations", ignore = true)
++    @Mapping(target = "removeReconciliation", ignore = true)
++    void partialUpdate(@MappingTarget Payment entity, PaymentDTO dto);
++}
+diff --git b/src/main/java/de/scmb/scotty/service/mapper/ReconciliationMapper.java a/src/main/java/de/scmb/scotty/service/mapper/ReconciliationMapper.java
+index b777e44..99d264b 100644
+--- b/src/main/java/de/scmb/scotty/service/mapper/ReconciliationMapper.java
++++ a/src/main/java/de/scmb/scotty/service/mapper/ReconciliationMapper.java
+@@ -11,11 +11,26 @@ import org.mapstruct.*;
+  */
+ @Mapper(componentModel = "spring")
+ public interface ReconciliationMapper extends EntityMapper<ReconciliationDTO, Reconciliation> {
++    @Override
+     @Mapping(target = "scottyPayment", source = "scottyPayment", qualifiedByName = "paymentId")
+     ReconciliationDTO toDto(Reconciliation s);
+ 
++    @Override
++    @Mapping(target = "scottyPayment", source = "scottyPayment", qualifiedByName = "reconciliationSet")
++    Reconciliation toEntity(ReconciliationDTO s);
++
++    @Override
++    @Mapping(target = "scottyPayment", source = "scottyPayment", qualifiedByName = "reconciliationSet")
++    void partialUpdate(@MappingTarget Reconciliation entity, ReconciliationDTO dto);
++
+     @Named("paymentId")
+     @BeanMapping(ignoreByDefault = true)
+     @Mapping(target = "id", source = "id")
+     PaymentDTO toDtoPaymentId(Payment payment);
++
++    @Named("reconciliationSet")
++    @BeanMapping(ignoreByDefault = true)
++    @Mapping(target = "reconciliations", ignore = true)
++    @Mapping(target = "removeReconciliation", ignore = true)
++    Payment toEntityReconciliationSet(PaymentDTO s);
+ }
+diff --git b/src/main/webapp/i18n/en/global.json a/src/main/webapp/i18n/en/global.json
+index e32a78a..cefc1d0 100644
+--- b/src/main/webapp/i18n/en/global.json
++++ a/src/main/webapp/i18n/en/global.json
+@@ -4,6 +4,12 @@
+     "browsehappy": "You are using an <strong>outdated</strong> browser. Please <a href=\"http://browsehappy.com/?locale=en\">upgrade your browser</a> to improve your experience.",
+     "menu": {
+       "home": "Home",
++      "payments": {
++        "main": "Payments",
++        "uploadPayments": "Upload Payment Files",
++        "downloadPayments": "Download Payment Files",
++        "downloadReconciliations": "Download Reconciliation Files"
++      },
+       "jhipster-needle-menu-add-element": "JHipster will add additional menu entries here (do not translate!)",
+       "entities": {
+         "main": "Entities",
+@@ -50,9 +56,9 @@
+     "messages": {
+       "info": {
+         "authenticated": {
+-          "prefix": "If you want to ",
++          "prefix": "Please ",
+           "link": "sign in",
+-          "suffix": ", you can try the default accounts:<br/>- Administrator (login=\"admin\" and password=\"admin\") <br/>- User (login=\"user\" and password=\"user\")."
++          "suffix": "."
+         },
+         "register": {
+           "noaccount": "You don't have an account yet?",
+@@ -146,5 +152,5 @@
+       "not.image": "File was expected to be an image but was found to be \"{{ fileType }}\""
+     }
+   },
+-  "footer": "This is your footer"
++  "footer": "Beam me up Scotty!"
+ }
+diff --git b/src/main/webapp/i18n/en/home.json a/src/main/webapp/i18n/en/home.json
+index d9fc499..cf9e9f7 100644
+--- b/src/main/webapp/i18n/en/home.json
++++ a/src/main/webapp/i18n/en/home.json
+@@ -1,7 +1,7 @@
+ {
+   "home": {
+-    "title": "Welcome, Java Hipster!",
+-    "subtitle": "This is your homepage",
++    "title": "Welcome to Scotty!",
++    "subtitle": "Your comfortable way to upload payments to payment gateways.",
+     "logged": {
+       "message": "You are logged in as user \"{{username}}\"."
+     },

@@ -22,7 +22,7 @@
       "fieldName": "gateway",
       "fieldType": "Gateway",
       "fieldValidateRules": ["required"],
-      "fieldValues": "EMERCHANTPAY (emerchantpay),CCBILL (ccbill),UNKNOWN (unknown)"
+      "fieldValues": "CCBILL (ccbill),EMERCHANTPAY (emerchantpay),NOVALNET (novalnet),OPENPAYD (openpayd),UNKNOWN (unknown)"
     },
     {
       "fieldName": "iban",
@@ -41,8 +41,7 @@
     {
       "fieldName": "amount",
       "fieldType": "Integer",
-      "fieldValidateRules": ["required", "min"],
-      "fieldValidateRulesMin": "0"
+      "fieldValidateRules": ["required"]
     },
     {
       "fieldName": "currencyCode",
@@ -133,7 +132,7 @@
       "fieldName": "gatewayId",
       "fieldType": "String",
       "fieldValidateRules": ["maxlength"],
-      "fieldValidateRulesMaxlength": "35"
+      "fieldValidateRulesMaxlength": "255"
     },
     {
       "fieldName": "mode",

@@ -41,8 +41,8 @@ class PaymentResourceIT {
     private static final String DEFAULT_PAYMENT_ID = "AAAAAAAAAA";
     private static final String UPDATED_PAYMENT_ID = "BBBBBBBBBB";
 
-    private static final Gateway DEFAULT_GATEWAY = Gateway.EMERCHANTPAY;
-    private static final Gateway UPDATED_GATEWAY = Gateway.CCBILL;
+    private static final Gateway DEFAULT_GATEWAY = Gateway.CCBILL;
+    private static final Gateway UPDATED_GATEWAY = Gateway.EMERCHANTPAY;
 
     private static final String DEFAULT_IBAN = "AAAAAAAAAAAAAAAA";
     private static final String UPDATED_IBAN = "BBBBBBBBBBBBBBBB";
@@ -50,9 +50,9 @@ class PaymentResourceIT {
     private static final String DEFAULT_BIC = "AAAAAAAAAA";
     private static final String UPDATED_BIC = "BBBBBBBBBB";
 
-    private static final Integer DEFAULT_AMOUNT = 0;
-    private static final Integer UPDATED_AMOUNT = 1;
-    private static final Integer SMALLER_AMOUNT = 0 - 1;
+    private static final Integer DEFAULT_AMOUNT = 1;
+    private static final Integer UPDATED_AMOUNT = 2;
+    private static final Integer SMALLER_AMOUNT = 1 - 1;
 
     private static final String DEFAULT_CURRENCY_CODE = "AAA";
     private static final String UPDATED_CURRENCY_CODE = "BBB";

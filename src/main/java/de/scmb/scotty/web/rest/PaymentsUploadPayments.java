@@ -5,6 +5,7 @@ import de.scmb.scotty.gateway.emerchantpay.EmerchantpayService;
 import de.scmb.scotty.gateway.novalnet.NovalnetService;
 import de.scmb.scotty.gateway.openpayd.OpenPaydService;
 import de.scmb.scotty.repository.PaymentRepository;
+import de.scmb.scotty.repository.PaymentRepositoryExtended;
 import de.scmb.scotty.service.ExcelService;
 import de.scmb.scotty.service.dto.PaymentsUploadPaymentsExecuteResponseDTO;
 import de.scmb.scotty.service.dto.PaymentsUploadPaymentsProgressResponseDTO;
@@ -40,7 +41,7 @@ public class PaymentsUploadPayments {
 
     private final OpenPaydService openPaydService;
 
-    private final PaymentRepository paymentRepository;
+    private final PaymentRepositoryExtended paymentRepositoryExtended;
 
     private final TaskExecutor taskExecutor;
 
@@ -55,7 +56,7 @@ public class PaymentsUploadPayments {
         EmerchantpayService emerchantpayService,
         NovalnetService novalnetService,
         OpenPaydService openPaydService,
-        PaymentRepository paymentRepository,
+        PaymentRepositoryExtended paymentRepositoryExtended,
         @Qualifier("taskExecutor") TaskExecutor taskExecutor,
         @Qualifier("deBlz2Bic") Map<String, String> deBlz2Bic
     ) {
@@ -63,7 +64,7 @@ public class PaymentsUploadPayments {
         this.emerchantpayService = emerchantpayService;
         this.novalnetService = novalnetService;
         this.openPaydService = openPaydService;
-        this.paymentRepository = paymentRepository;
+        this.paymentRepositoryExtended = paymentRepositoryExtended;
         this.taskExecutor = taskExecutor;
         this.deBlz2Bic = deBlz2Bic;
     }
@@ -141,7 +142,7 @@ public class PaymentsUploadPayments {
     public ResponseEntity<PaymentsUploadPaymentsProgressResponseDTO> progress(@RequestParam(value = "fileName") String fileName)
         throws URISyntaxException, IOException {
         int countFailed = 0;
-        List<Payment> payments = paymentRepository.findAllByFileNameOrderByIdAsc(fileName);
+        List<Payment> payments = paymentRepositoryExtended.findAllByFileNameOrderByIdAsc(fileName);
         for (Payment payment : payments) {
             if (payment.getState().equals("failed")) {
                 countFailed++;
@@ -165,7 +166,7 @@ public class PaymentsUploadPayments {
             payment.setGatewayId("");
             payment.setMode("");
         } finally {
-            paymentRepository.save(payment);
+            paymentRepositoryExtended.save(payment);
         }
     }
 
@@ -177,7 +178,7 @@ public class PaymentsUploadPayments {
             payment.setGatewayId("");
             payment.setMode("");
         } finally {
-            paymentRepository.save(payment);
+            paymentRepositoryExtended.save(payment);
         }
     }
 

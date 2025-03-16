@@ -139,7 +139,7 @@ export class ReconciliationFormService {
         validators: [Validators.required, Validators.maxLength(255)],
       }),
       gatewayId: new FormControl(reconciliationRawValue.gatewayId, {
-        validators: [Validators.maxLength(35)],
+        validators: [Validators.maxLength(255)],
       }),
       mode: new FormControl(reconciliationRawValue.mode, {
         validators: [Validators.maxLength(35)],

@@ -1,6 +1,7 @@
 package de.scmb.scotty.web.rest;
 
 import de.scmb.scotty.repository.ReconciliationRepository;
+import de.scmb.scotty.repository.ReconciliationRepositoryExtended;
 import de.scmb.scotty.service.ExcelService;
 import de.scmb.scotty.service.criteria.PaymentCriteria;
 import de.scmb.scotty.service.dto.PaymentsDownloadReconciliationsDto;
@@ -28,13 +29,13 @@ public class PaymentsDownloadReconciliations {
 
     private final ExcelService excelService;
 
-    private final ReconciliationRepository reconciliationRepository;
+    private final ReconciliationRepositoryExtended reconciliationRepositoryExtended;
 
     private final Logger log = LoggerFactory.getLogger(PaymentsDownloadReconciliations.class);
 
-    public PaymentsDownloadReconciliations(ExcelService excelService, ReconciliationRepository reconciliationRepository) {
+    public PaymentsDownloadReconciliations(ExcelService excelService, ReconciliationRepositoryExtended reconciliationRepositoryExtended) {
         this.excelService = excelService;
-        this.reconciliationRepository = reconciliationRepository;
+        this.reconciliationRepositoryExtended = reconciliationRepositoryExtended;
     }
 
     @GetMapping("/list")
@@ -44,7 +45,7 @@ public class PaymentsDownloadReconciliations {
     ) {
         log.debug("REST request to get Payments by criteria: {}", criteria);
 
-        Page<PaymentsDownloadReconciliationsDto> page = reconciliationRepository.findAllGroupByFileName(pageable);
+        Page<PaymentsDownloadReconciliationsDto> page = reconciliationRepositoryExtended.findAllGroupByFileName(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }

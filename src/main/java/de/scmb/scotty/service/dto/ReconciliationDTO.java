@@ -95,7 +95,7 @@ public class ReconciliationDTO implements Serializable {
     @Size(max = 255)
     private String message;
 
-    @Size(max = 35)
+    @Size(max = 255)
     private String gatewayId;
 
     @Size(max = 35)

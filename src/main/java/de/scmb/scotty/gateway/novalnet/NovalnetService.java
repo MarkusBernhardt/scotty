@@ -7,7 +7,9 @@ import de.scmb.scotty.domain.Payment;
 import de.scmb.scotty.domain.Reconciliation;
 import de.scmb.scotty.domain.enumeration.Gateway;
 import de.scmb.scotty.repository.PaymentRepository;
+import de.scmb.scotty.repository.PaymentRepositoryExtended;
 import de.scmb.scotty.repository.ReconciliationRepository;
+import de.scmb.scotty.repository.ReconciliationRepositoryExtended;
 import de.scmb.scotty.service.mapper.PaymentReconciliationMapper;
 import de.scmb.scotty.service.mapper.ReconciliationMapper;
 import java.time.Instant;
@@ -22,37 +24,37 @@ public class NovalnetService {
 
     private final ApplicationProperties applicationProperties;
 
-    private final PaymentRepository paymentRepository;
+    private final PaymentRepositoryExtended paymentRepositoryExtended;
 
     private final PaymentReconciliationMapper paymentReconciliationMapper;
 
     private final ReconciliationMapper reconciliationMapper;
 
-    private final ReconciliationRepository reconciliationRepository;
+    private final ReconciliationRepositoryExtended reconciliationRepositoryExtended;
 
     public NovalnetService(
         ApplicationProperties applicationProperties,
-        PaymentRepository paymentRepository,
+        PaymentRepositoryExtended paymentRepositoryExtended,
         PaymentReconciliationMapper paymentReconciliationMapper,
         ReconciliationMapper reconciliationMapper,
-        ReconciliationRepository reconciliationRepository
+        ReconciliationRepositoryExtended reconciliationRepositoryExtended
     ) {
         this.applicationProperties = applicationProperties;
-        this.paymentRepository = paymentRepository;
+        this.paymentRepositoryExtended = paymentRepositoryExtended;
         this.paymentReconciliationMapper = paymentReconciliationMapper;
         this.reconciliationMapper = reconciliationMapper;
-        this.reconciliationRepository = reconciliationRepository;
+        this.reconciliationRepositoryExtended = reconciliationRepositoryExtended;
     }
 
     public void execute(Payment payment) {
         try {
-            if(!applicationProperties.getNovalnet().isEnabled()) {
+            if (!applicationProperties.getNovalnet().isEnabled()) {
                 throw new IllegalArgumentException("Novalnet is not enabled");
             }
 
             NovalnetPayment novalnetPayment = getNovalnetPaymentRequest(payment);
 
-            Payment init = paymentRepository.findFirstByMandateIdAndGatewayAndGatewayIdNotNullAndGatewayIdNotOrderByIdAsc(
+            Payment init = paymentRepositoryExtended.findFirstByMandateIdAndGatewayAndGatewayIdNotNullAndGatewayIdNotOrderByIdAsc(
                 payment.getMandateId(),
                 Gateway.NOVALNET,
                 ""
@@ -100,7 +102,7 @@ public class NovalnetService {
             payment.setGatewayId("");
             payment.setMode("");
         } finally {
-            paymentRepository.save(payment);
+            paymentRepositoryExtended.save(payment);
         }
     }
 
@@ -109,10 +111,13 @@ public class NovalnetService {
             return;
         }
 
-        List<ReconciliationRepository.StateOnly> stateOnlyList = reconciliationRepository.findAllByGatewayIdOrderById(
+        List<ReconciliationRepositoryExtended.StateOnly> stateOnlyList = reconciliationRepositoryExtended.findAllByGatewayIdOrderById(
             novalnetPayment.getEvent().getParentTid()
         );
-        Set<String> stateOnlySet = stateOnlyList.stream().map(ReconciliationRepository.StateOnly::getState).collect(Collectors.toSet());
+        Set<String> stateOnlySet = stateOnlyList
+            .stream()
+            .map(ReconciliationRepositoryExtended.StateOnly::getState)
+            .collect(Collectors.toSet());
 
         Reconciliation reconciliation = getReconciliationForPaymentResponse(novalnetPayment, stateOnlySet);
         if (reconciliation == null) {
@@ -129,14 +134,14 @@ public class NovalnetService {
             paid.setReasonCode("");
             paid.setMessage(reconciliation.getScottyPayment().getMessage());
             paid.setScottyPayment(reconciliation.getScottyPayment());
-            reconciliationRepository.save(paid);
+            reconciliationRepositoryExtended.save(paid);
         }
         Payment payment = reconciliation.getScottyPayment();
         if (!reconciliation.getState().equals(payment.getState())) {
             payment.setState(reconciliation.getState());
-            paymentRepository.save(payment);
+            paymentRepositoryExtended.save(payment);
         }
-        reconciliationRepository.save(reconciliation);
+        reconciliationRepositoryExtended.save(reconciliation);
     }
 
     private Reconciliation getReconciliationForPaymentResponse(NovalnetPayment novalnetPayment, Set<String> stateOnlySet) {
@@ -146,7 +151,7 @@ public class NovalnetService {
         }
 
         String gatewayId = novalnetPayment.getEvent().getParentTid();
-        Payment payment = paymentRepository.findFirstByGatewayIdOrderByIdAsc(gatewayId);
+        Payment payment = paymentRepositoryExtended.findFirstByGatewayIdOrderByIdAsc(gatewayId);
         if (payment == null) {
             return null;
         }

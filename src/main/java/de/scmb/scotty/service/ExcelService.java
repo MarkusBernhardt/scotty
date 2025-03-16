@@ -4,7 +4,9 @@ import de.scmb.scotty.domain.Payment;
 import de.scmb.scotty.domain.Reconciliation;
 import de.scmb.scotty.domain.enumeration.Gateway;
 import de.scmb.scotty.repository.PaymentRepository;
+import de.scmb.scotty.repository.PaymentRepositoryExtended;
 import de.scmb.scotty.repository.ReconciliationRepository;
+import de.scmb.scotty.repository.ReconciliationRepositoryExtended;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -17,9 +19,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class ExcelService {
 
-    private final PaymentRepository paymentRepository;
+    private final PaymentRepositoryExtended paymentRepositoryExtended;
 
-    private final ReconciliationRepository reconciliationRepository;
+    private final ReconciliationRepositoryExtended reconciliationRepositoryExtended;
 
     public static final ColumnDescription[] COLUMNS = {
         new ColumnDescription(
@@ -150,9 +152,12 @@ public class ExcelService {
         new ColumnDescription("mode", ColumnLevel.response, "The mode of the payment. Can be \"test\" of \"live\"", "", ""),
     };
 
-    public ExcelService(PaymentRepository paymentRepository, ReconciliationRepository reconciliationRepository) {
-        this.paymentRepository = paymentRepository;
-        this.reconciliationRepository = reconciliationRepository;
+    public ExcelService(
+        PaymentRepositoryExtended paymentRepositoryExtended,
+        ReconciliationRepositoryExtended reconciliationRepositoryExtended
+    ) {
+        this.paymentRepositoryExtended = paymentRepositoryExtended;
+        this.reconciliationRepositoryExtended = reconciliationRepositoryExtended;
     }
 
     public ValidationResult validatePaymentsFromStream(InputStream inputStream) throws IOException {
@@ -265,7 +270,7 @@ public class ExcelService {
             }
 
             index = 1;
-            List<Payment> payments = paymentRepository.findAllByFileNameOrderByIdAsc(fileName);
+            List<Payment> payments = paymentRepositoryExtended.findAllByFileNameOrderByIdAsc(fileName);
             for (Payment payment : payments) {
                 row = sheet.createRow(index);
 
@@ -418,7 +423,7 @@ public class ExcelService {
             }
 
             index = 1;
-            List<Reconciliation> reconciliations = reconciliationRepository.findAllByFileNameOrderByIdAsc(fileName);
+            List<Reconciliation> reconciliations = reconciliationRepositoryExtended.findAllByFileNameOrderByIdAsc(fileName);
             for (Reconciliation reconciliation : reconciliations) {
                 row = sheet.createRow(index);
 

@@ -474,8 +474,8 @@
           @if (editForm.get('gatewayId')!.invalid && (editForm.get('gatewayId')!.dirty || editForm.get('gatewayId')!.touched)) {
             <div>
               @if (editForm.get('gatewayId')?.errors?.maxlength) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: 35 }"
-                  >This field cannot be longer than 35 characters.</small
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: 255 }"
+                  >This field cannot be longer than 255 characters.</small
                 >
               }
             </div>

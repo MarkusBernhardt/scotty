@@ -1,7 +1,11 @@
 export enum Gateway {
+  CCBILL = 'ccbill',
+
   EMERCHANTPAY = 'emerchantpay',
 
-  CCBILL = 'ccbill',
+  NOVALNET = 'novalnet',
+
+  OPENPAYD = 'openpayd',
 
   UNKNOWN = 'unknown',
 }

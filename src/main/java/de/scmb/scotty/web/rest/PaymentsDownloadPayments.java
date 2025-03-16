@@ -1,6 +1,7 @@
 package de.scmb.scotty.web.rest;
 
 import de.scmb.scotty.repository.PaymentRepository;
+import de.scmb.scotty.repository.PaymentRepositoryExtended;
 import de.scmb.scotty.service.ExcelService;
 import de.scmb.scotty.service.criteria.PaymentCriteria;
 import de.scmb.scotty.service.dto.*;
@@ -25,13 +26,13 @@ public class PaymentsDownloadPayments {
 
     private final ExcelService excelService;
 
-    private final PaymentRepository paymentRepository;
+    private final PaymentRepositoryExtended paymentRepositoryExtended;
 
     private final Logger log = LoggerFactory.getLogger(PaymentsDownloadPayments.class);
 
-    public PaymentsDownloadPayments(ExcelService excelService, PaymentRepository paymentRepository) {
+    public PaymentsDownloadPayments(ExcelService excelService, PaymentRepositoryExtended paymentRepositoryExtended) {
         this.excelService = excelService;
-        this.paymentRepository = paymentRepository;
+        this.paymentRepositoryExtended = paymentRepositoryExtended;
     }
 
     @GetMapping("/list")
@@ -41,7 +42,7 @@ public class PaymentsDownloadPayments {
     ) {
         log.debug("REST request to get Payments by criteria: {}", criteria);
 
-        Page<PaymentsDownloadPaymentsDto> page = paymentRepository.findAllGroupByFileName(pageable);
+        Page<PaymentsDownloadPaymentsDto> page = paymentRepositoryExtended.findAllGroupByFileName(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }

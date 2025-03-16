@@ -16,6 +16,7 @@ import de.scmb.scotty.config.ApplicationProperties;
 import de.scmb.scotty.domain.Payment;
 import de.scmb.scotty.domain.enumeration.Gateway;
 import de.scmb.scotty.repository.PaymentRepository;
+import de.scmb.scotty.repository.PaymentRepositoryExtended;
 import java.math.BigDecimal;
 import java.time.Instant;
 import org.springframework.stereotype.Service;
@@ -25,21 +26,21 @@ public class EmerchantpayService {
 
     private final ApplicationProperties applicationProperties;
 
-    private final PaymentRepository paymentRepository;
+    private final PaymentRepositoryExtended paymentRepositoryExtended;
 
-    public EmerchantpayService(ApplicationProperties applicationProperties, PaymentRepository paymentRepository) {
+    public EmerchantpayService(ApplicationProperties applicationProperties, PaymentRepositoryExtended paymentRepositoryExtended) {
         this.applicationProperties = applicationProperties;
-        this.paymentRepository = paymentRepository;
+        this.paymentRepositoryExtended = paymentRepositoryExtended;
     }
 
     public void execute(Payment payment) {
         try {
-            if(!applicationProperties.getEmerchantpay().isEnabled()) {
+            if (!applicationProperties.getEmerchantpay().isEnabled()) {
                 throw new IllegalArgumentException("Emerchantpay is not enabled");
             }
 
             Request request;
-            Payment init = paymentRepository.findFirstByMandateIdAndGatewayAndGatewayIdNotNullAndGatewayIdNotOrderByIdAsc(
+            Payment init = paymentRepositoryExtended.findFirstByMandateIdAndGatewayAndGatewayIdNotNullAndGatewayIdNotOrderByIdAsc(
                 payment.getMandateId(),
                 Gateway.EMERCHANTPAY,
                 ""
@@ -86,7 +87,7 @@ public class EmerchantpayService {
             payment.setGatewayId("");
             payment.setMode("");
         } finally {
-            paymentRepository.save(payment);
+            paymentRepositoryExtended.save(payment);
         }
     }
 

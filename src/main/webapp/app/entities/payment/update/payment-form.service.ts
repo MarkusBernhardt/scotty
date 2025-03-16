@@ -89,7 +89,7 @@ export class PaymentFormService {
         validators: [Validators.required, Validators.minLength(8), Validators.maxLength(11)],
       }),
       amount: new FormControl(paymentRawValue.amount, {
-        validators: [Validators.required, Validators.min(0)],
+        validators: [Validators.required],
       }),
       currencyCode: new FormControl(paymentRawValue.currencyCode, {
         validators: [Validators.required, Validators.minLength(3), Validators.maxLength(3)],
@@ -134,7 +134,7 @@ export class PaymentFormService {
         validators: [Validators.required, Validators.maxLength(255)],
       }),
       gatewayId: new FormControl(paymentRawValue.gatewayId, {
-        validators: [Validators.maxLength(35)],
+        validators: [Validators.maxLength(255)],
       }),
       mode: new FormControl(paymentRawValue.mode, {
         validators: [Validators.maxLength(35)],
