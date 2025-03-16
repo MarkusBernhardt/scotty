@@ -1,0 +1,25 @@
+{
+  "scottyApp": {
+    "keyValue": {
+      "home": {
+        "title": "Key Values",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Key Value",
+        "createOrEditLabel": "Create or edit a Key Value",
+        "notFound": "No Key Values found"
+      },
+      "created": "A new Key Value is created with identifier {{ param }}",
+      "updated": "A Key Value is updated with identifier {{ param }}",
+      "deleted": "A Key Value is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Key Value {{ id }}?"
+      },
+      "detail": {
+        "title": "Key Value"
+      },
+      "id": "ID",
+      "kvKey": "Kv Key",
+      "kvValue": "Kv Value"
+    }
+  }
+}

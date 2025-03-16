@@ -1,0 +1,312 @@
+<div>
+  <h2 id="page-heading" data-cy="ReconciliationHeading">
+    <span jhiTranslate="scottyApp.reconciliation.home.title">Reconciliations</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+        <fa-icon icon="sync" [spin]="isLoading"></fa-icon>
+        <span jhiTranslate="scottyApp.reconciliation.home.refreshListLabel">Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-reconciliation"
+        [routerLink]="['/reconciliation/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span jhiTranslate="scottyApp.reconciliation.home.createLabel">Create a new Reconciliation</span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error></jhi-alert-error>
+
+  <jhi-alert></jhi-alert>
+
+  <jhi-filter [filters]="filters"></jhi-filter>
+
+  @if (reconciliations?.length === 0) {
+    <div class="alert alert-warning" id="no-result">
+      <span jhiTranslate="scottyApp.reconciliation.home.notFound">No Reconciliations found</span>
+    </div>
+  }
+
+  @if (reconciliations && reconciliations.length > 0) {
+    <div class="table-responsive table-entities" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
+        <thead>
+          <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="navigateToWithComponentValues()">
+            <th scope="col" jhiSortBy="id">
+              <div class="d-flex">
+                <span jhiTranslate="global.field.id">ID</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="mandateId">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.reconciliation.mandateId">Mandate Id</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="paymentId">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.reconciliation.paymentId">Payment Id</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="gateway">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.reconciliation.gateway">Gateway</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="iban">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.reconciliation.iban">Iban</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="bic">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.reconciliation.bic">Bic</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="amount">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.reconciliation.amount">Amount</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="currencyCode">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.reconciliation.currencyCode">Currency Code</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="softDescriptor">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.reconciliation.softDescriptor">Soft Descriptor</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="firstName">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.reconciliation.firstName">First Name</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="lastName">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.reconciliation.lastName">Last Name</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="streetName">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.reconciliation.streetName">Street Name</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="houseNumber">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.reconciliation.houseNumber">House Number</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="postalCode">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.reconciliation.postalCode">Postal Code</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="city">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.reconciliation.city">City</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="countryCode">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.reconciliation.countryCode">Country Code</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="remoteIp">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.reconciliation.remoteIp">Remote Ip</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="emailAddress">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.reconciliation.emailAddress">Email Address</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="timestamp">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.reconciliation.timestamp">Timestamp</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="state">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.reconciliation.state">State</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="reasonCode">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.reconciliation.reasonCode">Reason Code</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="message">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.reconciliation.message">Message</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="gatewayId">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.reconciliation.gatewayId">Gateway Id</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="mode">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.reconciliation.mode">Mode</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="fileName">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.reconciliation.fileName">File Name</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="scottyPayment.id">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.reconciliation.scottyPayment">Scotty Payment</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (reconciliation of reconciliations; track trackId) {
+            <tr data-cy="entityTable">
+              <td>
+                <a [routerLink]="['/reconciliation', reconciliation.id, 'view']">{{ reconciliation.id }}</a>
+              </td>
+              <td>{{ reconciliation.mandateId }}</td>
+              <td>{{ reconciliation.paymentId }}</td>
+              <td jhiTranslate="{{ 'scottyApp.Gateway.' + reconciliation.gateway }}">{{ reconciliation.gateway }}</td>
+              <td>{{ reconciliation.iban }}</td>
+              <td>{{ reconciliation.bic }}</td>
+              <td>{{ reconciliation.amount }}</td>
+              <td>{{ reconciliation.currencyCode }}</td>
+              <td>{{ reconciliation.softDescriptor }}</td>
+              <td>{{ reconciliation.firstName }}</td>
+              <td>{{ reconciliation.lastName }}</td>
+              <td>{{ reconciliation.streetName }}</td>
+              <td>{{ reconciliation.houseNumber }}</td>
+              <td>{{ reconciliation.postalCode }}</td>
+              <td>{{ reconciliation.city }}</td>
+              <td>{{ reconciliation.countryCode }}</td>
+              <td>{{ reconciliation.remoteIp }}</td>
+              <td>{{ reconciliation.emailAddress }}</td>
+              <td>{{ reconciliation.timestamp | formatMediumDatetime }}</td>
+              <td>{{ reconciliation.state }}</td>
+              <td>{{ reconciliation.reasonCode }}</td>
+              <td>{{ reconciliation.message }}</td>
+              <td>{{ reconciliation.gatewayId }}</td>
+              <td>{{ reconciliation.mode }}</td>
+              <td>{{ reconciliation.fileName }}</td>
+              <td>
+                @if (reconciliation.scottyPayment) {
+                  <div>
+                    <a [routerLink]="['/payment', reconciliation.scottyPayment.id, 'view']">{{ reconciliation.scottyPayment.id }}</a>
+                  </div>
+                }
+              </td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <a
+                    [routerLink]="['/reconciliation', reconciliation.id, 'view']"
+                    class="btn btn-info btn-sm"
+                    data-cy="entityDetailsButton"
+                  >
+                    <fa-icon icon="eye"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+                  </a>
+
+                  <a
+                    [routerLink]="['/reconciliation', reconciliation.id, 'edit']"
+                    class="btn btn-primary btn-sm"
+                    data-cy="entityEditButton"
+                  >
+                    <fa-icon icon="pencil-alt"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+                  </a>
+
+                  <button type="submit" (click)="delete(reconciliation)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                    <fa-icon icon="times"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+  @if (reconciliations && reconciliations.length > 0) {
+    <div>
+      <div class="d-flex justify-content-center">
+        <jhi-item-count [params]="{ page: page, totalItems: totalItems, itemsPerPage: itemsPerPage }"></jhi-item-count>
+      </div>
+
+      <div class="d-flex justify-content-center">
+        <ngb-pagination
+          [collectionSize]="totalItems"
+          [page]="page"
+          [pageSize]="itemsPerPage"
+          [maxSize]="5"
+          [rotate]="true"
+          [boundaryLinks]="true"
+          (pageChange)="navigateToPage($event)"
+        ></ngb-pagination>
+      </div>
+    </div>
+  }
+</div>

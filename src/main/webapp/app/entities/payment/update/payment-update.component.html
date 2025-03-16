@@ -1,0 +1,501 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2 id="jhi-payment-heading" data-cy="PaymentCreateUpdateHeading" jhiTranslate="scottyApp.payment.home.createOrEditLabel">
+        Create or edit a Payment
+      </h2>
+
+      <div>
+        <jhi-alert-error></jhi-alert-error>
+
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" jhiTranslate="global.field.id" for="field_id">ID</label>
+            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="scottyApp.payment.mandateId" for="field_mandateId">Mandate Id</label>
+          <input type="text" class="form-control" name="mandateId" id="field_mandateId" data-cy="mandateId" formControlName="mandateId" />
+          @if (editForm.get('mandateId')!.invalid && (editForm.get('mandateId')!.dirty || editForm.get('mandateId')!.touched)) {
+            <div>
+              @if (editForm.get('mandateId')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+              @if (editForm.get('mandateId')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: 35 }"
+                  >This field cannot be longer than 35 characters.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="scottyApp.payment.paymentId" for="field_paymentId">Payment Id</label>
+          <input type="text" class="form-control" name="paymentId" id="field_paymentId" data-cy="paymentId" formControlName="paymentId" />
+          @if (editForm.get('paymentId')!.invalid && (editForm.get('paymentId')!.dirty || editForm.get('paymentId')!.touched)) {
+            <div>
+              @if (editForm.get('paymentId')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+              @if (editForm.get('paymentId')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: 35 }"
+                  >This field cannot be longer than 35 characters.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="scottyApp.payment.gateway" for="field_gateway">Gateway</label>
+          <select class="form-control" name="gateway" formControlName="gateway" id="field_gateway" data-cy="gateway">
+            <option [ngValue]="null">{{ 'scottyApp.Gateway.null' | translate }}</option>
+            @for (gateway of gatewayValues; track $index) {
+              <option [value]="gateway">{{ 'scottyApp.Gateway.' + gateway | translate }}</option>
+            }
+          </select>
+          @if (editForm.get('gateway')!.invalid && (editForm.get('gateway')!.dirty || editForm.get('gateway')!.touched)) {
+            <div>
+              @if (editForm.get('gateway')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="scottyApp.payment.iban" for="field_iban">Iban</label>
+          <input type="text" class="form-control" name="iban" id="field_iban" data-cy="iban" formControlName="iban" />
+          @if (editForm.get('iban')!.invalid && (editForm.get('iban')!.dirty || editForm.get('iban')!.touched)) {
+            <div>
+              @if (editForm.get('iban')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+              @if (editForm.get('iban')?.errors?.minlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.minlength" [translateValues]="{ min: 16 }"
+                  >This field is required to be at least 16 characters.</small
+                >
+              }
+              @if (editForm.get('iban')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: 34 }"
+                  >This field cannot be longer than 34 characters.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="scottyApp.payment.bic" for="field_bic">Bic</label>
+          <input type="text" class="form-control" name="bic" id="field_bic" data-cy="bic" formControlName="bic" />
+          @if (editForm.get('bic')!.invalid && (editForm.get('bic')!.dirty || editForm.get('bic')!.touched)) {
+            <div>
+              @if (editForm.get('bic')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+              @if (editForm.get('bic')?.errors?.minlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.minlength" [translateValues]="{ min: 8 }"
+                  >This field is required to be at least 8 characters.</small
+                >
+              }
+              @if (editForm.get('bic')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: 11 }"
+                  >This field cannot be longer than 11 characters.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="scottyApp.payment.amount" for="field_amount">Amount</label>
+          <input type="number" class="form-control" name="amount" id="field_amount" data-cy="amount" formControlName="amount" />
+          @if (editForm.get('amount')!.invalid && (editForm.get('amount')!.dirty || editForm.get('amount')!.touched)) {
+            <div>
+              @if (editForm.get('amount')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+              <small
+                class="form-text text-danger"
+                [hidden]="!editForm.get('amount')?.errors?.number"
+                jhiTranslate="entity.validation.number"
+                >This field should be a number.</small
+              >
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="scottyApp.payment.currencyCode" for="field_currencyCode">Currency Code</label>
+          <input
+            type="text"
+            class="form-control"
+            name="currencyCode"
+            id="field_currencyCode"
+            data-cy="currencyCode"
+            formControlName="currencyCode"
+          />
+          @if (editForm.get('currencyCode')!.invalid && (editForm.get('currencyCode')!.dirty || editForm.get('currencyCode')!.touched)) {
+            <div>
+              @if (editForm.get('currencyCode')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+              @if (editForm.get('currencyCode')?.errors?.minlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.minlength" [translateValues]="{ min: 3 }"
+                  >This field is required to be at least 3 characters.</small
+                >
+              }
+              @if (editForm.get('currencyCode')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: 3 }"
+                  >This field cannot be longer than 3 characters.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="scottyApp.payment.softDescriptor" for="field_softDescriptor">Soft Descriptor</label>
+          <input
+            type="text"
+            class="form-control"
+            name="softDescriptor"
+            id="field_softDescriptor"
+            data-cy="softDescriptor"
+            formControlName="softDescriptor"
+          />
+          @if (
+            editForm.get('softDescriptor')!.invalid && (editForm.get('softDescriptor')!.dirty || editForm.get('softDescriptor')!.touched)
+          ) {
+            <div>
+              @if (editForm.get('softDescriptor')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+              @if (editForm.get('softDescriptor')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: 140 }"
+                  >This field cannot be longer than 140 characters.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="scottyApp.payment.firstName" for="field_firstName">First Name</label>
+          <input type="text" class="form-control" name="firstName" id="field_firstName" data-cy="firstName" formControlName="firstName" />
+          @if (editForm.get('firstName')!.invalid && (editForm.get('firstName')!.dirty || editForm.get('firstName')!.touched)) {
+            <div>
+              @if (editForm.get('firstName')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+              @if (editForm.get('firstName')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: 35 }"
+                  >This field cannot be longer than 35 characters.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="scottyApp.payment.lastName" for="field_lastName">Last Name</label>
+          <input type="text" class="form-control" name="lastName" id="field_lastName" data-cy="lastName" formControlName="lastName" />
+          @if (editForm.get('lastName')!.invalid && (editForm.get('lastName')!.dirty || editForm.get('lastName')!.touched)) {
+            <div>
+              @if (editForm.get('lastName')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+              @if (editForm.get('lastName')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: 35 }"
+                  >This field cannot be longer than 35 characters.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="scottyApp.payment.streetName" for="field_streetName">Street Name</label>
+          <input
+            type="text"
+            class="form-control"
+            name="streetName"
+            id="field_streetName"
+            data-cy="streetName"
+            formControlName="streetName"
+          />
+          @if (editForm.get('streetName')!.invalid && (editForm.get('streetName')!.dirty || editForm.get('streetName')!.touched)) {
+            <div>
+              @if (editForm.get('streetName')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+              @if (editForm.get('streetName')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: 70 }"
+                  >This field cannot be longer than 70 characters.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="scottyApp.payment.houseNumber" for="field_houseNumber">House Number</label>
+          <input
+            type="text"
+            class="form-control"
+            name="houseNumber"
+            id="field_houseNumber"
+            data-cy="houseNumber"
+            formControlName="houseNumber"
+          />
+          @if (editForm.get('houseNumber')!.invalid && (editForm.get('houseNumber')!.dirty || editForm.get('houseNumber')!.touched)) {
+            <div>
+              @if (editForm.get('houseNumber')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+              @if (editForm.get('houseNumber')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: 16 }"
+                  >This field cannot be longer than 16 characters.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="scottyApp.payment.postalCode" for="field_postalCode">Postal Code</label>
+          <input
+            type="text"
+            class="form-control"
+            name="postalCode"
+            id="field_postalCode"
+            data-cy="postalCode"
+            formControlName="postalCode"
+          />
+          @if (editForm.get('postalCode')!.invalid && (editForm.get('postalCode')!.dirty || editForm.get('postalCode')!.touched)) {
+            <div>
+              @if (editForm.get('postalCode')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+              @if (editForm.get('postalCode')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: 16 }"
+                  >This field cannot be longer than 16 characters.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="scottyApp.payment.city" for="field_city">City</label>
+          <input type="text" class="form-control" name="city" id="field_city" data-cy="city" formControlName="city" />
+          @if (editForm.get('city')!.invalid && (editForm.get('city')!.dirty || editForm.get('city')!.touched)) {
+            <div>
+              @if (editForm.get('city')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+              @if (editForm.get('city')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: 35 }"
+                  >This field cannot be longer than 35 characters.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="scottyApp.payment.countryCode" for="field_countryCode">Country Code</label>
+          <input
+            type="text"
+            class="form-control"
+            name="countryCode"
+            id="field_countryCode"
+            data-cy="countryCode"
+            formControlName="countryCode"
+          />
+          @if (editForm.get('countryCode')!.invalid && (editForm.get('countryCode')!.dirty || editForm.get('countryCode')!.touched)) {
+            <div>
+              @if (editForm.get('countryCode')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+              @if (editForm.get('countryCode')?.errors?.minlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.minlength" [translateValues]="{ min: 2 }"
+                  >This field is required to be at least 2 characters.</small
+                >
+              }
+              @if (editForm.get('countryCode')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: 2 }"
+                  >This field cannot be longer than 2 characters.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="scottyApp.payment.remoteIp" for="field_remoteIp">Remote Ip</label>
+          <input type="text" class="form-control" name="remoteIp" id="field_remoteIp" data-cy="remoteIp" formControlName="remoteIp" />
+          @if (editForm.get('remoteIp')!.invalid && (editForm.get('remoteIp')!.dirty || editForm.get('remoteIp')!.touched)) {
+            <div>
+              @if (editForm.get('remoteIp')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+              @if (editForm.get('remoteIp')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: 39 }"
+                  >This field cannot be longer than 39 characters.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="scottyApp.payment.emailAddress" for="field_emailAddress">Email Address</label>
+          <input
+            type="text"
+            class="form-control"
+            name="emailAddress"
+            id="field_emailAddress"
+            data-cy="emailAddress"
+            formControlName="emailAddress"
+          />
+          @if (editForm.get('emailAddress')!.invalid && (editForm.get('emailAddress')!.dirty || editForm.get('emailAddress')!.touched)) {
+            <div>
+              @if (editForm.get('emailAddress')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+              @if (editForm.get('emailAddress')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: 255 }"
+                  >This field cannot be longer than 255 characters.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="scottyApp.payment.timestamp" for="field_timestamp">Timestamp</label>
+          <div class="d-flex">
+            <input
+              id="field_timestamp"
+              data-cy="timestamp"
+              type="datetime-local"
+              class="form-control"
+              name="timestamp"
+              formControlName="timestamp"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+          @if (editForm.get('timestamp')!.invalid && (editForm.get('timestamp')!.dirty || editForm.get('timestamp')!.touched)) {
+            <div>
+              @if (editForm.get('timestamp')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+              <small
+                class="form-text text-danger"
+                [hidden]="!editForm.get('timestamp')?.errors?.datetimelocal"
+                jhiTranslate="entity.validation.datetimelocal"
+                >This field should be a date and time.</small
+              >
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="scottyApp.payment.state" for="field_state">State</label>
+          <input type="text" class="form-control" name="state" id="field_state" data-cy="state" formControlName="state" />
+          @if (editForm.get('state')!.invalid && (editForm.get('state')!.dirty || editForm.get('state')!.touched)) {
+            <div>
+              @if (editForm.get('state')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+              @if (editForm.get('state')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: 35 }"
+                  >This field cannot be longer than 35 characters.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="scottyApp.payment.message" for="field_message">Message</label>
+          <input type="text" class="form-control" name="message" id="field_message" data-cy="message" formControlName="message" />
+          @if (editForm.get('message')!.invalid && (editForm.get('message')!.dirty || editForm.get('message')!.touched)) {
+            <div>
+              @if (editForm.get('message')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+              @if (editForm.get('message')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: 255 }"
+                  >This field cannot be longer than 255 characters.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="scottyApp.payment.gatewayId" for="field_gatewayId">Gateway Id</label>
+          <input type="text" class="form-control" name="gatewayId" id="field_gatewayId" data-cy="gatewayId" formControlName="gatewayId" />
+          @if (editForm.get('gatewayId')!.invalid && (editForm.get('gatewayId')!.dirty || editForm.get('gatewayId')!.touched)) {
+            <div>
+              @if (editForm.get('gatewayId')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: 255 }"
+                  >This field cannot be longer than 255 characters.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="scottyApp.payment.mode" for="field_mode">Mode</label>
+          <input type="text" class="form-control" name="mode" id="field_mode" data-cy="mode" formControlName="mode" />
+          @if (editForm.get('mode')!.invalid && (editForm.get('mode')!.dirty || editForm.get('mode')!.touched)) {
+            <div>
+              @if (editForm.get('mode')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: 35 }"
+                  >This field cannot be longer than 35 characters.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" jhiTranslate="scottyApp.payment.fileName" for="field_fileName">File Name</label>
+          <input type="text" class="form-control" name="fileName" id="field_fileName" data-cy="fileName" formControlName="fileName" />
+          @if (editForm.get('fileName')!.invalid && (editForm.get('fileName')!.dirty || editForm.get('fileName')!.touched)) {
+            <div>
+              @if (editForm.get('fileName')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: 255 }"
+                  >This field cannot be longer than 255 characters.</small
+                >
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

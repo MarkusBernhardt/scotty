@@ -1,0 +1,107 @@
+import dayjs from 'dayjs/esm';
+
+import { IPayment, NewPayment } from './payment.model';
+
+export const sampleWithRequiredData: IPayment = {
+  id: 6687,
+  mandateId: 'turbulent',
+  paymentId: 'sheet',
+  gateway: 'EMERCHANTPAY',
+  iban: 'PL43600542440536240240716215',
+  bic: 'TBHSBYH8',
+  amount: 16188,
+  currencyCode: 'KZT',
+  softDescriptor: 'but confute',
+  firstName: 'Nigel',
+  lastName: 'Lynch',
+  streetName: 'The Avenue',
+  houseNumber: 'uneven mutation',
+  postalCode: 'mama',
+  city: 'East Natalia',
+  countryCode: 'PY',
+  remoteIp: 'nationalize um',
+  emailAddress: 'parliament',
+  timestamp: dayjs('2024-02-29T18:59'),
+  state: 'emanate fond counterfeit',
+  message: 'meh whine',
+};
+
+export const sampleWithPartialData: IPayment = {
+  id: 9514,
+  mandateId: 'majestic',
+  paymentId: 'loyally microchip',
+  gateway: 'OPENPAYD',
+  iban: 'AZ03AXHY74006140305004006004',
+  bic: 'BGXSGQ1W',
+  amount: 7570,
+  currencyCode: 'AED',
+  softDescriptor: 'corps',
+  firstName: 'Odessa',
+  lastName: 'Gleichner',
+  streetName: 'Danika Isle',
+  houseNumber: 'that stupendous ',
+  postalCode: 'ribbon unfortuna',
+  city: 'Port Heathfield',
+  countryCode: 'MQ',
+  remoteIp: 'misfit',
+  emailAddress: 'after cheer rainbow',
+  timestamp: dayjs('2024-03-01T10:15'),
+  state: 'mop',
+  message: 'midst behoove seize',
+};
+
+export const sampleWithFullData: IPayment = {
+  id: 3721,
+  mandateId: 'victimise wardrobe swath',
+  paymentId: 'boo around woot',
+  gateway: 'OPENPAYD',
+  iban: 'NO3528470090043X',
+  bic: 'QVRBVAIDTPA',
+  amount: 1487,
+  currencyCode: 'MVR',
+  softDescriptor: 'tall',
+  firstName: 'Elta',
+  lastName: 'Purdy',
+  streetName: 'Antonia Centers',
+  houseNumber: 'mature vacantly',
+  postalCode: 'boohoo vulgarise',
+  city: 'West Graycefield',
+  countryCode: 'GP',
+  remoteIp: 'rat',
+  emailAddress: 'duh ajar',
+  timestamp: dayjs('2024-02-29T14:33'),
+  state: 'gracious',
+  message: 'until',
+  gatewayId: 'fortunately thresh',
+  mode: 'genie',
+  fileName: 'oh pristine',
+};
+
+export const sampleWithNewData: NewPayment = {
+  mandateId: 'television',
+  paymentId: 'supposing unless inasmuch',
+  gateway: 'OPENPAYD',
+  iban: 'MR0700780799359240080935112',
+  bic: 'VTMEMWW8XXX',
+  amount: 24938,
+  currencyCode: 'TMT',
+  softDescriptor: 'niche',
+  firstName: 'Fausto',
+  lastName: 'Schneider-Prosacco',
+  streetName: 'W Center Street',
+  houseNumber: 'yet',
+  postalCode: 'competence subdu',
+  city: 'Arlington',
+  countryCode: 'SG',
+  remoteIp: 'until since',
+  emailAddress: 'evil wash unto',
+  timestamp: dayjs('2024-03-01T06:14'),
+  state: 'smart finger what',
+  message: 'despite',
+  id: null,
+};
+
+Object.freeze(sampleWithNewData);
+Object.freeze(sampleWithRequiredData);
+Object.freeze(sampleWithPartialData);
+Object.freeze(sampleWithFullData);
