@@ -2,8 +2,6 @@ package de.scmb.scotty.service;
 
 import de.scmb.scotty.service.dto.KeyValueDTO;
 import java.util.Optional;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 /**
  * Service Interface for managing {@link de.scmb.scotty.domain.KeyValue}.
@@ -32,14 +30,6 @@ public interface KeyValueService {
      * @return the persisted entity.
      */
     Optional<KeyValueDTO> partialUpdate(KeyValueDTO keyValueDTO);
-
-    /**
-     * Get all the keyValues.
-     *
-     * @param pageable the pagination information.
-     * @return the list of entities.
-     */
-    Page<KeyValueDTO> findAll(Pageable pageable);
 
     /**
      * Get the "id" keyValue.

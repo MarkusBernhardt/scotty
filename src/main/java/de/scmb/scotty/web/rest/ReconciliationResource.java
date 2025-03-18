@@ -33,7 +33,7 @@ import tech.jhipster.web.util.ResponseUtil;
 @RequestMapping("/api/reconciliations")
 public class ReconciliationResource {
 
-    private final Logger log = LoggerFactory.getLogger(ReconciliationResource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ReconciliationResource.class);
 
     private static final String ENTITY_NAME = "reconciliation";
 
@@ -66,15 +66,14 @@ public class ReconciliationResource {
     @PostMapping("")
     public ResponseEntity<ReconciliationDTO> createReconciliation(@Valid @RequestBody ReconciliationDTO reconciliationDTO)
         throws URISyntaxException {
-        log.debug("REST request to save Reconciliation : {}", reconciliationDTO);
+        LOG.debug("REST request to save Reconciliation : {}", reconciliationDTO);
         if (reconciliationDTO.getId() != null) {
             throw new BadRequestAlertException("A new reconciliation cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        ReconciliationDTO result = reconciliationService.save(reconciliationDTO);
-        return ResponseEntity
-            .created(new URI("/api/reconciliations/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
-            .body(result);
+        reconciliationDTO = reconciliationService.save(reconciliationDTO);
+        return ResponseEntity.created(new URI("/api/reconciliations/" + reconciliationDTO.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, reconciliationDTO.getId().toString()))
+            .body(reconciliationDTO);
     }
 
     /**
@@ -92,7 +91,7 @@ public class ReconciliationResource {
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody ReconciliationDTO reconciliationDTO
     ) throws URISyntaxException {
-        log.debug("REST request to update Reconciliation : {}, {}", id, reconciliationDTO);
+        LOG.debug("REST request to update Reconciliation : {}, {}", id, reconciliationDTO);
         if (reconciliationDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -104,11 +103,10 @@ public class ReconciliationResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        ReconciliationDTO result = reconciliationService.update(reconciliationDTO);
-        return ResponseEntity
-            .ok()
+        reconciliationDTO = reconciliationService.update(reconciliationDTO);
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, reconciliationDTO.getId().toString()))
-            .body(result);
+            .body(reconciliationDTO);
     }
 
     /**
@@ -127,7 +125,7 @@ public class ReconciliationResource {
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody ReconciliationDTO reconciliationDTO
     ) throws URISyntaxException {
-        log.debug("REST request to partial update Reconciliation partially : {}, {}", id, reconciliationDTO);
+        LOG.debug("REST request to partial update Reconciliation partially : {}, {}", id, reconciliationDTO);
         if (reconciliationDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -159,7 +157,7 @@ public class ReconciliationResource {
         ReconciliationCriteria criteria,
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
-        log.debug("REST request to get Reconciliations by criteria: {}", criteria);
+        LOG.debug("REST request to get Reconciliations by criteria: {}", criteria);
 
         Page<ReconciliationDTO> page = reconciliationQueryService.findByCriteria(criteria, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
@@ -174,7 +172,7 @@ public class ReconciliationResource {
      */
     @GetMapping("/count")
     public ResponseEntity<Long> countReconciliations(ReconciliationCriteria criteria) {
-        log.debug("REST request to count Reconciliations by criteria: {}", criteria);
+        LOG.debug("REST request to count Reconciliations by criteria: {}", criteria);
         return ResponseEntity.ok().body(reconciliationQueryService.countByCriteria(criteria));
     }
 
@@ -186,7 +184,7 @@ public class ReconciliationResource {
      */
     @GetMapping("/{id}")
     public ResponseEntity<ReconciliationDTO> getReconciliation(@PathVariable("id") Long id) {
-        log.debug("REST request to get Reconciliation : {}", id);
+        LOG.debug("REST request to get Reconciliation : {}", id);
         Optional<ReconciliationDTO> reconciliationDTO = reconciliationService.findOne(id);
         return ResponseUtil.wrapOrNotFound(reconciliationDTO);
     }
@@ -199,10 +197,9 @@ public class ReconciliationResource {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReconciliation(@PathVariable("id") Long id) {
-        log.debug("REST request to delete Reconciliation : {}", id);
+        LOG.debug("REST request to delete Reconciliation : {}", id);
         reconciliationService.delete(id);
-        return ResponseEntity
-            .noContent()
+        return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
     }

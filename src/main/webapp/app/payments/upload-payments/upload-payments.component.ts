@@ -1,8 +1,8 @@
 import { TranslateService } from '@ngx-translate/core';
 import { PaymentsUploadPaymentsService } from './upload-payments.service';
-import { HttpEventType } from '@angular/common/http';
+import { HttpEvent, HttpEventType } from '@angular/common/http';
 import { Subscription } from 'rxjs';
-import { PaymentsUploadPaymentsValidateResponse, PaymentsUploadPaymentsExecuteResponse } from './upload-payments.model';
+import { PaymentsUploadPaymentsValidateResponse, PaymentsUploadPaymentsProgressResponse } from './upload-payments.model';
 import FileSaver from 'file-saver';
 import SharedModule from '../../shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -41,17 +41,17 @@ export default class PaymentsUploadPaymentsComponent {
     private paymentsUploadPaymentsService: PaymentsUploadPaymentsService,
   ) {}
 
-  async onFileBrowsed(event: Event) {
+  async onFileBrowsed(event: Event): Promise<void> {
     const target = event.target as HTMLInputElement;
     if (target.files) {
       await this.onFileDropped(target.files);
     }
   }
 
-  async onFileDropped(fileList: FileList) {
+  async onFileDropped(fileList: FileList): Promise<void> {
     const allowedFileExtensions = new Set(['xls', 'xlsx']);
     for (let i = 0; i < fileList.length; i++) {
-      let file = fileList.item(i);
+      const file = fileList.item(i);
       await new Promise(f => setTimeout(f, 250));
       if (file != null) {
         if (!allowedFileExtensions.has(file.name.substring(file.name.lastIndexOf('.') + 1).toLowerCase())) {
@@ -74,28 +74,8 @@ export default class PaymentsUploadPaymentsComponent {
     }
 
     fileCache.validateSubscription = this.paymentsUploadPaymentsService.validate(fileCache.file).subscribe({
-      next: event => {
-        switch (event.type) {
-          case HttpEventType.UploadProgress:
-            if (event.total) {
-              fileCache.validateProgress = Math.round((100 * event.loaded) / event.total);
-            }
-            break;
-          case HttpEventType.Response:
-            const response = event.body as PaymentsUploadPaymentsValidateResponse;
-            fileCache.validateProgress = 100;
-            fileCache.validateSuccess = response.success;
-            fileCache.validateCount = response.count;
-            fileCache.validateAmount = response.amount;
-            break;
-          default:
-            break;
-        }
-      },
-      error: () => {
-        fileCache.validateSuccess = false;
-        fileCache.validateProgress = 100;
-      },
+      next: event => this.validateOnNext(fileCache, event),
+      error: () => this.validateOnError(fileCache),
     });
   }
 
@@ -108,37 +88,18 @@ export default class PaymentsUploadPaymentsComponent {
     fileCache.executeFileName = 'payments-' + formatDate(Date.now(), 'yyyyMMdd-hhmmss', 'en-US') + '.xlsx';
 
     fileCache.executeSubscription = this.paymentsUploadPaymentsService.execute(fileCache.file, fileCache.executeFileName).subscribe({
-      next: event => {
-        switch (event.type) {
-          case HttpEventType.UploadProgress:
-            if (event.total) {
-              fileCache.executeProgress = Math.round((50 * event.loaded) / event.total);
-            }
-            break;
-          case HttpEventType.Response:
-            const response = event.body as PaymentsUploadPaymentsExecuteResponse;
-            fileCache.executeProgress = 10;
-            break;
-          default:
-            break;
-        }
-      },
-      error: () => {
-        fileCache.executeSuccess = 1;
-        fileCache.executeProgress = 100;
-      },
+      next: event => this.executeOnNext(fileCache, event),
+      error: () => this.executeOnError(fileCache),
     });
 
     (async () => {
       await new Promise(f => setTimeout(f, 3000));
-      let stillRunning = true;
-      while (stillRunning) {
-        this.paymentsUploadPaymentsService.progress(fileCache.executeFileName).subscribe({
-          next: response => {
-            fileCache.executeSuccess = response.success;
-            fileCache.executeProgress = Math.round(10 + (90 * response.count) / fileCache.validateCount);
-            stillRunning = response.stillRunning;
-          },
+      let paymentsUploadPaymentsProgressResponse = new PaymentsUploadPaymentsProgressResponse(0, 0, true);
+      while (paymentsUploadPaymentsProgressResponse.stillRunning) {
+        this.paymentsUploadPaymentsService.progress(fileCache.executeFileName).subscribe(response => {
+          fileCache.executeSuccess = response.success;
+          fileCache.executeProgress = Math.round(10 + (90 * response.count) / fileCache.validateCount);
+          paymentsUploadPaymentsProgressResponse = response;
         });
         await new Promise(f => setTimeout(f, 1000));
       }
@@ -146,13 +107,58 @@ export default class PaymentsUploadPaymentsComponent {
     })();
   }
 
-  save(name: string): void {
+  protected validateOnNext(fileCache: FileCache, event: HttpEvent<any>): void {
+    let response: PaymentsUploadPaymentsValidateResponse;
+    switch (event.type) {
+      case HttpEventType.UploadProgress:
+        if (event.total) {
+          fileCache.validateProgress = Math.round((100 * event.loaded) / event.total);
+        }
+        break;
+      case HttpEventType.Response:
+        response = event.body as PaymentsUploadPaymentsValidateResponse;
+        fileCache.validateProgress = 100;
+        fileCache.validateSuccess = response.success;
+        fileCache.validateCount = response.count;
+        fileCache.validateAmount = response.amount;
+        break;
+      default:
+        break;
+    }
+  }
+
+  protected validateOnError(fileCache: FileCache): void {
+    fileCache.validateSuccess = false;
+    fileCache.validateProgress = 100;
+  }
+
+  protected executeOnNext(fileCache: FileCache, event: HttpEvent<any>): void {
+    switch (event.type) {
+      case HttpEventType.UploadProgress:
+        if (event.total) {
+          fileCache.executeProgress = Math.round((50 * event.loaded) / event.total);
+        }
+        break;
+      case HttpEventType.Response:
+        fileCache.executeProgress = 10;
+        break;
+      default:
+        break;
+    }
+  }
+
+  protected executeOnError(fileCache: FileCache): void {
+    fileCache.executeSuccess = 1;
+    fileCache.executeProgress = 100;
+  }
+
+  protected save(name: string): void {
     const fileCache = this.fileCaches.get(name);
     if (fileCache == null) {
       return;
     }
 
-    if (fileCache.executeProgress != 100) {
+    if (fileCache.executeProgress !== 100) {
       return;
     }
 
@@ -166,12 +172,13 @@ export default class PaymentsUploadPaymentsComponent {
           filename = contentDispositionFilename.replace('filename=', '').trim();
         }
         const blob = new Blob([event.body], { type: 'application/octet-stream' });
-        FileSaver.saveAs(blob, filename);
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
+        FileSaver.saveAs(blob, filename, { autoBom: false });
       }
     });
   }
 
-  example(): void {
+  protected example(): void {
     this.paymentsUploadPaymentsService.example().subscribe(event => {
       if (event.type === HttpEventType.Response) {
         const contentDisposition = event.headers.get('content-disposition') ?? 'attachment; filename=payments.xlsx';
@@ -182,12 +189,13 @@ export default class PaymentsUploadPaymentsComponent {
           filename = contentDispositionFilename.replace('filename=', '').trim();
         }
         const blob = new Blob([event.body], { type: 'application/octet-stream' });
-        FileSaver.saveAs(blob, filename);
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
+        FileSaver.saveAs(blob, filename, { autoBom: false });
       }
     });
   }
 
-  formatBytes(bytes: number, decimals: number = 2) {
+  protected formatBytes(bytes: number, decimals = 2): string {
     if (bytes === 0) {
       return '0 Bytes';
     }
@@ -195,10 +203,10 @@ export default class PaymentsUploadPaymentsComponent {
     const dm = decimals <= 0 ? 0 : decimals || 2;
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)).toString() + ' ' + sizes[i];
   }
 
-  formatCurrency(amount: number, decimals: number = 2) {
+  protected formatCurrency(amount: number, decimals = 2): string {
     const formatter = new Intl.NumberFormat('de-DE', {
       style: 'currency',
       currency: 'EUR',
@@ -208,7 +216,7 @@ export default class PaymentsUploadPaymentsComponent {
     return formatter.format(amount);
   }
 
-  formatCount(count: number, decimals: number = 0) {
+  protected formatCount(count: number, decimals = 0): string {
     const formatter = new Intl.NumberFormat('de-DE', {
       minimumFractionDigits: decimals,
       maximumFractionDigits: decimals,
@@ -216,7 +224,7 @@ export default class PaymentsUploadPaymentsComponent {
     return formatter.format(count);
   }
 
-  deleteFile(name: string) {
+  protected deleteFile(name: string): void {
     const fileCache = this.fileCaches.get(name);
     if (fileCache == null) {
       return;
@@ -229,13 +237,13 @@ export default class PaymentsUploadPaymentsComponent {
     this.fileCaches.delete(name);
   }
 
-  deleteDiscardedFile(name: string) {
+  protected deleteDiscardedFile(name: string): void {
     setTimeout(() => {
       this.discardedFiles.delete(name);
     }, 5000);
   }
 
-  getFiles() {
+  protected getFiles(): FileCache[] {
     return Array.from(this.fileCaches.values());
   }
 }

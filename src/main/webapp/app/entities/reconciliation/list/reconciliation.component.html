@@ -4,7 +4,7 @@
 
     <div class="d-flex justify-content-end">
       <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
-        <fa-icon icon="sync" [spin]="isLoading"></fa-icon>
+        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
         <span jhiTranslate="scottyApp.reconciliation.home.refreshListLabel">Refresh list</span>
       </button>
 
@@ -36,7 +36,7 @@
     <div class="table-responsive table-entities" id="entities">
       <table class="table table-striped" aria-describedby="page-heading">
         <thead>
-          <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="navigateToWithComponentValues()">
+          <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
             <th scope="col" jhiSortBy="id">
               <div class="d-flex">
                 <span jhiTranslate="global.field.id">ID</span>
@@ -222,14 +222,25 @@
           </tr>
         </thead>
         <tbody>
-          @for (reconciliation of reconciliations; track trackId) {
+          @for (reconciliation of reconciliations; track trackId(reconciliation)) {
             <tr data-cy="entityTable">
               <td>
                 <a [routerLink]="['/reconciliation', reconciliation.id, 'view']">{{ reconciliation.id }}</a>
               </td>
               <td>{{ reconciliation.mandateId }}</td>
               <td>{{ reconciliation.paymentId }}</td>
-              <td jhiTranslate="{{ 'scottyApp.Gateway.' + reconciliation.gateway }}">{{ reconciliation.gateway }}</td>
+              <td [jhiTranslate]="'scottyApp.Gateway.' + (reconciliation.gateway ?? 'null')">
+                {{
+                  {
+                    null: '',
+                    CCBILL: 'ccbill',
+                    EMERCHANTPAY: 'emerchantpay',
+                    NOVALNET: 'novalnet',
+                    OPENPAYD: 'openpayd',
+                    UNKNOWN: 'unknown',
+                  }[reconciliation.gateway ?? 'null']
+                }}
+              </td>
               <td>{{ reconciliation.iban }}</td>
               <td>{{ reconciliation.bic }}</td>
               <td>{{ reconciliation.amount }}</td>

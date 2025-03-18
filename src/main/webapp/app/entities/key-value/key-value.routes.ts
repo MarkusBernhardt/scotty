@@ -2,23 +2,20 @@ import { Routes } from '@angular/router';
 
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
 import { ASC } from 'app/config/navigation.constants';
-import { KeyValueComponent } from './list/key-value.component';
-import { KeyValueDetailComponent } from './detail/key-value-detail.component';
-import { KeyValueUpdateComponent } from './update/key-value-update.component';
 import KeyValueResolve from './route/key-value-routing-resolve.service';
 
 const keyValueRoute: Routes = [
   {
     path: '',
-    component: KeyValueComponent,
+    loadComponent: () => import('./list/key-value.component').then(m => m.KeyValueComponent),
     data: {
-      defaultSort: 'id,' + ASC,
+      defaultSort: `id,${ASC}`,
     },
     canActivate: [UserRouteAccessService],
   },
   {
     path: ':id/view',
-    component: KeyValueDetailComponent,
+    loadComponent: () => import('./detail/key-value-detail.component').then(m => m.KeyValueDetailComponent),
     resolve: {
       keyValue: KeyValueResolve,
     },
@@ -26,7 +23,7 @@ const keyValueRoute: Routes = [
   },
   {
     path: 'new',
-    component: KeyValueUpdateComponent,
+    loadComponent: () => import('./update/key-value-update.component').then(m => m.KeyValueUpdateComponent),
     resolve: {
       keyValue: KeyValueResolve,
     },
@@ -34,7 +31,7 @@ const keyValueRoute: Routes = [
   },
   {
     path: ':id/edit',
-    component: KeyValueUpdateComponent,
+    loadComponent: () => import('./update/key-value-update.component').then(m => m.KeyValueUpdateComponent),
     resolve: {
       keyValue: KeyValueResolve,
     },

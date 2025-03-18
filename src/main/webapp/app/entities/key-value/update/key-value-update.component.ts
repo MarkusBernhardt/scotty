@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -9,7 +9,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { IKeyValue } from '../key-value.model';
 import { KeyValueService } from '../service/key-value.service';
-import { KeyValueFormService, KeyValueFormGroup } from './key-value-form.service';
+import { KeyValueFormGroup, KeyValueFormService } from './key-value-form.service';
 
 @Component({
   standalone: true,
@@ -21,13 +21,12 @@ export class KeyValueUpdateComponent implements OnInit {
   isSaving = false;
   keyValue: IKeyValue | null = null;
 
-  editForm: KeyValueFormGroup = this.keyValueFormService.createKeyValueFormGroup();
+  protected keyValueService = inject(KeyValueService);
+  protected keyValueFormService = inject(KeyValueFormService);
+  protected activatedRoute = inject(ActivatedRoute);
 
-  constructor(
-    protected keyValueService: KeyValueService,
-    protected keyValueFormService: KeyValueFormService,
-    protected activatedRoute: ActivatedRoute,
-  ) {}
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  editForm: KeyValueFormGroup = this.keyValueFormService.createKeyValueFormGroup();
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ keyValue }) => {

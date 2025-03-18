@@ -1,8 +1,8 @@
-import { Component, Input } from '@angular/core';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { Component, input } from '@angular/core';
+import { RouterModule } from '@angular/router';
 
 import SharedModule from 'app/shared/shared.module';
-import { DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe } from 'app/shared/date';
+import { DurationPipe, FormatMediumDatePipe, FormatMediumDatetimePipe } from 'app/shared/date';
 import { IKeyValue } from '../key-value.model';
 
 @Component({
@@ -12,9 +12,7 @@ import { IKeyValue } from '../key-value.model';
   imports: [SharedModule, RouterModule, DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe],
 })
 export class KeyValueDetailComponent {
-  @Input() keyValue: IKeyValue | null = null;
-
-  constructor(protected activatedRoute: ActivatedRoute) {}
+  keyValue = input<IKeyValue | null>(null);
 
   previousState(): void {
     window.history.back();

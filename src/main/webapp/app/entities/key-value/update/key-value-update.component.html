@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-center">
   <div class="col-8">
-    <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
       <h2 id="jhi-key-value-heading" data-cy="KeyValueCreateUpdateHeading" jhiTranslate="scottyApp.keyValue.home.createOrEditLabel">
         Create or edit a Key Value
       </h2>
@@ -10,21 +10,22 @@
 
         @if (editForm.controls.id.value !== null) {
           <div class="mb-3">
-            <label class="form-label" jhiTranslate="global.field.id" for="field_id">ID</label>
+            <label class="form-label" for="field_id" jhiTranslate="scottyApp.keyValue.id">ID</label>
             <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
           </div>
         }
 
+        @let kvKeyRef = editForm.get('kvKey')!;
         <div class="mb-3">
-          <label class="form-label" jhiTranslate="scottyApp.keyValue.kvKey" for="field_kvKey">Kv Key</label>
+          <label class="form-label" for="field_kvKey" jhiTranslate="scottyApp.keyValue.kvKey">Kv Key</label>
           <input type="text" class="form-control" name="kvKey" id="field_kvKey" data-cy="kvKey" formControlName="kvKey" />
-          @if (editForm.get('kvKey')!.invalid && (editForm.get('kvKey')!.dirty || editForm.get('kvKey')!.touched)) {
+          @if (kvKeyRef.invalid && (kvKeyRef.dirty || kvKeyRef.touched)) {
             <div>
               @if (editForm.get('kvKey')?.errors?.required) {
                 <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
               }
               @if (editForm.get('kvKey')?.errors?.maxlength) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: 255 }"
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '255' }"
                   >This field cannot be longer than 255 characters.</small
                 >
               }
@@ -32,13 +33,14 @@
           }
         </div>
 
+        @let kvValueRef = editForm.get('kvValue')!;
         <div class="mb-3">
-          <label class="form-label" jhiTranslate="scottyApp.keyValue.kvValue" for="field_kvValue">Kv Value</label>
+          <label class="form-label" for="field_kvValue" jhiTranslate="scottyApp.keyValue.kvValue">Kv Value</label>
           <input type="text" class="form-control" name="kvValue" id="field_kvValue" data-cy="kvValue" formControlName="kvValue" />
-          @if (editForm.get('kvValue')!.invalid && (editForm.get('kvValue')!.dirty || editForm.get('kvValue')!.touched)) {
+          @if (kvValueRef.invalid && (kvValueRef.dirty || kvValueRef.touched)) {
             <div>
               @if (editForm.get('kvValue')?.errors?.maxlength) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: 255 }"
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '255' }"
                   >This field cannot be longer than 255 characters.</small
                 >
               }

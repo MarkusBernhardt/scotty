@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-center">
   <div class="col-8">
-    @if (keyValue) {
+    @if (keyValue(); as keyValueRef) {
       <div>
         <h2 data-cy="keyValueDetailsHeading"><span jhiTranslate="scottyApp.keyValue.detail.title">Key Value</span></h2>
 
@@ -13,15 +13,15 @@
         <dl class="row-md jh-entity-details">
           <dt><span jhiTranslate="global.field.id">ID</span></dt>
           <dd>
-            <span>{{ keyValue.id }}</span>
+            <span>{{ keyValueRef.id }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.keyValue.kvKey">Kv Key</span></dt>
           <dd>
-            <span>{{ keyValue.kvKey }}</span>
+            <span>{{ keyValueRef.kvKey }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.keyValue.kvValue">Kv Value</span></dt>
           <dd>
-            <span>{{ keyValue.kvValue }}</span>
+            <span>{{ keyValueRef.kvValue }}</span>
           </dd>
         </dl>
 
@@ -29,7 +29,7 @@
           <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
         </button>
 
-        <button type="button" [routerLink]="['/key-value', keyValue.id, 'edit']" class="btn btn-primary">
+        <button type="button" [routerLink]="['/key-value', keyValueRef.id, 'edit']" class="btn btn-primary">
           <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
         </button>
       </div>

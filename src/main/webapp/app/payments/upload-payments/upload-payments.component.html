@@ -5,7 +5,7 @@
 
       <jhi-alert-error></jhi-alert-error>
 
-      <div class="container" spxDnd (fileDropped)="onFileDropped($event)">
+      <div class="container" jhiSpxDnd (fileDropped)="onFileDropped($event)">
         <fa-icon icon="cloud-arrow-up" size="5x"></fa-icon>
         <p></p>
         <input
@@ -42,7 +42,7 @@
               size="2x"
               [ngClass]="{
                 'fa-icon-error': !value.validateSuccess,
-                'fa-icon-success': value.validateSuccess && value.validateProgress == 100
+                'fa-icon-success': value.validateSuccess && value.validateProgress == 100,
               }"
             ></fa-icon>
           </div>
@@ -78,7 +78,7 @@
               [ngClass]="{
                 'fa-icon-error': value.executeSuccess === 1 && value.executeProgress === 100,
                 'fa-icon-warn': value.executeSuccess === 2 && value.executeProgress === 100,
-                'fa-icon-success': value.executeSuccess === 3 && value.executeProgress === 100
+                'fa-icon-success': value.executeSuccess === 3 && value.executeProgress === 100,
               }"
             ></fa-icon>
           </div>

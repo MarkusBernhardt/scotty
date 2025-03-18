@@ -38,6 +38,15 @@ export class PaymentsDownloadReconciliationsService {
     return payment.fileName;
   }
 
+  public save(fileName: string): Observable<HttpEvent<any>> {
+    return this.http.get(this.saveUrl, {
+      observe: 'events',
+      reportProgress: true,
+      responseType: 'blob',
+      params: new HttpParams().set('fileName', fileName),
+    });
+  }
+
   protected convertDateFromServer(restPayment: RestPayment): IPaymentsDownloadReconciliationsRecord {
     return {
       ...restPayment,
@@ -47,15 +56,6 @@ export class PaymentsDownloadReconciliationsService {
   protected convertResponseArrayFromServer(res: HttpResponse<RestPayment[]>): HttpResponse<IPaymentsDownloadReconciliationsRecord[]> {
     return res.clone({
       body: res.body ? res.body.map(item => this.convertDateFromServer(item)) : null,
-    });
-  }
-
-  save(fileName: string): Observable<HttpEvent<any>> {
-    return this.http.get(this.saveUrl, {
-      observe: 'events',
-      reportProgress: true,
-      responseType: 'blob',
-      params: new HttpParams().set('fileName', fileName),
     });
   }
 }

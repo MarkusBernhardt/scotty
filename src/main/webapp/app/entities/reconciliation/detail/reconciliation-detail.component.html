@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-center">
   <div class="col-8">
-    @if (reconciliation) {
+    @if (reconciliation(); as reconciliationRef) {
       <div>
         <h2 data-cy="reconciliationDetailsHeading"><span jhiTranslate="scottyApp.reconciliation.detail.title">Reconciliation</span></h2>
 
@@ -13,109 +13,113 @@
         <dl class="row-md jh-entity-details">
           <dt><span jhiTranslate="global.field.id">ID</span></dt>
           <dd>
-            <span>{{ reconciliation.id }}</span>
+            <span>{{ reconciliationRef.id }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.reconciliation.mandateId">Mandate Id</span></dt>
           <dd>
-            <span>{{ reconciliation.mandateId }}</span>
+            <span>{{ reconciliationRef.mandateId }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.reconciliation.paymentId">Payment Id</span></dt>
           <dd>
-            <span>{{ reconciliation.paymentId }}</span>
+            <span>{{ reconciliationRef.paymentId }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.reconciliation.gateway">Gateway</span></dt>
           <dd>
-            <span jhiTranslate="{{ 'scottyApp.Gateway.' + reconciliation.gateway }}">{{ reconciliation.gateway }}</span>
+            <span [jhiTranslate]="'scottyApp.Gateway.' + (reconciliationRef.gateway ?? 'null')">{{
+              { null: '', CCBILL: 'ccbill', EMERCHANTPAY: 'emerchantpay', NOVALNET: 'novalnet', OPENPAYD: 'openpayd', UNKNOWN: 'unknown' }[
+                reconciliationRef.gateway ?? 'null'
+              ]
+            }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.reconciliation.iban">Iban</span></dt>
           <dd>
-            <span>{{ reconciliation.iban }}</span>
+            <span>{{ reconciliationRef.iban }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.reconciliation.bic">Bic</span></dt>
           <dd>
-            <span>{{ reconciliation.bic }}</span>
+            <span>{{ reconciliationRef.bic }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.reconciliation.amount">Amount</span></dt>
           <dd>
-            <span>{{ reconciliation.amount }}</span>
+            <span>{{ reconciliationRef.amount }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.reconciliation.currencyCode">Currency Code</span></dt>
           <dd>
-            <span>{{ reconciliation.currencyCode }}</span>
+            <span>{{ reconciliationRef.currencyCode }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.reconciliation.softDescriptor">Soft Descriptor</span></dt>
           <dd>
-            <span>{{ reconciliation.softDescriptor }}</span>
+            <span>{{ reconciliationRef.softDescriptor }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.reconciliation.firstName">First Name</span></dt>
           <dd>
-            <span>{{ reconciliation.firstName }}</span>
+            <span>{{ reconciliationRef.firstName }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.reconciliation.lastName">Last Name</span></dt>
           <dd>
-            <span>{{ reconciliation.lastName }}</span>
+            <span>{{ reconciliationRef.lastName }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.reconciliation.streetName">Street Name</span></dt>
           <dd>
-            <span>{{ reconciliation.streetName }}</span>
+            <span>{{ reconciliationRef.streetName }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.reconciliation.houseNumber">House Number</span></dt>
           <dd>
-            <span>{{ reconciliation.houseNumber }}</span>
+            <span>{{ reconciliationRef.houseNumber }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.reconciliation.postalCode">Postal Code</span></dt>
           <dd>
-            <span>{{ reconciliation.postalCode }}</span>
+            <span>{{ reconciliationRef.postalCode }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.reconciliation.city">City</span></dt>
           <dd>
-            <span>{{ reconciliation.city }}</span>
+            <span>{{ reconciliationRef.city }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.reconciliation.countryCode">Country Code</span></dt>
           <dd>
-            <span>{{ reconciliation.countryCode }}</span>
+            <span>{{ reconciliationRef.countryCode }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.reconciliation.remoteIp">Remote Ip</span></dt>
           <dd>
-            <span>{{ reconciliation.remoteIp }}</span>
+            <span>{{ reconciliationRef.remoteIp }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.reconciliation.emailAddress">Email Address</span></dt>
           <dd>
-            <span>{{ reconciliation.emailAddress }}</span>
+            <span>{{ reconciliationRef.emailAddress }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.reconciliation.timestamp">Timestamp</span></dt>
           <dd>
-            <span>{{ reconciliation.timestamp | formatMediumDatetime }}</span>
+            <span>{{ reconciliationRef.timestamp | formatMediumDatetime }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.reconciliation.state">State</span></dt>
           <dd>
-            <span>{{ reconciliation.state }}</span>
+            <span>{{ reconciliationRef.state }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.reconciliation.reasonCode">Reason Code</span></dt>
           <dd>
-            <span>{{ reconciliation.reasonCode }}</span>
+            <span>{{ reconciliationRef.reasonCode }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.reconciliation.message">Message</span></dt>
           <dd>
-            <span>{{ reconciliation.message }}</span>
+            <span>{{ reconciliationRef.message }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.reconciliation.gatewayId">Gateway Id</span></dt>
           <dd>
-            <span>{{ reconciliation.gatewayId }}</span>
+            <span>{{ reconciliationRef.gatewayId }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.reconciliation.mode">Mode</span></dt>
           <dd>
-            <span>{{ reconciliation.mode }}</span>
+            <span>{{ reconciliationRef.mode }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.reconciliation.fileName">File Name</span></dt>
           <dd>
-            <span>{{ reconciliation.fileName }}</span>
+            <span>{{ reconciliationRef.fileName }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.reconciliation.scottyPayment">Scotty Payment</span></dt>
           <dd>
-            @if (reconciliation.scottyPayment) {
+            @if (reconciliation()!.scottyPayment) {
               <div>
-                <a [routerLink]="['/payment', reconciliation.scottyPayment.id, 'view']">{{ reconciliation.scottyPayment.id }}</a>
+                <a [routerLink]="['/payment', reconciliation()!.scottyPayment?.id, 'view']">{{ reconciliationRef.scottyPayment?.id }}</a>
               </div>
             }
           </dd>
@@ -125,7 +129,7 @@
           <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
         </button>
 
-        <button type="button" [routerLink]="['/reconciliation', reconciliation.id, 'edit']" class="btn btn-primary">
+        <button type="button" [routerLink]="['/reconciliation', reconciliationRef.id, 'edit']" class="btn btn-primary">
           <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
         </button>
       </div>

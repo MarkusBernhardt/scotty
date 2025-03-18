@@ -24,7 +24,7 @@ class ReconciliationTest {
     }
 
     @Test
-    void scottyPaymentTest() throws Exception {
+    void scottyPaymentTest() {
         Reconciliation reconciliation = getReconciliationRandomSampleGenerator();
         Payment paymentBack = getPaymentRandomSampleGenerator();
 

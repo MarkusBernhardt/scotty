@@ -33,7 +33,7 @@ import tech.jhipster.web.util.ResponseUtil;
 @RequestMapping("/api/key-values")
 public class KeyValueResource {
 
-    private final Logger log = LoggerFactory.getLogger(KeyValueResource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(KeyValueResource.class);
 
     private static final String ENTITY_NAME = "keyValue";
 
@@ -65,15 +65,14 @@ public class KeyValueResource {
      */
     @PostMapping("")
     public ResponseEntity<KeyValueDTO> createKeyValue(@Valid @RequestBody KeyValueDTO keyValueDTO) throws URISyntaxException {
-        log.debug("REST request to save KeyValue : {}", keyValueDTO);
+        LOG.debug("REST request to save KeyValue : {}", keyValueDTO);
         if (keyValueDTO.getId() != null) {
             throw new BadRequestAlertException("A new keyValue cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        KeyValueDTO result = keyValueService.save(keyValueDTO);
-        return ResponseEntity
-            .created(new URI("/api/key-values/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
-            .body(result);
+        keyValueDTO = keyValueService.save(keyValueDTO);
+        return ResponseEntity.created(new URI("/api/key-values/" + keyValueDTO.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, keyValueDTO.getId().toString()))
+            .body(keyValueDTO);
     }
 
     /**
@@ -91,7 +90,7 @@ public class KeyValueResource {
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody KeyValueDTO keyValueDTO
     ) throws URISyntaxException {
-        log.debug("REST request to update KeyValue : {}, {}", id, keyValueDTO);
+        LOG.debug("REST request to update KeyValue : {}, {}", id, keyValueDTO);
         if (keyValueDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -103,11 +102,10 @@ public class KeyValueResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        KeyValueDTO result = keyValueService.update(keyValueDTO);
-        return ResponseEntity
-            .ok()
+        keyValueDTO = keyValueService.update(keyValueDTO);
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, keyValueDTO.getId().toString()))
-            .body(result);
+            .body(keyValueDTO);
     }
 
     /**
@@ -126,7 +124,7 @@ public class KeyValueResource {
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody KeyValueDTO keyValueDTO
     ) throws URISyntaxException {
-        log.debug("REST request to partial update KeyValue partially : {}, {}", id, keyValueDTO);
+        LOG.debug("REST request to partial update KeyValue partially : {}, {}", id, keyValueDTO);
         if (keyValueDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -158,7 +156,7 @@ public class KeyValueResource {
         KeyValueCriteria criteria,
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
-        log.debug("REST request to get KeyValues by criteria: {}", criteria);
+        LOG.debug("REST request to get KeyValues by criteria: {}", criteria);
 
         Page<KeyValueDTO> page = keyValueQueryService.findByCriteria(criteria, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
@@ -173,7 +171,7 @@ public class KeyValueResource {
      */
     @GetMapping("/count")
     public ResponseEntity<Long> countKeyValues(KeyValueCriteria criteria) {
-        log.debug("REST request to count KeyValues by criteria: {}", criteria);
+        LOG.debug("REST request to count KeyValues by criteria: {}", criteria);
         return ResponseEntity.ok().body(keyValueQueryService.countByCriteria(criteria));
     }
 
@@ -185,7 +183,7 @@ public class KeyValueResource {
      */
     @GetMapping("/{id}")
     public ResponseEntity<KeyValueDTO> getKeyValue(@PathVariable("id") Long id) {
-        log.debug("REST request to get KeyValue : {}", id);
+        LOG.debug("REST request to get KeyValue : {}", id);
         Optional<KeyValueDTO> keyValueDTO = keyValueService.findOne(id);
         return ResponseUtil.wrapOrNotFound(keyValueDTO);
     }
@@ -198,10 +196,9 @@ public class KeyValueResource {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteKeyValue(@PathVariable("id") Long id) {
-        log.debug("REST request to delete KeyValue : {}", id);
+        LOG.debug("REST request to delete KeyValue : {}", id);
         keyValueService.delete(id);
-        return ResponseEntity
-            .noContent()
+        return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
     }

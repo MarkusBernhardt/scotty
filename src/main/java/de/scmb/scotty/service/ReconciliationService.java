@@ -2,8 +2,6 @@ package de.scmb.scotty.service;
 
 import de.scmb.scotty.service.dto.ReconciliationDTO;
 import java.util.Optional;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 /**
  * Service Interface for managing {@link de.scmb.scotty.domain.Reconciliation}.
@@ -32,14 +30,6 @@ public interface ReconciliationService {
      * @return the persisted entity.
      */
     Optional<ReconciliationDTO> partialUpdate(ReconciliationDTO reconciliationDTO);
-
-    /**
-     * Get all the reconciliations.
-     *
-     * @param pageable the pagination information.
-     * @return the list of entities.
-     */
-    Page<ReconciliationDTO> findAll(Pageable pageable);
 
     /**
      * Get the "id" reconciliation.

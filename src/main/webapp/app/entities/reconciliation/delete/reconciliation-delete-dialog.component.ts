@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -15,10 +15,8 @@ import { ReconciliationService } from '../service/reconciliation.service';
 export class ReconciliationDeleteDialogComponent {
   reconciliation?: IReconciliation;
 
-  constructor(
-    protected reconciliationService: ReconciliationService,
-    protected activeModal: NgbActiveModal,
-  ) {}
+  protected reconciliationService = inject(ReconciliationService);
+  protected activeModal = inject(NgbActiveModal);
 
   cancel(): void {
     this.activeModal.dismiss();

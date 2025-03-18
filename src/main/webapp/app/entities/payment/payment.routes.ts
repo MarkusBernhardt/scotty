@@ -2,23 +2,20 @@ import { Routes } from '@angular/router';
 
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
 import { ASC } from 'app/config/navigation.constants';
-import { PaymentComponent } from './list/payment.component';
-import { PaymentDetailComponent } from './detail/payment-detail.component';
-import { PaymentUpdateComponent } from './update/payment-update.component';
 import PaymentResolve from './route/payment-routing-resolve.service';
 
 const paymentRoute: Routes = [
   {
     path: '',
-    component: PaymentComponent,
+    loadComponent: () => import('./list/payment.component').then(m => m.PaymentComponent),
     data: {
-      defaultSort: 'id,' + ASC,
+      defaultSort: `id,${ASC}`,
     },
     canActivate: [UserRouteAccessService],
   },
   {
     path: ':id/view',
-    component: PaymentDetailComponent,
+    loadComponent: () => import('./detail/payment-detail.component').then(m => m.PaymentDetailComponent),
     resolve: {
       payment: PaymentResolve,
     },
@@ -26,7 +23,7 @@ const paymentRoute: Routes = [
   },
   {
     path: 'new',
-    component: PaymentUpdateComponent,
+    loadComponent: () => import('./update/payment-update.component').then(m => m.PaymentUpdateComponent),
     resolve: {
       payment: PaymentResolve,
     },
@@ -34,7 +31,7 @@ const paymentRoute: Routes = [
   },
   {
     path: ':id/edit',
-    component: PaymentUpdateComponent,
+    loadComponent: () => import('./update/payment-update.component').then(m => m.PaymentUpdateComponent),
     resolve: {
       payment: PaymentResolve,
     },

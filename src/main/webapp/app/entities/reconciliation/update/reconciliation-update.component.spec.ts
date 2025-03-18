@@ -1,10 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpResponse } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { HttpResponse, provideHttpClient } from '@angular/common/http';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import { of, Subject, from } from 'rxjs';
+import { Subject, from, of } from 'rxjs';
 
 import { IPayment } from 'app/entities/payment/payment.model';
 import { PaymentService } from 'app/entities/payment/service/payment.service';
@@ -24,8 +22,9 @@ describe('Reconciliation Management Update Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([]), ReconciliationUpdateComponent],
+      imports: [ReconciliationUpdateComponent],
       providers: [
+        provideHttpClient(),
         FormBuilder,
         {
           provide: ActivatedRoute,
@@ -50,10 +49,10 @@ describe('Reconciliation Management Update Component', () => {
   describe('ngOnInit', () => {
     it('Should call Payment query and add missing value', () => {
       const reconciliation: IReconciliation = { id: 456 };
-      const scottyPayment: IPayment = { id: 31145 };
+      const scottyPayment: IPayment = { id: 22811 };
       reconciliation.scottyPayment = scottyPayment;
 
-      const paymentCollection: IPayment[] = [{ id: 32678 }];
+      const paymentCollection: IPayment[] = [{ id: 2812 }];
       jest.spyOn(paymentService, 'query').mockReturnValue(of(new HttpResponse({ body: paymentCollection })));
       const additionalPayments = [scottyPayment];
       const expectedCollection: IPayment[] = [...additionalPayments, ...paymentCollection];
@@ -72,7 +71,7 @@ describe('Reconciliation Management Update Component', () => {
 
     it('Should update editForm', () => {
       const reconciliation: IReconciliation = { id: 456 };
-      const scottyPayment: IPayment = { id: 26361 };
+      const scottyPayment: IPayment = { id: 24976 };
       reconciliation.scottyPayment = scottyPayment;
 
       activatedRoute.data = of({ reconciliation });

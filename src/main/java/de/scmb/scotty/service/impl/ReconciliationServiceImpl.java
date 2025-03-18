@@ -8,8 +8,6 @@ import de.scmb.scotty.service.mapper.ReconciliationMapper;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ReconciliationServiceImpl implements ReconciliationService {
 
-    private final Logger log = LoggerFactory.getLogger(ReconciliationServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ReconciliationServiceImpl.class);
 
     private final ReconciliationRepository reconciliationRepository;
 
@@ -33,7 +31,7 @@ public class ReconciliationServiceImpl implements ReconciliationService {
 
     @Override
     public ReconciliationDTO save(ReconciliationDTO reconciliationDTO) {
-        log.debug("Request to save Reconciliation : {}", reconciliationDTO);
+        LOG.debug("Request to save Reconciliation : {}", reconciliationDTO);
         Reconciliation reconciliation = reconciliationMapper.toEntity(reconciliationDTO);
         reconciliation = reconciliationRepository.save(reconciliation);
         return reconciliationMapper.toDto(reconciliation);
@@ -41,7 +39,7 @@ public class ReconciliationServiceImpl implements ReconciliationService {
 
     @Override
     public ReconciliationDTO update(ReconciliationDTO reconciliationDTO) {
-        log.debug("Request to update Reconciliation : {}", reconciliationDTO);
+        LOG.debug("Request to update Reconciliation : {}", reconciliationDTO);
         Reconciliation reconciliation = reconciliationMapper.toEntity(reconciliationDTO);
         reconciliation = reconciliationRepository.save(reconciliation);
         return reconciliationMapper.toDto(reconciliation);
@@ -49,7 +47,7 @@ public class ReconciliationServiceImpl implements ReconciliationService {
 
     @Override
     public Optional<ReconciliationDTO> partialUpdate(ReconciliationDTO reconciliationDTO) {
-        log.debug("Request to partially update Reconciliation : {}", reconciliationDTO);
+        LOG.debug("Request to partially update Reconciliation : {}", reconciliationDTO);
 
         return reconciliationRepository
             .findById(reconciliationDTO.getId())
@@ -64,21 +62,14 @@ public class ReconciliationServiceImpl implements ReconciliationService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<ReconciliationDTO> findAll(Pageable pageable) {
-        log.debug("Request to get all Reconciliations");
-        return reconciliationRepository.findAll(pageable).map(reconciliationMapper::toDto);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public Optional<ReconciliationDTO> findOne(Long id) {
-        log.debug("Request to get Reconciliation : {}", id);
+        LOG.debug("Request to get Reconciliation : {}", id);
         return reconciliationRepository.findById(id).map(reconciliationMapper::toDto);
     }
 
     @Override
     public void delete(Long id) {
-        log.debug("Request to delete Reconciliation : {}", id);
+        LOG.debug("Request to delete Reconciliation : {}", id);
         reconciliationRepository.deleteById(id);
     }
 }

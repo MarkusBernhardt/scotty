@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -15,10 +15,8 @@ import { PaymentService } from '../service/payment.service';
 export class PaymentDeleteDialogComponent {
   payment?: IPayment;
 
-  constructor(
-    protected paymentService: PaymentService,
-    protected activeModal: NgbActiveModal,
-  ) {}
+  protected paymentService = inject(PaymentService);
+  protected activeModal = inject(NgbActiveModal);
 
   cancel(): void {
     this.activeModal.dismiss();

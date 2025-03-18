@@ -2,6 +2,7 @@ package de.scmb.scotty.service.criteria;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.Optional;
 import org.springdoc.core.annotations.ParameterObject;
 import tech.jhipster.service.Criteria;
 import tech.jhipster.service.filter.*;
@@ -32,9 +33,9 @@ public class KeyValueCriteria implements Serializable, Criteria {
     public KeyValueCriteria() {}
 
     public KeyValueCriteria(KeyValueCriteria other) {
-        this.id = other.id == null ? null : other.id.copy();
-        this.kvKey = other.kvKey == null ? null : other.kvKey.copy();
-        this.kvValue = other.kvValue == null ? null : other.kvValue.copy();
+        this.id = other.optionalId().map(LongFilter::copy).orElse(null);
+        this.kvKey = other.optionalKvKey().map(StringFilter::copy).orElse(null);
+        this.kvValue = other.optionalKvValue().map(StringFilter::copy).orElse(null);
         this.distinct = other.distinct;
     }
 
@@ -47,9 +48,13 @@ public class KeyValueCriteria implements Serializable, Criteria {
         return id;
     }
 
+    public Optional<LongFilter> optionalId() {
+        return Optional.ofNullable(id);
+    }
+
     public LongFilter id() {
         if (id == null) {
-            id = new LongFilter();
+            setId(new LongFilter());
         }
         return id;
     }
@@ -62,9 +67,13 @@ public class KeyValueCriteria implements Serializable, Criteria {
         return kvKey;
     }
 
+    public Optional<StringFilter> optionalKvKey() {
+        return Optional.ofNullable(kvKey);
+    }
+
     public StringFilter kvKey() {
         if (kvKey == null) {
-            kvKey = new StringFilter();
+            setKvKey(new StringFilter());
         }
         return kvKey;
     }
@@ -77,9 +86,13 @@ public class KeyValueCriteria implements Serializable, Criteria {
         return kvValue;
     }
 
+    public Optional<StringFilter> optionalKvValue() {
+        return Optional.ofNullable(kvValue);
+    }
+
     public StringFilter kvValue() {
         if (kvValue == null) {
-            kvValue = new StringFilter();
+            setKvValue(new StringFilter());
         }
         return kvValue;
     }
@@ -89,6 +102,17 @@ public class KeyValueCriteria implements Serializable, Criteria {
     }
 
     public Boolean getDistinct() {
+        return distinct;
+    }
+
+    public Optional<Boolean> optionalDistinct() {
+        return Optional.ofNullable(distinct);
+    }
+
+    public Boolean distinct() {
+        if (distinct == null) {
+            setDistinct(true);
+        }
         return distinct;
     }
 
@@ -122,10 +146,10 @@ public class KeyValueCriteria implements Serializable, Criteria {
     @Override
     public String toString() {
         return "KeyValueCriteria{" +
-            (id != null ? "id=" + id + ", " : "") +
-            (kvKey != null ? "kvKey=" + kvKey + ", " : "") +
-            (kvValue != null ? "kvValue=" + kvValue + ", " : "") +
-            (distinct != null ? "distinct=" + distinct + ", " : "") +
-            "}";
+            optionalId().map(f -> "id=" + f + ", ").orElse("") +
+            optionalKvKey().map(f -> "kvKey=" + f + ", ").orElse("") +
+            optionalKvValue().map(f -> "kvValue=" + f + ", ").orElse("") +
+            optionalDistinct().map(f -> "distinct=" + f + ", ").orElse("") +
+        "}";
     }
 }

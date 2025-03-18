@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
@@ -14,12 +14,10 @@ export type EntityArrayResponseType = HttpResponse<IKeyValue[]>;
 
 @Injectable({ providedIn: 'root' })
 export class KeyValueService {
-  protected resourceUrl = this.applicationConfigService.getEndpointFor('api/key-values');
+  protected readonly http = inject(HttpClient);
+  protected readonly applicationConfigService = inject(ApplicationConfigService);
 
-  constructor(
-    protected http: HttpClient,
-    protected applicationConfigService: ApplicationConfigService,
-  ) {}
+  protected resourceUrl = this.applicationConfigService.getEndpointFor('api/key-values');
 
   create(keyValue: NewKeyValue): Observable<EntityResponseType> {
     return this.http.post<IKeyValue>(this.resourceUrl, keyValue, { observe: 'response' });
@@ -60,7 +58,7 @@ export class KeyValueService {
   ): Type[] {
     const keyValues: Type[] = keyValuesToCheck.filter(isPresent);
     if (keyValues.length > 0) {
-      const keyValueCollectionIdentifiers = keyValueCollection.map(keyValueItem => this.getKeyValueIdentifier(keyValueItem)!);
+      const keyValueCollectionIdentifiers = keyValueCollection.map(keyValueItem => this.getKeyValueIdentifier(keyValueItem));
       const keyValuesToAdd = keyValues.filter(keyValueItem => {
         const keyValueIdentifier = this.getKeyValueIdentifier(keyValueItem);
         if (keyValueCollectionIdentifiers.includes(keyValueIdentifier)) {

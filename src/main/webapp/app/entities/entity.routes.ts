@@ -7,6 +7,11 @@ const routes: Routes = [
     loadChildren: () => import('./payment/payment.routes'),
   },
   {
+    path: 'authority',
+    data: { pageTitle: 'scottyApp.adminAuthority.home.title' },
+    loadChildren: () => import('./admin/authority/authority.routes'),
+  },
+  {
     path: 'key-value',
     data: { pageTitle: 'scottyApp.keyValue.home.title' },
     loadChildren: () => import('./key-value/key-value.routes'),

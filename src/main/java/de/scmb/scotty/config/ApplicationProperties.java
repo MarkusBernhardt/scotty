@@ -13,7 +13,8 @@ import org.springframework.scheduling.support.CronExpression;
 @ConfigurationProperties(prefix = "application", ignoreUnknownFields = false)
 public class ApplicationProperties {
 
-    // jhipster-needle-application-properties-property
+    private final Liquibase liquibase = new Liquibase();
+
     private final Emerchantpay emerchantpay = new Emerchantpay();
 
     private final Novalnet novalnet = new Novalnet();
@@ -22,7 +23,12 @@ public class ApplicationProperties {
 
     private final Proxy proxy = new Proxy();
 
-    // jhipster-needle-application-properties-property-getter
+    // jhipster-needle-application-properties-property
+
+    public Liquibase getLiquibase() {
+        return liquibase;
+    }
+
     public Emerchantpay getEmerchantpay() {
         return this.emerchantpay;
     }
@@ -39,7 +45,21 @@ public class ApplicationProperties {
         return this.proxy;
     }
 
-    // jhipster-needle-application-properties-property-class
+    // jhipster-needle-application-properties-property-getter
+
+    public static class Liquibase {
+
+        private Boolean asyncStart;
+
+        public Boolean getAsyncStart() {
+            return asyncStart;
+        }
+
+        public void setAsyncStart(Boolean asyncStart) {
+            this.asyncStart = asyncStart;
+        }
+    }
+
     public static class Emerchantpay {
 
         private boolean enabled;
@@ -319,4 +339,5 @@ public class ApplicationProperties {
             this.accountHolderId = accountHolderId;
         }
     }
+    // jhipster-needle-application-properties-property-class
 }

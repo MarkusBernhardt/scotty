@@ -2,23 +2,20 @@ import { Routes } from '@angular/router';
 
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
 import { ASC } from 'app/config/navigation.constants';
-import { ReconciliationComponent } from './list/reconciliation.component';
-import { ReconciliationDetailComponent } from './detail/reconciliation-detail.component';
-import { ReconciliationUpdateComponent } from './update/reconciliation-update.component';
 import ReconciliationResolve from './route/reconciliation-routing-resolve.service';
 
 const reconciliationRoute: Routes = [
   {
     path: '',
-    component: ReconciliationComponent,
+    loadComponent: () => import('./list/reconciliation.component').then(m => m.ReconciliationComponent),
     data: {
-      defaultSort: 'id,' + ASC,
+      defaultSort: `id,${ASC}`,
     },
     canActivate: [UserRouteAccessService],
   },
   {
     path: ':id/view',
-    component: ReconciliationDetailComponent,
+    loadComponent: () => import('./detail/reconciliation-detail.component').then(m => m.ReconciliationDetailComponent),
     resolve: {
       reconciliation: ReconciliationResolve,
     },
@@ -26,7 +23,7 @@ const reconciliationRoute: Routes = [
   },
   {
     path: 'new',
-    component: ReconciliationUpdateComponent,
+    loadComponent: () => import('./update/reconciliation-update.component').then(m => m.ReconciliationUpdateComponent),
     resolve: {
       reconciliation: ReconciliationResolve,
     },
@@ -34,7 +31,7 @@ const reconciliationRoute: Routes = [
   },
   {
     path: ':id/edit',
-    component: ReconciliationUpdateComponent,
+    loadComponent: () => import('./update/reconciliation-update.component').then(m => m.ReconciliationUpdateComponent),
     resolve: {
       reconciliation: ReconciliationResolve,
     },

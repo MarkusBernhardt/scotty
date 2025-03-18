@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-center">
   <div class="col-8">
-    @if (payment) {
+    @if (payment(); as paymentRef) {
       <div>
         <h2 data-cy="paymentDetailsHeading"><span jhiTranslate="scottyApp.payment.detail.title">Payment</span></h2>
 
@@ -13,99 +13,103 @@
         <dl class="row-md jh-entity-details">
           <dt><span jhiTranslate="global.field.id">ID</span></dt>
           <dd>
-            <span>{{ payment.id }}</span>
+            <span>{{ paymentRef.id }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.payment.mandateId">Mandate Id</span></dt>
           <dd>
-            <span>{{ payment.mandateId }}</span>
+            <span>{{ paymentRef.mandateId }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.payment.paymentId">Payment Id</span></dt>
           <dd>
-            <span>{{ payment.paymentId }}</span>
+            <span>{{ paymentRef.paymentId }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.payment.gateway">Gateway</span></dt>
           <dd>
-            <span jhiTranslate="{{ 'scottyApp.Gateway.' + payment.gateway }}">{{ payment.gateway }}</span>
+            <span [jhiTranslate]="'scottyApp.Gateway.' + (paymentRef.gateway ?? 'null')">{{
+              { null: '', CCBILL: 'ccbill', EMERCHANTPAY: 'emerchantpay', NOVALNET: 'novalnet', OPENPAYD: 'openpayd', UNKNOWN: 'unknown' }[
+                paymentRef.gateway ?? 'null'
+              ]
+            }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.payment.iban">Iban</span></dt>
           <dd>
-            <span>{{ payment.iban }}</span>
+            <span>{{ paymentRef.iban }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.payment.bic">Bic</span></dt>
           <dd>
-            <span>{{ payment.bic }}</span>
+            <span>{{ paymentRef.bic }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.payment.amount">Amount</span></dt>
           <dd>
-            <span>{{ payment.amount }}</span>
+            <span>{{ paymentRef.amount }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.payment.currencyCode">Currency Code</span></dt>
           <dd>
-            <span>{{ payment.currencyCode }}</span>
+            <span>{{ paymentRef.currencyCode }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.payment.softDescriptor">Soft Descriptor</span></dt>
           <dd>
-            <span>{{ payment.softDescriptor }}</span>
+            <span>{{ paymentRef.softDescriptor }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.payment.firstName">First Name</span></dt>
           <dd>
-            <span>{{ payment.firstName }}</span>
+            <span>{{ paymentRef.firstName }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.payment.lastName">Last Name</span></dt>
           <dd>
-            <span>{{ payment.lastName }}</span>
+            <span>{{ paymentRef.lastName }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.payment.streetName">Street Name</span></dt>
           <dd>
-            <span>{{ payment.streetName }}</span>
+            <span>{{ paymentRef.streetName }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.payment.houseNumber">House Number</span></dt>
           <dd>
-            <span>{{ payment.houseNumber }}</span>
+            <span>{{ paymentRef.houseNumber }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.payment.postalCode">Postal Code</span></dt>
           <dd>
-            <span>{{ payment.postalCode }}</span>
+            <span>{{ paymentRef.postalCode }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.payment.city">City</span></dt>
           <dd>
-            <span>{{ payment.city }}</span>
+            <span>{{ paymentRef.city }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.payment.countryCode">Country Code</span></dt>
           <dd>
-            <span>{{ payment.countryCode }}</span>
+            <span>{{ paymentRef.countryCode }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.payment.remoteIp">Remote Ip</span></dt>
           <dd>
-            <span>{{ payment.remoteIp }}</span>
+            <span>{{ paymentRef.remoteIp }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.payment.emailAddress">Email Address</span></dt>
           <dd>
-            <span>{{ payment.emailAddress }}</span>
+            <span>{{ paymentRef.emailAddress }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.payment.timestamp">Timestamp</span></dt>
           <dd>
-            <span>{{ payment.timestamp | formatMediumDatetime }}</span>
+            <span>{{ paymentRef.timestamp | formatMediumDatetime }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.payment.state">State</span></dt>
           <dd>
-            <span>{{ payment.state }}</span>
+            <span>{{ paymentRef.state }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.payment.message">Message</span></dt>
           <dd>
-            <span>{{ payment.message }}</span>
+            <span>{{ paymentRef.message }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.payment.gatewayId">Gateway Id</span></dt>
           <dd>
-            <span>{{ payment.gatewayId }}</span>
+            <span>{{ paymentRef.gatewayId }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.payment.mode">Mode</span></dt>
           <dd>
-            <span>{{ payment.mode }}</span>
+            <span>{{ paymentRef.mode }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.payment.fileName">File Name</span></dt>
           <dd>
-            <span>{{ payment.fileName }}</span>
+            <span>{{ paymentRef.fileName }}</span>
           </dd>
         </dl>
 
@@ -113,7 +117,7 @@
           <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
         </button>
 
-        <button type="button" [routerLink]="['/payment', payment.id, 'edit']" class="btn btn-primary">
+        <button type="button" [routerLink]="['/payment', paymentRef.id, 'edit']" class="btn btn-primary">
           <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
         </button>
       </div>

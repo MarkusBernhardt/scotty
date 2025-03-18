@@ -1,14 +1,14 @@
 import { inject } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { ActivatedRouteSnapshot, Router } from '@angular/router';
-import { of, EMPTY, Observable } from 'rxjs';
+import { EMPTY, Observable, of } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 
 import { IKeyValue } from '../key-value.model';
 import { KeyValueService } from '../service/key-value.service';
 
-export const keyValueResolve = (route: ActivatedRouteSnapshot): Observable<null | IKeyValue> => {
-  const id = route.params['id'];
+const keyValueResolve = (route: ActivatedRouteSnapshot): Observable<null | IKeyValue> => {
+  const id = route.params.id;
   if (id) {
     return inject(KeyValueService)
       .find(id)
@@ -16,10 +16,9 @@ export const keyValueResolve = (route: ActivatedRouteSnapshot): Observable<null 
         mergeMap((keyValue: HttpResponse<IKeyValue>) => {
           if (keyValue.body) {
             return of(keyValue.body);
-          } else {
-            inject(Router).navigate(['404']);
-            return EMPTY;
           }
+          inject(Router).navigate(['404']);
+          return EMPTY;
         }),
       );
   }
