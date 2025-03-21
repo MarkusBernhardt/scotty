@@ -72,9 +72,9 @@ public class PaymentsUploadPayments {
     @PostMapping("/validate")
     public ResponseEntity<PaymentsUploadPaymentsValidateResponseDTO> validate(@Valid @RequestPart MultipartFile file) throws IOException {
         try {
+            String contentType = file.getContentType();
             ExcelService.ValidationResult validationResult = excelService.validatePaymentsFromStream(file.getInputStream());
-            return ResponseEntity
-                .ok()
+            return ResponseEntity.ok()
                 .body(new PaymentsUploadPaymentsValidateResponseDTO(true, validationResult.count, validationResult.amount, null));
         } catch (Throwable t) {
             return ResponseEntity.ok().body(new PaymentsUploadPaymentsValidateResponseDTO(false, 0, 0, t.getMessage()));
@@ -186,8 +186,7 @@ public class PaymentsUploadPayments {
     public ResponseEntity<StreamingResponseBody> save(@RequestParam(value = "fileName") String fileName)
         throws URISyntaxException, IOException {
         StreamingResponseBody stream = outputStream -> excelService.writePaymentsToStream(outputStream, fileName);
-        return ResponseEntity
-            .ok()
+        return ResponseEntity.ok()
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
             .contentType(MediaType.APPLICATION_OCTET_STREAM)
             .body(stream);
@@ -196,8 +195,7 @@ public class PaymentsUploadPayments {
     @GetMapping(value = "/example")
     public ResponseEntity<StreamingResponseBody> example() throws URISyntaxException, IOException {
         StreamingResponseBody stream = excelService::writeExampleToStream;
-        return ResponseEntity
-            .ok()
+        return ResponseEntity.ok()
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=payments.xlsx")
             .contentType(MediaType.APPLICATION_OCTET_STREAM)
             .body(stream);

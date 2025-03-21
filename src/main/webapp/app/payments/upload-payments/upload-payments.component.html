@@ -10,12 +10,12 @@
         <p></p>
         <input
           type="file"
-          accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/xml"
           id="fileDropRef"
           multiple
           (change)="onFileBrowsed($event)"
         />
-        <h3>Drop Excel file here</h3>
+        <h3>Drop Excel or SEPA PAIN file here</h3>
         <p></p>
         <button class="btn btn-primary" form="fileDropRef">Browse for file</button>
       </div>
