@@ -15,9 +15,9 @@
         "main": "Entities",
         "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)",
         "adminAuthority": "Authority",
+        "payment": "Payment",
         "reconciliation": "Reconciliation",
-        "keyValue": "Key Value",
-        "payment": "Payment"
+        "keyValue": "Key Value"
       },
       "account": {
         "main": "Account",

@@ -2,9 +2,8 @@
   "annotations": {
     "changelogDate": "20240301131341"
   },
-  "applications": "*",
+  "applications": ["scotty"],
   "dto": "mapstruct",
-  "entityTableName": "reconciliation",
   "fields": [
     {
       "fieldName": "mandateId",

@@ -1,0 +1,47 @@
+{
+  "scottyApp": {
+    "payment": {
+      "home": {
+        "title": "Payments",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Payment erstellen",
+        "createOrEditLabel": "Payment erstellen oder bearbeiten",
+        "notFound": "Keine Payments gefunden"
+      },
+      "created": "Payment erstellt mit ID {{ param }}",
+      "updated": "Payment aktualisiert mit ID {{ param }}",
+      "deleted": "Payment gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Payment {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Payment"
+      },
+      "id": "ID",
+      "mandateId": "Mandate Id",
+      "paymentId": "Payment Id",
+      "gateway": "Gateway",
+      "iban": "Iban",
+      "bic": "Bic",
+      "amount": "Amount",
+      "currencyCode": "Currency Code",
+      "softDescriptor": "Soft Descriptor",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "streetName": "Street Name",
+      "houseNumber": "House Number",
+      "postalCode": "Postal Code",
+      "city": "City",
+      "countryCode": "Country Code",
+      "remoteIp": "Remote Ip",
+      "emailAddress": "Email Address",
+      "timestamp": "Timestamp",
+      "state": "State",
+      "message": "Message",
+      "gatewayId": "Gateway Id",
+      "mode": "Mode",
+      "fileName": "File Name",
+      "reconciliation": "Reconciliation"
+    }
+  }
+}

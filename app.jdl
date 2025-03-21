@@ -1,3 +1,32 @@
+application {
+  config {
+    applicationType monolith
+    authenticationType jwt
+    baseName scotty
+    buildTool maven
+    cacheProvider ehcache
+    clientFramework angular
+    clientPackageManager npm
+    clientTheme slate
+    clientThemeVariant primary
+    databaseType sql
+    devDatabaseType postgresql
+    enableHibernateCache true
+    enableSwaggerCodegen false
+    enableTranslation true
+    languages [en]
+    nativeLanguage en
+    packageName de.scmb.scotty
+    prodDatabaseType postgresql
+    reactive false
+    searchEngine false
+    serviceDiscoveryType no
+    testFrameworks [gatling, cucumber, cypress]
+    websocket false
+  }
+
+  entities *
+}
 
 entity Payment {
 	mandateId String required maxlength(35),

@@ -49,10 +49,10 @@ describe('Reconciliation Management Update Component', () => {
   describe('ngOnInit', () => {
     it('Should call Payment query and add missing value', () => {
       const reconciliation: IReconciliation = { id: 456 };
-      const scottyPayment: IPayment = { id: 22811 };
+      const scottyPayment: IPayment = { id: 7455 };
       reconciliation.scottyPayment = scottyPayment;
 
-      const paymentCollection: IPayment[] = [{ id: 2812 }];
+      const paymentCollection: IPayment[] = [{ id: 9794 }];
       jest.spyOn(paymentService, 'query').mockReturnValue(of(new HttpResponse({ body: paymentCollection })));
       const additionalPayments = [scottyPayment];
       const expectedCollection: IPayment[] = [...additionalPayments, ...paymentCollection];
@@ -71,7 +71,7 @@ describe('Reconciliation Management Update Component', () => {
 
     it('Should update editForm', () => {
       const reconciliation: IReconciliation = { id: 456 };
-      const scottyPayment: IPayment = { id: 24976 };
+      const scottyPayment: IPayment = { id: 24376 };
       reconciliation.scottyPayment = scottyPayment;
 
       activatedRoute.data = of({ reconciliation });

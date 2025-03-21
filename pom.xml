@@ -83,11 +83,27 @@
         <resource.delimiter>@</resource.delimiter>
         <sonar-maven-plugin.version>4.0.0.4121</sonar-maven-plugin.version>
         <spotless-maven-plugin.version>2.43.0</spotless-maven-plugin.version>
+        <spring-cloud-dependencies.version>2023.0.3</spring-cloud-dependencies.version>
         <springdoc-openapi-starter-webmvc-api.version>2.6.0</springdoc-openapi-starter-webmvc-api.version>
+        <testng.version>7.10.2</testng.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud-dependencies.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.cucumber</groupId>
+                <artifactId>cucumber-bom</artifactId>
+                <version>${cucumber-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>com.emerchantpay.gateway</groupId>
                 <artifactId>genesis-java</artifactId>
@@ -265,6 +281,27 @@
             <artifactId>HikariCP</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit-platform-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-spring</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.gatling.highcharts</groupId>
+            <artifactId>gatling-charts-highcharts</artifactId>
+            <version>${gatling.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus-simpleclient</artifactId>
         </dependency>
@@ -372,6 +409,12 @@
             <groupId>com.opencsv</groupId>
             <artifactId>opencsv</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>${testng.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -435,6 +478,10 @@
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>io.gatling</groupId>
+                <artifactId>gatling-maven-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -764,6 +811,14 @@
                     </dependencies>
                 </plugin>
                 <plugin>
+                    <groupId>io.gatling</groupId>
+                    <artifactId>gatling-maven-plugin</artifactId>
+                    <version>${gatling-maven-plugin.version}</version>
+                    <configuration>
+                        <runMultipleSimulations>true</runMultipleSimulations>
+                    </configuration>
+                </plugin>
+                <plugin>
                     <groupId>io.github.git-commit-id</groupId>
                     <artifactId>git-commit-id-maven-plugin</artifactId>
                     <version>${git-commit-id-maven-plugin.version}</version>
@@ -872,7 +927,7 @@
                         <defaultSchemaName/>
                         <username>${liquibase-plugin.username}</username>
                         <password>${liquibase-plugin.password}</password>
-                        <referenceUrl>hibernate:spring:de.scmb.scotty.domain?dialect=${liquibase-plugin.hibernate-dialect}&amp;hibernate.physical_naming_strategy=org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy&amp;hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy</referenceUrl>
+                        <referenceUrl>hibernate:spring:de.scmb.scotty.domain?dialect=org.hibernate.dialect.PostgreSQLDialect&amp;hibernate.physical_naming_strategy=org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy&amp;hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy</referenceUrl>
                         <verbose>true</verbose>
                         <logging>debug</logging>
                         <contexts>!test</contexts>
@@ -924,8 +979,8 @@
             <properties>
                 <!-- default Spring profiles -->
                 <liquibase-plugin.password>password</liquibase-plugin.password>
-                <liquibase-plugin.url>jdbc:postgresql://localhost:5432/PaceGateway</liquibase-plugin.url>
-                <liquibase-plugin.username>PaceGateway</liquibase-plugin.username>
+                <liquibase-plugin.url>jdbc:postgresql://localhost:5432/scotty</liquibase-plugin.url>
+                <liquibase-plugin.username>scotty</liquibase-plugin.username>
                 <profile.test>testdev</profile.test>
                 <spring.profiles.active>dev${profile.tls}${profile.no-liquibase}</spring.profiles.active>
             </properties>
@@ -1054,8 +1109,8 @@
             <properties>
                 <!-- default Spring profiles -->
                 <liquibase-plugin.password>password</liquibase-plugin.password>
-                <liquibase-plugin.url>jdbc:postgresql://localhost:5432/PaceGateway</liquibase-plugin.url>
-                <liquibase-plugin.username>PaceGateway</liquibase-plugin.username>
+                <liquibase-plugin.url>jdbc:postgresql://localhost:5432/scotty</liquibase-plugin.url>
+                <liquibase-plugin.username>scotty</liquibase-plugin.username>
                 <profile.test>testprod</profile.test>
                 <spring.profiles.active>prod${profile.api-docs}${profile.tls}${profile.e2e}${profile.no-liquibase}</spring.profiles.active>
             </properties>
@@ -1306,7 +1361,7 @@
                             <defaultSchemaName/>
                             <username>${env.JDBC_DATABASE_USERNAME}</username>
                             <password>${env.JDBC_DATABASE_PASSWORD}</password>
-                            <referenceUrl>hibernate:spring:app.pace.gateway.domain?dialect=org.hibernate.dialect.PostgreSQLDialect&amp;hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy&amp;hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy</referenceUrl>
+                            <referenceUrl>hibernate:spring:de.scmb.scotty.domain?dialect=org.hibernate.dialect.PostgreSQLDialect&amp;hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy&amp;hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy</referenceUrl>
                             <verbose>true</verbose>
                             <logging>debug</logging>
                             <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>

@@ -1,0 +1,48 @@
+{
+  "scottyApp": {
+    "reconciliation": {
+      "home": {
+        "title": "Reconciliations",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Reconciliation erstellen",
+        "createOrEditLabel": "Reconciliation erstellen oder bearbeiten",
+        "notFound": "Keine Reconciliations gefunden"
+      },
+      "created": "Reconciliation erstellt mit ID {{ param }}",
+      "updated": "Reconciliation aktualisiert mit ID {{ param }}",
+      "deleted": "Reconciliation gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Reconciliation {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Reconciliation"
+      },
+      "id": "ID",
+      "mandateId": "Mandate Id",
+      "paymentId": "Payment Id",
+      "gateway": "Gateway",
+      "iban": "Iban",
+      "bic": "Bic",
+      "amount": "Amount",
+      "currencyCode": "Currency Code",
+      "softDescriptor": "Soft Descriptor",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "streetName": "Street Name",
+      "houseNumber": "House Number",
+      "postalCode": "Postal Code",
+      "city": "City",
+      "countryCode": "Country Code",
+      "remoteIp": "Remote Ip",
+      "emailAddress": "Email Address",
+      "timestamp": "Timestamp",
+      "state": "State",
+      "reasonCode": "Reason Code",
+      "message": "Message",
+      "gatewayId": "Gateway Id",
+      "mode": "Mode",
+      "fileName": "File Name",
+      "scottyPayment": "Scotty Payment"
+    }
+  }
+}
