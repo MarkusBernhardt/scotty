@@ -146,6 +146,29 @@ public class PaymentQueryService extends QueryService<Payment> {
             if (criteria.getFileName() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getFileName(), Payment_.fileName));
             }
+            if (criteria.getCreditorName() != null) {
+                specification = specification.and(buildStringSpecification(criteria.getCreditorName(), Payment_.creditorName));
+            }
+            if (criteria.getCreditorIban() != null) {
+                specification = specification.and(buildStringSpecification(criteria.getCreditorIban(), Payment_.creditorIban));
+            }
+            if (criteria.getCreditorBic() != null) {
+                specification = specification.and(buildStringSpecification(criteria.getCreditorBic(), Payment_.creditorBic));
+            }
+            if (criteria.getCreditorId() != null) {
+                specification = specification.and(buildStringSpecification(criteria.getCreditorId(), Payment_.creditorId));
+            }
+            if (criteria.getMandateDate() != null) {
+                specification = specification.and(buildRangeSpecification(criteria.getMandateDate(), Payment_.mandateDate));
+            }
+            if (criteria.getExecutionDate() != null) {
+                specification = specification.and(buildRangeSpecification(criteria.getExecutionDate(), Payment_.executionDate));
+            }
+            if (criteria.getPaymentInformationId() != null) {
+                specification = specification.and(
+                    buildStringSpecification(criteria.getPaymentInformationId(), Payment_.paymentInformationId)
+                );
+            }
             if (criteria.getReconciliationId() != null) {
                 specification = specification.and(
                     buildSpecification(criteria.getReconciliationId(), root ->

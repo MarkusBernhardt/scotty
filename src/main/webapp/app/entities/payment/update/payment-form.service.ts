@@ -19,15 +19,17 @@ type PaymentFormGroupInput = IPayment | PartialWithRequiredKeyOf<NewPayment>;
 /**
  * Type that converts some properties for forms.
  */
-type FormValueOf<T extends IPayment | NewPayment> = Omit<T, 'timestamp'> & {
+type FormValueOf<T extends IPayment | NewPayment> = Omit<T, 'timestamp' | 'mandateDate' | 'executionDate'> & {
   timestamp?: string | null;
+  mandateDate?: string | null;
+  executionDate?: string | null;
 };
 
 type PaymentFormRawValue = FormValueOf<IPayment>;
 
 type NewPaymentFormRawValue = FormValueOf<NewPayment>;
 
-type PaymentFormDefaults = Pick<NewPayment, 'id' | 'timestamp'>;
+type PaymentFormDefaults = Pick<NewPayment, 'id' | 'timestamp' | 'mandateDate' | 'executionDate'>;
 
 type PaymentFormGroupContent = {
   id: FormControl<PaymentFormRawValue['id'] | NewPayment['id']>;
@@ -54,6 +56,13 @@ type PaymentFormGroupContent = {
   gatewayId: FormControl<PaymentFormRawValue['gatewayId']>;
   mode: FormControl<PaymentFormRawValue['mode']>;
   fileName: FormControl<PaymentFormRawValue['fileName']>;
+  creditorName: FormControl<PaymentFormRawValue['creditorName']>;
+  creditorIban: FormControl<PaymentFormRawValue['creditorIban']>;
+  creditorBic: FormControl<PaymentFormRawValue['creditorBic']>;
+  creditorId: FormControl<PaymentFormRawValue['creditorId']>;
+  mandateDate: FormControl<PaymentFormRawValue['mandateDate']>;
+  executionDate: FormControl<PaymentFormRawValue['executionDate']>;
+  paymentInformationId: FormControl<PaymentFormRawValue['paymentInformationId']>;
 };
 
 export type PaymentFormGroup = FormGroup<PaymentFormGroupContent>;
@@ -142,6 +151,23 @@ export class PaymentFormService {
       fileName: new FormControl(paymentRawValue.fileName, {
         validators: [Validators.maxLength(255)],
       }),
+      creditorName: new FormControl(paymentRawValue.creditorName, {
+        validators: [Validators.maxLength(70)],
+      }),
+      creditorIban: new FormControl(paymentRawValue.creditorIban, {
+        validators: [Validators.minLength(16), Validators.maxLength(34)],
+      }),
+      creditorBic: new FormControl(paymentRawValue.creditorBic, {
+        validators: [Validators.minLength(8), Validators.maxLength(11)],
+      }),
+      creditorId: new FormControl(paymentRawValue.creditorId, {
+        validators: [Validators.maxLength(35)],
+      }),
+      mandateDate: new FormControl(paymentRawValue.mandateDate),
+      executionDate: new FormControl(paymentRawValue.executionDate),
+      paymentInformationId: new FormControl(paymentRawValue.paymentInformationId, {
+        validators: [Validators.maxLength(35)],
+      }),
     });
   }
 
@@ -165,6 +191,8 @@ export class PaymentFormService {
     return {
       id: null,
       timestamp: currentTime,
+      mandateDate: currentTime,
+      executionDate: currentTime,
     };
   }
 
@@ -172,6 +200,8 @@ export class PaymentFormService {
     return {
       ...rawPayment,
       timestamp: dayjs(rawPayment.timestamp, DATE_TIME_FORMAT),
+      mandateDate: dayjs(rawPayment.mandateDate, DATE_TIME_FORMAT),
+      executionDate: dayjs(rawPayment.executionDate, DATE_TIME_FORMAT),
     };
   }
 
@@ -181,6 +211,8 @@ export class PaymentFormService {
     return {
       ...payment,
       timestamp: payment.timestamp ? payment.timestamp.format(DATE_TIME_FORMAT) : undefined,
+      mandateDate: payment.mandateDate ? payment.mandateDate.format(DATE_TIME_FORMAT) : undefined,
+      executionDate: payment.executionDate ? payment.executionDate.format(DATE_TIME_FORMAT) : undefined,
     };
   }
 }

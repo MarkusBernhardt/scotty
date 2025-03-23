@@ -92,6 +92,13 @@ public class ReconciliationGatlingTest extends Simulation {
                                 ", \"gatewayId\": \"SAMPLE_TEXT\"" +
                                 ", \"mode\": \"SAMPLE_TEXT\"" +
                                 ", \"fileName\": \"SAMPLE_TEXT\"" +
+                                ", \"creditorName\": \"SAMPLE_TEXT\"" +
+                                ", \"creditorIban\": \"SAMPLE_TEXT\"" +
+                                ", \"creditorBic\": \"SAMPLE_TEXT\"" +
+                                ", \"creditorId\": \"SAMPLE_TEXT\"" +
+                                ", \"mandateDate\": \"2020-01-01T00:00:00.000Z\"" +
+                                ", \"executionDate\": \"2020-01-01T00:00:00.000Z\"" +
+                                ", \"paymentInformationId\": \"SAMPLE_TEXT\"" +
                                 "}"
                             )
                         )

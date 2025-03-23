@@ -88,6 +88,20 @@ public class PaymentCriteria implements Serializable, Criteria {
 
     private StringFilter fileName;
 
+    private StringFilter creditorName;
+
+    private StringFilter creditorIban;
+
+    private StringFilter creditorBic;
+
+    private StringFilter creditorId;
+
+    private InstantFilter mandateDate;
+
+    private InstantFilter executionDate;
+
+    private StringFilter paymentInformationId;
+
     private LongFilter reconciliationId;
 
     private Boolean distinct;
@@ -119,6 +133,13 @@ public class PaymentCriteria implements Serializable, Criteria {
         this.gatewayId = other.optionalGatewayId().map(StringFilter::copy).orElse(null);
         this.mode = other.optionalMode().map(StringFilter::copy).orElse(null);
         this.fileName = other.optionalFileName().map(StringFilter::copy).orElse(null);
+        this.creditorName = other.optionalCreditorName().map(StringFilter::copy).orElse(null);
+        this.creditorIban = other.optionalCreditorIban().map(StringFilter::copy).orElse(null);
+        this.creditorBic = other.optionalCreditorBic().map(StringFilter::copy).orElse(null);
+        this.creditorId = other.optionalCreditorId().map(StringFilter::copy).orElse(null);
+        this.mandateDate = other.optionalMandateDate().map(InstantFilter::copy).orElse(null);
+        this.executionDate = other.optionalExecutionDate().map(InstantFilter::copy).orElse(null);
+        this.paymentInformationId = other.optionalPaymentInformationId().map(StringFilter::copy).orElse(null);
         this.reconciliationId = other.optionalReconciliationId().map(LongFilter::copy).orElse(null);
         this.distinct = other.distinct;
     }
@@ -584,6 +605,139 @@ public class PaymentCriteria implements Serializable, Criteria {
         this.fileName = fileName;
     }
 
+    public StringFilter getCreditorName() {
+        return creditorName;
+    }
+
+    public Optional<StringFilter> optionalCreditorName() {
+        return Optional.ofNullable(creditorName);
+    }
+
+    public StringFilter creditorName() {
+        if (creditorName == null) {
+            setCreditorName(new StringFilter());
+        }
+        return creditorName;
+    }
+
+    public void setCreditorName(StringFilter creditorName) {
+        this.creditorName = creditorName;
+    }
+
+    public StringFilter getCreditorIban() {
+        return creditorIban;
+    }
+
+    public Optional<StringFilter> optionalCreditorIban() {
+        return Optional.ofNullable(creditorIban);
+    }
+
+    public StringFilter creditorIban() {
+        if (creditorIban == null) {
+            setCreditorIban(new StringFilter());
+        }
+        return creditorIban;
+    }
+
+    public void setCreditorIban(StringFilter creditorIban) {
+        this.creditorIban = creditorIban;
+    }
+
+    public StringFilter getCreditorBic() {
+        return creditorBic;
+    }
+
+    public Optional<StringFilter> optionalCreditorBic() {
+        return Optional.ofNullable(creditorBic);
+    }
+
+    public StringFilter creditorBic() {
+        if (creditorBic == null) {
+            setCreditorBic(new StringFilter());
+        }
+        return creditorBic;
+    }
+
+    public void setCreditorBic(StringFilter creditorBic) {
+        this.creditorBic = creditorBic;
+    }
+
+    public StringFilter getCreditorId() {
+        return creditorId;
+    }
+
+    public Optional<StringFilter> optionalCreditorId() {
+        return Optional.ofNullable(creditorId);
+    }
+
+    public StringFilter creditorId() {
+        if (creditorId == null) {
+            setCreditorId(new StringFilter());
+        }
+        return creditorId;
+    }
+
+    public void setCreditorId(StringFilter creditorId) {
+        this.creditorId = creditorId;
+    }
+
+    public InstantFilter getMandateDate() {
+        return mandateDate;
+    }
+
+    public Optional<InstantFilter> optionalMandateDate() {
+        return Optional.ofNullable(mandateDate);
+    }
+
+    public InstantFilter mandateDate() {
+        if (mandateDate == null) {
+            setMandateDate(new InstantFilter());
+        }
+        return mandateDate;
+    }
+
+    public void setMandateDate(InstantFilter mandateDate) {
+        this.mandateDate = mandateDate;
+    }
+
+    public InstantFilter getExecutionDate() {
+        return executionDate;
+    }
+
+    public Optional<InstantFilter> optionalExecutionDate() {
+        return Optional.ofNullable(executionDate);
+    }
+
+    public InstantFilter executionDate() {
+        if (executionDate == null) {
+            setExecutionDate(new InstantFilter());
+        }
+        return executionDate;
+    }
+
+    public void setExecutionDate(InstantFilter executionDate) {
+        this.executionDate = executionDate;
+    }
+
+    public StringFilter getPaymentInformationId() {
+        return paymentInformationId;
+    }
+
+    public Optional<StringFilter> optionalPaymentInformationId() {
+        return Optional.ofNullable(paymentInformationId);
+    }
+
+    public StringFilter paymentInformationId() {
+        if (paymentInformationId == null) {
+            setPaymentInformationId(new StringFilter());
+        }
+        return paymentInformationId;
+    }
+
+    public void setPaymentInformationId(StringFilter paymentInformationId) {
+        this.paymentInformationId = paymentInformationId;
+    }
+
     public LongFilter getReconciliationId() {
         return reconciliationId;
     }
@@ -656,6 +810,13 @@ public class PaymentCriteria implements Serializable, Criteria {
             Objects.equals(gatewayId, that.gatewayId) &&
             Objects.equals(mode, that.mode) &&
             Objects.equals(fileName, that.fileName) &&
+            Objects.equals(creditorName, that.creditorName) &&
+            Objects.equals(creditorIban, that.creditorIban) &&
+            Objects.equals(creditorBic, that.creditorBic) &&
+            Objects.equals(creditorId, that.creditorId) &&
+            Objects.equals(mandateDate, that.mandateDate) &&
+            Objects.equals(executionDate, that.executionDate) &&
+            Objects.equals(paymentInformationId, that.paymentInformationId) &&
             Objects.equals(reconciliationId, that.reconciliationId) &&
             Objects.equals(distinct, that.distinct)
         );
@@ -688,6 +849,13 @@ public class PaymentCriteria implements Serializable, Criteria {
             gatewayId,
             mode,
             fileName,
+            creditorName,
+            creditorIban,
+            creditorBic,
+            creditorId,
+            mandateDate,
+            executionDate,
+            paymentInformationId,
             reconciliationId,
             distinct
         );
@@ -721,6 +889,13 @@ public class PaymentCriteria implements Serializable, Criteria {
             optionalGatewayId().map(f -> "gatewayId=" + f + ", ").orElse("") +
             optionalMode().map(f -> "mode=" + f + ", ").orElse("") +
             optionalFileName().map(f -> "fileName=" + f + ", ").orElse("") +
+            optionalCreditorName().map(f -> "creditorName=" + f + ", ").orElse("") +
+            optionalCreditorIban().map(f -> "creditorIban=" + f + ", ").orElse("") +
+            optionalCreditorBic().map(f -> "creditorBic=" + f + ", ").orElse("") +
+            optionalCreditorId().map(f -> "creditorId=" + f + ", ").orElse("") +
+            optionalMandateDate().map(f -> "mandateDate=" + f + ", ").orElse("") +
+            optionalExecutionDate().map(f -> "executionDate=" + f + ", ").orElse("") +
+            optionalPaymentInformationId().map(f -> "paymentInformationId=" + f + ", ").orElse("") +
             optionalReconciliationId().map(f -> "reconciliationId=" + f + ", ").orElse("") +
             optionalDistinct().map(f -> "distinct=" + f + ", ").orElse("") +
         "}";

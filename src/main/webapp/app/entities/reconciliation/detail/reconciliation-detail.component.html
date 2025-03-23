@@ -115,6 +115,34 @@
           <dd>
             <span>{{ reconciliationRef.fileName }}</span>
           </dd>
+          <dt><span jhiTranslate="scottyApp.reconciliation.creditorName">Creditor Name</span></dt>
+          <dd>
+            <span>{{ reconciliationRef.creditorName }}</span>
+          </dd>
+          <dt><span jhiTranslate="scottyApp.reconciliation.creditorIban">Creditor Iban</span></dt>
+          <dd>
+            <span>{{ reconciliationRef.creditorIban }}</span>
+          </dd>
+          <dt><span jhiTranslate="scottyApp.reconciliation.creditorBic">Creditor Bic</span></dt>
+          <dd>
+            <span>{{ reconciliationRef.creditorBic }}</span>
+          </dd>
+          <dt><span jhiTranslate="scottyApp.reconciliation.creditorId">Creditor Id</span></dt>
+          <dd>
+            <span>{{ reconciliationRef.creditorId }}</span>
+          </dd>
+          <dt><span jhiTranslate="scottyApp.reconciliation.mandateDate">Mandate Date</span></dt>
+          <dd>
+            <span>{{ reconciliationRef.mandateDate | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span jhiTranslate="scottyApp.reconciliation.executionDate">Execution Date</span></dt>
+          <dd>
+            <span>{{ reconciliationRef.executionDate | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span jhiTranslate="scottyApp.reconciliation.paymentInformationId">Payment Information Id</span></dt>
+          <dd>
+            <span>{{ reconciliationRef.paymentInformationId }}</span>
+          </dd>
           <dt><span jhiTranslate="scottyApp.reconciliation.scottyPayment">Scotty Payment</span></dt>
           <dd>
             @if (reconciliation()!.scottyPayment) {

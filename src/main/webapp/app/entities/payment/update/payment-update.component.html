@@ -500,6 +500,158 @@
             </div>
           }
         </div>
+
+        @let creditorNameRef = editForm.get('creditorName')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_creditorName" jhiTranslate="scottyApp.payment.creditorName">Creditor Name</label>
+          <input
+            type="text"
+            class="form-control"
+            name="creditorName"
+            id="field_creditorName"
+            data-cy="creditorName"
+            formControlName="creditorName"
+          />
+          @if (creditorNameRef.invalid && (creditorNameRef.dirty || creditorNameRef.touched)) {
+            <div>
+              @if (editForm.get('creditorName')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '70' }"
+                  >This field cannot be longer than 70 characters.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        @let creditorIbanRef = editForm.get('creditorIban')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_creditorIban" jhiTranslate="scottyApp.payment.creditorIban">Creditor Iban</label>
+          <input
+            type="text"
+            class="form-control"
+            name="creditorIban"
+            id="field_creditorIban"
+            data-cy="creditorIban"
+            formControlName="creditorIban"
+          />
+          @if (creditorIbanRef.invalid && (creditorIbanRef.dirty || creditorIbanRef.touched)) {
+            <div>
+              @if (editForm.get('creditorIban')?.errors?.minlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.minlength" [translateValues]="{ min: '16' }"
+                  >This field is required to be at least 16 characters.</small
+                >
+              }
+              @if (editForm.get('creditorIban')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '34' }"
+                  >This field cannot be longer than 34 characters.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        @let creditorBicRef = editForm.get('creditorBic')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_creditorBic" jhiTranslate="scottyApp.payment.creditorBic">Creditor Bic</label>
+          <input
+            type="text"
+            class="form-control"
+            name="creditorBic"
+            id="field_creditorBic"
+            data-cy="creditorBic"
+            formControlName="creditorBic"
+          />
+          @if (creditorBicRef.invalid && (creditorBicRef.dirty || creditorBicRef.touched)) {
+            <div>
+              @if (editForm.get('creditorBic')?.errors?.minlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.minlength" [translateValues]="{ min: '8' }"
+                  >This field is required to be at least 8 characters.</small
+                >
+              }
+              @if (editForm.get('creditorBic')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '11' }"
+                  >This field cannot be longer than 11 characters.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        @let creditorIdRef = editForm.get('creditorId')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_creditorId" jhiTranslate="scottyApp.payment.creditorId">Creditor Id</label>
+          <input
+            type="text"
+            class="form-control"
+            name="creditorId"
+            id="field_creditorId"
+            data-cy="creditorId"
+            formControlName="creditorId"
+          />
+          @if (creditorIdRef.invalid && (creditorIdRef.dirty || creditorIdRef.touched)) {
+            <div>
+              @if (editForm.get('creditorId')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '35' }"
+                  >This field cannot be longer than 35 characters.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_mandateDate" jhiTranslate="scottyApp.payment.mandateDate">Mandate Date</label>
+          <div class="d-flex">
+            <input
+              id="field_mandateDate"
+              data-cy="mandateDate"
+              type="datetime-local"
+              class="form-control"
+              name="mandateDate"
+              formControlName="mandateDate"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_executionDate" jhiTranslate="scottyApp.payment.executionDate">Execution Date</label>
+          <div class="d-flex">
+            <input
+              id="field_executionDate"
+              data-cy="executionDate"
+              type="datetime-local"
+              class="form-control"
+              name="executionDate"
+              formControlName="executionDate"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+        </div>
+
+        @let paymentInformationIdRef = editForm.get('paymentInformationId')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_paymentInformationId" jhiTranslate="scottyApp.payment.paymentInformationId"
+            >Payment Information Id</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            name="paymentInformationId"
+            id="field_paymentInformationId"
+            data-cy="paymentInformationId"
+            formControlName="paymentInformationId"
+          />
+          @if (paymentInformationIdRef.invalid && (paymentInformationIdRef.dirty || paymentInformationIdRef.touched)) {
+            <div>
+              @if (editForm.get('paymentInformationId')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '35' }"
+                  >This field cannot be longer than 35 characters.</small
+                >
+              }
+            </div>
+          }
+        </div>
       </div>
 
       <div>

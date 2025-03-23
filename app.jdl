@@ -29,7 +29,7 @@ application {
 }
 
 entity Payment {
-	mandateId String required maxlength(35),
+	  mandateId String required maxlength(35),
     paymentId String required maxlength(35),
     gateway Gateway required,
     iban String required minlength(16) maxlength(34),
@@ -52,6 +52,13 @@ entity Payment {
     gatewayId String maxlength(255),
     mode String maxlength(35),
     fileName String maxlength(255),
+    creditorName String maxlength(70),
+    creditorIban String minlength(16) maxlength(34),
+    creditorBic String minlength(8) maxlength(11),
+    creditorId String maxlength(35),
+    mandateDate Date,
+    executionDate Date,
+    paymentInformationId String maxlength(35),
 }
 
 entity Reconciliation {
@@ -79,6 +86,13 @@ entity Reconciliation {
     gatewayId String maxlength(255),
     mode String maxlength(35),
     fileName String maxlength(255),
+    creditorName String maxlength(70),
+    creditorIban String minlength(16) maxlength(34),
+    creditorBic String minlength(8) maxlength(11),
+    creditorId String maxlength(35),
+    mandateDate Date,
+    executionDate Date,
+    paymentInformationId String maxlength(35),
 }
 
 entity KeyValue {

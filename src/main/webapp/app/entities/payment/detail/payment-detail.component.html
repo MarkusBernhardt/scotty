@@ -111,6 +111,34 @@
           <dd>
             <span>{{ paymentRef.fileName }}</span>
           </dd>
+          <dt><span jhiTranslate="scottyApp.payment.creditorName">Creditor Name</span></dt>
+          <dd>
+            <span>{{ paymentRef.creditorName }}</span>
+          </dd>
+          <dt><span jhiTranslate="scottyApp.payment.creditorIban">Creditor Iban</span></dt>
+          <dd>
+            <span>{{ paymentRef.creditorIban }}</span>
+          </dd>
+          <dt><span jhiTranslate="scottyApp.payment.creditorBic">Creditor Bic</span></dt>
+          <dd>
+            <span>{{ paymentRef.creditorBic }}</span>
+          </dd>
+          <dt><span jhiTranslate="scottyApp.payment.creditorId">Creditor Id</span></dt>
+          <dd>
+            <span>{{ paymentRef.creditorId }}</span>
+          </dd>
+          <dt><span jhiTranslate="scottyApp.payment.mandateDate">Mandate Date</span></dt>
+          <dd>
+            <span>{{ paymentRef.mandateDate | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span jhiTranslate="scottyApp.payment.executionDate">Execution Date</span></dt>
+          <dd>
+            <span>{{ paymentRef.executionDate | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span jhiTranslate="scottyApp.payment.paymentInformationId">Payment Information Id</span></dt>
+          <dd>
+            <span>{{ paymentRef.paymentInformationId }}</span>
+          </dd>
         </dl>
 
         <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">

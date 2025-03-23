@@ -111,6 +111,27 @@ class ReconciliationResourceIT {
     private static final String DEFAULT_FILE_NAME = "AAAAAAAAAA";
     private static final String UPDATED_FILE_NAME = "BBBBBBBBBB";
 
+    private static final String DEFAULT_CREDITOR_NAME = "AAAAAAAAAA";
+    private static final String UPDATED_CREDITOR_NAME = "BBBBBBBBBB";
+
+    private static final String DEFAULT_CREDITOR_IBAN = "AAAAAAAAAAAAAAAA";
+    private static final String UPDATED_CREDITOR_IBAN = "BBBBBBBBBBBBBBBB";
+
+    private static final String DEFAULT_CREDITOR_BIC = "AAAAAAAAAA";
+    private static final String UPDATED_CREDITOR_BIC = "BBBBBBBBBB";
+
+    private static final String DEFAULT_CREDITOR_ID = "AAAAAAAAAA";
+    private static final String UPDATED_CREDITOR_ID = "BBBBBBBBBB";
+
+    private static final Instant DEFAULT_MANDATE_DATE = Instant.ofEpochMilli(0L);
+    private static final Instant UPDATED_MANDATE_DATE = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+
+    private static final Instant DEFAULT_EXECUTION_DATE = Instant.ofEpochMilli(0L);
+    private static final Instant UPDATED_EXECUTION_DATE = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+
+    private static final String DEFAULT_PAYMENT_INFORMATION_ID = "AAAAAAAAAA";
+    private static final String UPDATED_PAYMENT_INFORMATION_ID = "BBBBBBBBBB";
+
     private static final String ENTITY_API_URL = "/api/reconciliations";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
@@ -167,7 +188,14 @@ class ReconciliationResourceIT {
             .message(DEFAULT_MESSAGE)
             .gatewayId(DEFAULT_GATEWAY_ID)
             .mode(DEFAULT_MODE)
-            .fileName(DEFAULT_FILE_NAME);
+            .fileName(DEFAULT_FILE_NAME)
+            .creditorName(DEFAULT_CREDITOR_NAME)
+            .creditorIban(DEFAULT_CREDITOR_IBAN)
+            .creditorBic(DEFAULT_CREDITOR_BIC)
+            .creditorId(DEFAULT_CREDITOR_ID)
+            .mandateDate(DEFAULT_MANDATE_DATE)
+            .executionDate(DEFAULT_EXECUTION_DATE)
+            .paymentInformationId(DEFAULT_PAYMENT_INFORMATION_ID);
     }
 
     /**
@@ -201,7 +229,14 @@ class ReconciliationResourceIT {
             .message(UPDATED_MESSAGE)
             .gatewayId(UPDATED_GATEWAY_ID)
             .mode(UPDATED_MODE)
-            .fileName(UPDATED_FILE_NAME);
+            .fileName(UPDATED_FILE_NAME)
+            .creditorName(UPDATED_CREDITOR_NAME)
+            .creditorIban(UPDATED_CREDITOR_IBAN)
+            .creditorBic(UPDATED_CREDITOR_BIC)
+            .creditorId(UPDATED_CREDITOR_ID)
+            .mandateDate(UPDATED_MANDATE_DATE)
+            .executionDate(UPDATED_EXECUTION_DATE)
+            .paymentInformationId(UPDATED_PAYMENT_INFORMATION_ID);
     }
 
     @BeforeEach
@@ -651,7 +686,14 @@ class ReconciliationResourceIT {
             .andExpect(jsonPath("$.[*].message").value(hasItem(DEFAULT_MESSAGE)))
             .andExpect(jsonPath("$.[*].gatewayId").value(hasItem(DEFAULT_GATEWAY_ID)))
             .andExpect(jsonPath("$.[*].mode").value(hasItem(DEFAULT_MODE)))
-            .andExpect(jsonPath("$.[*].fileName").value(hasItem(DEFAULT_FILE_NAME)));
+            .andExpect(jsonPath("$.[*].fileName").value(hasItem(DEFAULT_FILE_NAME)))
+            .andExpect(jsonPath("$.[*].creditorName").value(hasItem(DEFAULT_CREDITOR_NAME)))
+            .andExpect(jsonPath("$.[*].creditorIban").value(hasItem(DEFAULT_CREDITOR_IBAN)))
+            .andExpect(jsonPath("$.[*].creditorBic").value(hasItem(DEFAULT_CREDITOR_BIC)))
+            .andExpect(jsonPath("$.[*].creditorId").value(hasItem(DEFAULT_CREDITOR_ID)))
+            .andExpect(jsonPath("$.[*].mandateDate").value(hasItem(DEFAULT_MANDATE_DATE.toString())))
+            .andExpect(jsonPath("$.[*].executionDate").value(hasItem(DEFAULT_EXECUTION_DATE.toString())))
+            .andExpect(jsonPath("$.[*].paymentInformationId").value(hasItem(DEFAULT_PAYMENT_INFORMATION_ID)));
     }
 
     @Test
@@ -689,7 +731,14 @@ class ReconciliationResourceIT {
             .andExpect(jsonPath("$.message").value(DEFAULT_MESSAGE))
             .andExpect(jsonPath("$.gatewayId").value(DEFAULT_GATEWAY_ID))
             .andExpect(jsonPath("$.mode").value(DEFAULT_MODE))
-            .andExpect(jsonPath("$.fileName").value(DEFAULT_FILE_NAME));
+            .andExpect(jsonPath("$.fileName").value(DEFAULT_FILE_NAME))
+            .andExpect(jsonPath("$.creditorName").value(DEFAULT_CREDITOR_NAME))
+            .andExpect(jsonPath("$.creditorIban").value(DEFAULT_CREDITOR_IBAN))
+            .andExpect(jsonPath("$.creditorBic").value(DEFAULT_CREDITOR_BIC))
+            .andExpect(jsonPath("$.creditorId").value(DEFAULT_CREDITOR_ID))
+            .andExpect(jsonPath("$.mandateDate").value(DEFAULT_MANDATE_DATE.toString()))
+            .andExpect(jsonPath("$.executionDate").value(DEFAULT_EXECUTION_DATE.toString()))
+            .andExpect(jsonPath("$.paymentInformationId").value(DEFAULT_PAYMENT_INFORMATION_ID));
     }
 
     @Test
@@ -1955,6 +2004,358 @@ class ReconciliationResourceIT {
 
     @Test
     @Transactional
+    void getAllReconciliationsByCreditorNameIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where creditorName equals to
+        defaultReconciliationFiltering("creditorName.equals=" + DEFAULT_CREDITOR_NAME, "creditorName.equals=" + UPDATED_CREDITOR_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByCreditorNameIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where creditorName in
+        defaultReconciliationFiltering(
+            "creditorName.in=" + DEFAULT_CREDITOR_NAME + "," + UPDATED_CREDITOR_NAME,
+            "creditorName.in=" + UPDATED_CREDITOR_NAME
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByCreditorNameIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where creditorName is not null
+        defaultReconciliationFiltering("creditorName.specified=true", "creditorName.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByCreditorNameContainsSomething() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where creditorName contains
+        defaultReconciliationFiltering("creditorName.contains=" + DEFAULT_CREDITOR_NAME, "creditorName.contains=" + UPDATED_CREDITOR_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByCreditorNameNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where creditorName does not contain
+        defaultReconciliationFiltering(
+            "creditorName.doesNotContain=" + UPDATED_CREDITOR_NAME,
+            "creditorName.doesNotContain=" + DEFAULT_CREDITOR_NAME
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByCreditorIbanIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where creditorIban equals to
+        defaultReconciliationFiltering("creditorIban.equals=" + DEFAULT_CREDITOR_IBAN, "creditorIban.equals=" + UPDATED_CREDITOR_IBAN);
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByCreditorIbanIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where creditorIban in
+        defaultReconciliationFiltering(
+            "creditorIban.in=" + DEFAULT_CREDITOR_IBAN + "," + UPDATED_CREDITOR_IBAN,
+            "creditorIban.in=" + UPDATED_CREDITOR_IBAN
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByCreditorIbanIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where creditorIban is not null
+        defaultReconciliationFiltering("creditorIban.specified=true", "creditorIban.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByCreditorIbanContainsSomething() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where creditorIban contains
+        defaultReconciliationFiltering("creditorIban.contains=" + DEFAULT_CREDITOR_IBAN, "creditorIban.contains=" + UPDATED_CREDITOR_IBAN);
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByCreditorIbanNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where creditorIban does not contain
+        defaultReconciliationFiltering(
+            "creditorIban.doesNotContain=" + UPDATED_CREDITOR_IBAN,
+            "creditorIban.doesNotContain=" + DEFAULT_CREDITOR_IBAN
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByCreditorBicIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where creditorBic equals to
+        defaultReconciliationFiltering("creditorBic.equals=" + DEFAULT_CREDITOR_BIC, "creditorBic.equals=" + UPDATED_CREDITOR_BIC);
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByCreditorBicIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where creditorBic in
+        defaultReconciliationFiltering(
+            "creditorBic.in=" + DEFAULT_CREDITOR_BIC + "," + UPDATED_CREDITOR_BIC,
+            "creditorBic.in=" + UPDATED_CREDITOR_BIC
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByCreditorBicIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where creditorBic is not null
+        defaultReconciliationFiltering("creditorBic.specified=true", "creditorBic.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByCreditorBicContainsSomething() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where creditorBic contains
+        defaultReconciliationFiltering("creditorBic.contains=" + DEFAULT_CREDITOR_BIC, "creditorBic.contains=" + UPDATED_CREDITOR_BIC);
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByCreditorBicNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where creditorBic does not contain
+        defaultReconciliationFiltering(
+            "creditorBic.doesNotContain=" + UPDATED_CREDITOR_BIC,
+            "creditorBic.doesNotContain=" + DEFAULT_CREDITOR_BIC
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByCreditorIdIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where creditorId equals to
+        defaultReconciliationFiltering("creditorId.equals=" + DEFAULT_CREDITOR_ID, "creditorId.equals=" + UPDATED_CREDITOR_ID);
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByCreditorIdIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where creditorId in
+        defaultReconciliationFiltering(
+            "creditorId.in=" + DEFAULT_CREDITOR_ID + "," + UPDATED_CREDITOR_ID,
+            "creditorId.in=" + UPDATED_CREDITOR_ID
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByCreditorIdIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where creditorId is not null
+        defaultReconciliationFiltering("creditorId.specified=true", "creditorId.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByCreditorIdContainsSomething() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where creditorId contains
+        defaultReconciliationFiltering("creditorId.contains=" + DEFAULT_CREDITOR_ID, "creditorId.contains=" + UPDATED_CREDITOR_ID);
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByCreditorIdNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where creditorId does not contain
+        defaultReconciliationFiltering(
+            "creditorId.doesNotContain=" + UPDATED_CREDITOR_ID,
+            "creditorId.doesNotContain=" + DEFAULT_CREDITOR_ID
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByMandateDateIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where mandateDate equals to
+        defaultReconciliationFiltering("mandateDate.equals=" + DEFAULT_MANDATE_DATE, "mandateDate.equals=" + UPDATED_MANDATE_DATE);
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByMandateDateIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where mandateDate in
+        defaultReconciliationFiltering(
+            "mandateDate.in=" + DEFAULT_MANDATE_DATE + "," + UPDATED_MANDATE_DATE,
+            "mandateDate.in=" + UPDATED_MANDATE_DATE
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByMandateDateIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where mandateDate is not null
+        defaultReconciliationFiltering("mandateDate.specified=true", "mandateDate.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByExecutionDateIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where executionDate equals to
+        defaultReconciliationFiltering("executionDate.equals=" + DEFAULT_EXECUTION_DATE, "executionDate.equals=" + UPDATED_EXECUTION_DATE);
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByExecutionDateIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where executionDate in
+        defaultReconciliationFiltering(
+            "executionDate.in=" + DEFAULT_EXECUTION_DATE + "," + UPDATED_EXECUTION_DATE,
+            "executionDate.in=" + UPDATED_EXECUTION_DATE
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByExecutionDateIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where executionDate is not null
+        defaultReconciliationFiltering("executionDate.specified=true", "executionDate.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByPaymentInformationIdIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where paymentInformationId equals to
+        defaultReconciliationFiltering(
+            "paymentInformationId.equals=" + DEFAULT_PAYMENT_INFORMATION_ID,
+            "paymentInformationId.equals=" + UPDATED_PAYMENT_INFORMATION_ID
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByPaymentInformationIdIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where paymentInformationId in
+        defaultReconciliationFiltering(
+            "paymentInformationId.in=" + DEFAULT_PAYMENT_INFORMATION_ID + "," + UPDATED_PAYMENT_INFORMATION_ID,
+            "paymentInformationId.in=" + UPDATED_PAYMENT_INFORMATION_ID
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByPaymentInformationIdIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where paymentInformationId is not null
+        defaultReconciliationFiltering("paymentInformationId.specified=true", "paymentInformationId.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByPaymentInformationIdContainsSomething() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where paymentInformationId contains
+        defaultReconciliationFiltering(
+            "paymentInformationId.contains=" + DEFAULT_PAYMENT_INFORMATION_ID,
+            "paymentInformationId.contains=" + UPDATED_PAYMENT_INFORMATION_ID
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByPaymentInformationIdNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where paymentInformationId does not contain
+        defaultReconciliationFiltering(
+            "paymentInformationId.doesNotContain=" + UPDATED_PAYMENT_INFORMATION_ID,
+            "paymentInformationId.doesNotContain=" + DEFAULT_PAYMENT_INFORMATION_ID
+        );
+    }
+
+    @Test
+    @Transactional
     void getAllReconciliationsByScottyPaymentIsEqualToSomething() throws Exception {
         Payment scottyPayment;
         if (TestUtil.findAll(em, Payment.class).isEmpty()) {
@@ -2012,7 +2413,14 @@ class ReconciliationResourceIT {
             .andExpect(jsonPath("$.[*].message").value(hasItem(DEFAULT_MESSAGE)))
             .andExpect(jsonPath("$.[*].gatewayId").value(hasItem(DEFAULT_GATEWAY_ID)))
             .andExpect(jsonPath("$.[*].mode").value(hasItem(DEFAULT_MODE)))
-            .andExpect(jsonPath("$.[*].fileName").value(hasItem(DEFAULT_FILE_NAME)));
+            .andExpect(jsonPath("$.[*].fileName").value(hasItem(DEFAULT_FILE_NAME)))
+            .andExpect(jsonPath("$.[*].creditorName").value(hasItem(DEFAULT_CREDITOR_NAME)))
+            .andExpect(jsonPath("$.[*].creditorIban").value(hasItem(DEFAULT_CREDITOR_IBAN)))
+            .andExpect(jsonPath("$.[*].creditorBic").value(hasItem(DEFAULT_CREDITOR_BIC)))
+            .andExpect(jsonPath("$.[*].creditorId").value(hasItem(DEFAULT_CREDITOR_ID)))
+            .andExpect(jsonPath("$.[*].mandateDate").value(hasItem(DEFAULT_MANDATE_DATE.toString())))
+            .andExpect(jsonPath("$.[*].executionDate").value(hasItem(DEFAULT_EXECUTION_DATE.toString())))
+            .andExpect(jsonPath("$.[*].paymentInformationId").value(hasItem(DEFAULT_PAYMENT_INFORMATION_ID)));
 
         // Check, that the count call also returns 1
         restReconciliationMockMvc
@@ -2084,7 +2492,14 @@ class ReconciliationResourceIT {
             .message(UPDATED_MESSAGE)
             .gatewayId(UPDATED_GATEWAY_ID)
             .mode(UPDATED_MODE)
-            .fileName(UPDATED_FILE_NAME);
+            .fileName(UPDATED_FILE_NAME)
+            .creditorName(UPDATED_CREDITOR_NAME)
+            .creditorIban(UPDATED_CREDITOR_IBAN)
+            .creditorBic(UPDATED_CREDITOR_BIC)
+            .creditorId(UPDATED_CREDITOR_ID)
+            .mandateDate(UPDATED_MANDATE_DATE)
+            .executionDate(UPDATED_EXECUTION_DATE)
+            .paymentInformationId(UPDATED_PAYMENT_INFORMATION_ID);
         ReconciliationDTO reconciliationDTO = reconciliationMapper.toDto(updatedReconciliation);
 
         restReconciliationMockMvc
@@ -2185,7 +2600,11 @@ class ReconciliationResourceIT {
             .emailAddress(UPDATED_EMAIL_ADDRESS)
             .gatewayId(UPDATED_GATEWAY_ID)
             .mode(UPDATED_MODE)
-            .fileName(UPDATED_FILE_NAME);
+            .fileName(UPDATED_FILE_NAME)
+            .creditorIban(UPDATED_CREDITOR_IBAN)
+            .creditorBic(UPDATED_CREDITOR_BIC)
+            .executionDate(UPDATED_EXECUTION_DATE)
+            .paymentInformationId(UPDATED_PAYMENT_INFORMATION_ID);
 
         restReconciliationMockMvc
             .perform(
@@ -2240,7 +2659,14 @@ class ReconciliationResourceIT {
             .message(UPDATED_MESSAGE)
             .gatewayId(UPDATED_GATEWAY_ID)
             .mode(UPDATED_MODE)
-            .fileName(UPDATED_FILE_NAME);
+            .fileName(UPDATED_FILE_NAME)
+            .creditorName(UPDATED_CREDITOR_NAME)
+            .creditorIban(UPDATED_CREDITOR_IBAN)
+            .creditorBic(UPDATED_CREDITOR_BIC)
+            .creditorId(UPDATED_CREDITOR_ID)
+            .mandateDate(UPDATED_MANDATE_DATE)
+            .executionDate(UPDATED_EXECUTION_DATE)
+            .paymentInformationId(UPDATED_PAYMENT_INFORMATION_ID);
 
         restReconciliationMockMvc
             .perform(

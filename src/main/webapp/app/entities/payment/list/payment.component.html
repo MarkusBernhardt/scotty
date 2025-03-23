@@ -205,6 +205,55 @@
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
+            <th scope="col" jhiSortBy="creditorName">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.payment.creditorName">Creditor Name</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="creditorIban">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.payment.creditorIban">Creditor Iban</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="creditorBic">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.payment.creditorBic">Creditor Bic</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="creditorId">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.payment.creditorId">Creditor Id</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="mandateDate">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.payment.mandateDate">Mandate Date</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="executionDate">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.payment.executionDate">Execution Date</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="paymentInformationId">
+              <div class="d-flex">
+                <span jhiTranslate="scottyApp.payment.paymentInformationId">Payment Information Id</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
             <th scope="col"></th>
           </tr>
         </thead>
@@ -248,6 +297,13 @@
               <td>{{ payment.gatewayId }}</td>
               <td>{{ payment.mode }}</td>
               <td>{{ payment.fileName }}</td>
+              <td>{{ payment.creditorName }}</td>
+              <td>{{ payment.creditorIban }}</td>
+              <td>{{ payment.creditorBic }}</td>
+              <td>{{ payment.creditorId }}</td>
+              <td>{{ payment.mandateDate | formatMediumDatetime }}</td>
+              <td>{{ payment.executionDate | formatMediumDatetime }}</td>
+              <td>{{ payment.paymentInformationId }}</td>
               <td class="text-end">
                 <div class="btn-group">
                   <button

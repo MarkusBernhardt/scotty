@@ -11,8 +11,10 @@ import { IReconciliation, NewReconciliation } from '../reconciliation.model';
 
 export type PartialUpdateReconciliation = Partial<IReconciliation> & Pick<IReconciliation, 'id'>;
 
-type RestOf<T extends IReconciliation | NewReconciliation> = Omit<T, 'timestamp'> & {
+type RestOf<T extends IReconciliation | NewReconciliation> = Omit<T, 'timestamp' | 'mandateDate' | 'executionDate'> & {
   timestamp?: string | null;
+  mandateDate?: string | null;
+  executionDate?: string | null;
 };
 
 export type RestReconciliation = RestOf<IReconciliation>;
@@ -105,6 +107,8 @@ export class ReconciliationService {
     return {
       ...reconciliation,
       timestamp: reconciliation.timestamp?.toJSON() ?? null,
+      mandateDate: reconciliation.mandateDate?.toJSON() ?? null,
+      executionDate: reconciliation.executionDate?.toJSON() ?? null,
     };
   }
 
@@ -112,6 +116,8 @@ export class ReconciliationService {
     return {
       ...restReconciliation,
       timestamp: restReconciliation.timestamp ? dayjs(restReconciliation.timestamp) : undefined,
+      mandateDate: restReconciliation.mandateDate ? dayjs(restReconciliation.mandateDate) : undefined,
+      executionDate: restReconciliation.executionDate ? dayjs(restReconciliation.executionDate) : undefined,
     };
   }
 

@@ -10,6 +10,8 @@ import { PaymentService, RestPayment } from './payment.service';
 const requireRestSample: RestPayment = {
   ...sampleWithRequiredData,
   timestamp: sampleWithRequiredData.timestamp?.toJSON(),
+  mandateDate: sampleWithRequiredData.mandateDate?.toJSON(),
+  executionDate: sampleWithRequiredData.executionDate?.toJSON(),
 };
 
 describe('Payment Service', () => {

@@ -144,6 +144,46 @@
       "fieldType": "String",
       "fieldValidateRules": ["maxlength"],
       "fieldValidateRulesMaxlength": "255"
+    },
+    {
+      "fieldName": "creditorName",
+      "fieldType": "String",
+      "fieldValidateRules": ["maxlength"],
+      "fieldValidateRulesMaxlength": "70"
+    },
+    {
+      "fieldName": "creditorIban",
+      "fieldType": "String",
+      "fieldValidateRules": ["minlength", "maxlength"],
+      "fieldValidateRulesMaxlength": "34",
+      "fieldValidateRulesMinlength": "16"
+    },
+    {
+      "fieldName": "creditorBic",
+      "fieldType": "String",
+      "fieldValidateRules": ["minlength", "maxlength"],
+      "fieldValidateRulesMaxlength": "11",
+      "fieldValidateRulesMinlength": "8"
+    },
+    {
+      "fieldName": "creditorId",
+      "fieldType": "String",
+      "fieldValidateRules": ["maxlength"],
+      "fieldValidateRulesMaxlength": "35"
+    },
+    {
+      "fieldName": "mandateDate",
+      "fieldType": "Instant"
+    },
+    {
+      "fieldName": "executionDate",
+      "fieldType": "Instant"
+    },
+    {
+      "fieldName": "paymentInformationId",
+      "fieldType": "String",
+      "fieldValidateRules": ["maxlength"],
+      "fieldValidateRulesMaxlength": "35"
     }
   ],
   "jpaMetamodelFiltering": true,

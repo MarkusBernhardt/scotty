@@ -69,7 +69,16 @@ public class PaymentAsserts {
             .satisfies(e -> assertThat(e.getMessage()).as("check message").isEqualTo(actual.getMessage()))
             .satisfies(e -> assertThat(e.getGatewayId()).as("check gatewayId").isEqualTo(actual.getGatewayId()))
             .satisfies(e -> assertThat(e.getMode()).as("check mode").isEqualTo(actual.getMode()))
-            .satisfies(e -> assertThat(e.getFileName()).as("check fileName").isEqualTo(actual.getFileName()));
+            .satisfies(e -> assertThat(e.getFileName()).as("check fileName").isEqualTo(actual.getFileName()))
+            .satisfies(e -> assertThat(e.getCreditorName()).as("check creditorName").isEqualTo(actual.getCreditorName()))
+            .satisfies(e -> assertThat(e.getCreditorIban()).as("check creditorIban").isEqualTo(actual.getCreditorIban()))
+            .satisfies(e -> assertThat(e.getCreditorBic()).as("check creditorBic").isEqualTo(actual.getCreditorBic()))
+            .satisfies(e -> assertThat(e.getCreditorId()).as("check creditorId").isEqualTo(actual.getCreditorId()))
+            .satisfies(e -> assertThat(e.getMandateDate()).as("check mandateDate").isEqualTo(actual.getMandateDate()))
+            .satisfies(e -> assertThat(e.getExecutionDate()).as("check executionDate").isEqualTo(actual.getExecutionDate()))
+            .satisfies(e ->
+                assertThat(e.getPaymentInformationId()).as("check paymentInformationId").isEqualTo(actual.getPaymentInformationId())
+            );
     }
 
     /**

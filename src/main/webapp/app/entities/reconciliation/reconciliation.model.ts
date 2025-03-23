@@ -28,6 +28,13 @@ export interface IReconciliation {
   gatewayId?: string | null;
   mode?: string | null;
   fileName?: string | null;
+  creditorName?: string | null;
+  creditorIban?: string | null;
+  creditorBic?: string | null;
+  creditorId?: string | null;
+  mandateDate?: dayjs.Dayjs | null;
+  executionDate?: dayjs.Dayjs | null;
+  paymentInformationId?: string | null;
   scottyPayment?: Pick<IPayment, 'id'> | null;
 }
 

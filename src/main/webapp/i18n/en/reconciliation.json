@@ -42,6 +42,13 @@
       "gatewayId": "Gateway Id",
       "mode": "Mode",
       "fileName": "File Name",
+      "creditorName": "Creditor Name",
+      "creditorIban": "Creditor Iban",
+      "creditorBic": "Creditor Bic",
+      "creditorId": "Creditor Id",
+      "mandateDate": "Mandate Date",
+      "executionDate": "Execution Date",
+      "paymentInformationId": "Payment Information Id",
       "scottyPayment": "Scotty Payment"
     }
   }

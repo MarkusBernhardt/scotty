@@ -19,15 +19,17 @@ type ReconciliationFormGroupInput = IReconciliation | PartialWithRequiredKeyOf<N
 /**
  * Type that converts some properties for forms.
  */
-type FormValueOf<T extends IReconciliation | NewReconciliation> = Omit<T, 'timestamp'> & {
+type FormValueOf<T extends IReconciliation | NewReconciliation> = Omit<T, 'timestamp' | 'mandateDate' | 'executionDate'> & {
   timestamp?: string | null;
+  mandateDate?: string | null;
+  executionDate?: string | null;
 };
 
 type ReconciliationFormRawValue = FormValueOf<IReconciliation>;
 
 type NewReconciliationFormRawValue = FormValueOf<NewReconciliation>;
 
-type ReconciliationFormDefaults = Pick<NewReconciliation, 'id' | 'timestamp'>;
+type ReconciliationFormDefaults = Pick<NewReconciliation, 'id' | 'timestamp' | 'mandateDate' | 'executionDate'>;
 
 type ReconciliationFormGroupContent = {
   id: FormControl<ReconciliationFormRawValue['id'] | NewReconciliation['id']>;
@@ -55,6 +57,13 @@ type ReconciliationFormGroupContent = {
   gatewayId: FormControl<ReconciliationFormRawValue['gatewayId']>;
   mode: FormControl<ReconciliationFormRawValue['mode']>;
   fileName: FormControl<ReconciliationFormRawValue['fileName']>;
+  creditorName: FormControl<ReconciliationFormRawValue['creditorName']>;
+  creditorIban: FormControl<ReconciliationFormRawValue['creditorIban']>;
+  creditorBic: FormControl<ReconciliationFormRawValue['creditorBic']>;
+  creditorId: FormControl<ReconciliationFormRawValue['creditorId']>;
+  mandateDate: FormControl<ReconciliationFormRawValue['mandateDate']>;
+  executionDate: FormControl<ReconciliationFormRawValue['executionDate']>;
+  paymentInformationId: FormControl<ReconciliationFormRawValue['paymentInformationId']>;
   scottyPayment: FormControl<ReconciliationFormRawValue['scottyPayment']>;
 };
 
@@ -147,6 +156,23 @@ export class ReconciliationFormService {
       fileName: new FormControl(reconciliationRawValue.fileName, {
         validators: [Validators.maxLength(255)],
       }),
+      creditorName: new FormControl(reconciliationRawValue.creditorName, {
+        validators: [Validators.maxLength(70)],
+      }),
+      creditorIban: new FormControl(reconciliationRawValue.creditorIban, {
+        validators: [Validators.minLength(16), Validators.maxLength(34)],
+      }),
+      creditorBic: new FormControl(reconciliationRawValue.creditorBic, {
+        validators: [Validators.minLength(8), Validators.maxLength(11)],
+      }),
+      creditorId: new FormControl(reconciliationRawValue.creditorId, {
+        validators: [Validators.maxLength(35)],
+      }),
+      mandateDate: new FormControl(reconciliationRawValue.mandateDate),
+      executionDate: new FormControl(reconciliationRawValue.executionDate),
+      paymentInformationId: new FormControl(reconciliationRawValue.paymentInformationId, {
+        validators: [Validators.maxLength(35)],
+      }),
       scottyPayment: new FormControl(reconciliationRawValue.scottyPayment),
     });
   }
@@ -173,6 +199,8 @@ export class ReconciliationFormService {
     return {
       id: null,
       timestamp: currentTime,
+      mandateDate: currentTime,
+      executionDate: currentTime,
     };
   }
 
@@ -182,6 +210,8 @@ export class ReconciliationFormService {
     return {
       ...rawReconciliation,
       timestamp: dayjs(rawReconciliation.timestamp, DATE_TIME_FORMAT),
+      mandateDate: dayjs(rawReconciliation.mandateDate, DATE_TIME_FORMAT),
+      executionDate: dayjs(rawReconciliation.executionDate, DATE_TIME_FORMAT),
     };
   }
 
@@ -191,6 +221,8 @@ export class ReconciliationFormService {
     return {
       ...reconciliation,
       timestamp: reconciliation.timestamp ? reconciliation.timestamp.format(DATE_TIME_FORMAT) : undefined,
+      mandateDate: reconciliation.mandateDate ? reconciliation.mandateDate.format(DATE_TIME_FORMAT) : undefined,
+      executionDate: reconciliation.executionDate ? reconciliation.executionDate.format(DATE_TIME_FORMAT) : undefined,
     };
   }
 }

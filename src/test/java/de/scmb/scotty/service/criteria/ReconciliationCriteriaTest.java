@@ -99,6 +99,13 @@ class ReconciliationCriteriaTest {
         reconciliationCriteria.gatewayId();
         reconciliationCriteria.mode();
         reconciliationCriteria.fileName();
+        reconciliationCriteria.creditorName();
+        reconciliationCriteria.creditorIban();
+        reconciliationCriteria.creditorBic();
+        reconciliationCriteria.creditorId();
+        reconciliationCriteria.mandateDate();
+        reconciliationCriteria.executionDate();
+        reconciliationCriteria.paymentInformationId();
         reconciliationCriteria.scottyPaymentId();
         reconciliationCriteria.distinct();
     }
@@ -131,6 +138,13 @@ class ReconciliationCriteriaTest {
                 condition.apply(criteria.getGatewayId()) &&
                 condition.apply(criteria.getMode()) &&
                 condition.apply(criteria.getFileName()) &&
+                condition.apply(criteria.getCreditorName()) &&
+                condition.apply(criteria.getCreditorIban()) &&
+                condition.apply(criteria.getCreditorBic()) &&
+                condition.apply(criteria.getCreditorId()) &&
+                condition.apply(criteria.getMandateDate()) &&
+                condition.apply(criteria.getExecutionDate()) &&
+                condition.apply(criteria.getPaymentInformationId()) &&
                 condition.apply(criteria.getScottyPaymentId()) &&
                 condition.apply(criteria.getDistinct()),
             "every filter matches"
@@ -168,6 +182,13 @@ class ReconciliationCriteriaTest {
                 condition.apply(criteria.getGatewayId(), copy.getGatewayId()) &&
                 condition.apply(criteria.getMode(), copy.getMode()) &&
                 condition.apply(criteria.getFileName(), copy.getFileName()) &&
+                condition.apply(criteria.getCreditorName(), copy.getCreditorName()) &&
+                condition.apply(criteria.getCreditorIban(), copy.getCreditorIban()) &&
+                condition.apply(criteria.getCreditorBic(), copy.getCreditorBic()) &&
+                condition.apply(criteria.getCreditorId(), copy.getCreditorId()) &&
+                condition.apply(criteria.getMandateDate(), copy.getMandateDate()) &&
+                condition.apply(criteria.getExecutionDate(), copy.getExecutionDate()) &&
+                condition.apply(criteria.getPaymentInformationId(), copy.getPaymentInformationId()) &&
                 condition.apply(criteria.getScottyPaymentId(), copy.getScottyPaymentId()) &&
                 condition.apply(criteria.getDistinct(), copy.getDistinct()),
             "every filter matches"

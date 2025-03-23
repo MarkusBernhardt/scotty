@@ -35,7 +35,12 @@ public class ReconciliationTestSamples {
             .message("message1")
             .gatewayId("gatewayId1")
             .mode("mode1")
-            .fileName("fileName1");
+            .fileName("fileName1")
+            .creditorName("creditorName1")
+            .creditorIban("creditorIban1")
+            .creditorBic("creditorBic1")
+            .creditorId("creditorId1")
+            .paymentInformationId("paymentInformationId1");
     }
 
     public static Reconciliation getReconciliationSample2() {
@@ -62,7 +67,12 @@ public class ReconciliationTestSamples {
             .message("message2")
             .gatewayId("gatewayId2")
             .mode("mode2")
-            .fileName("fileName2");
+            .fileName("fileName2")
+            .creditorName("creditorName2")
+            .creditorIban("creditorIban2")
+            .creditorBic("creditorBic2")
+            .creditorId("creditorId2")
+            .paymentInformationId("paymentInformationId2");
     }
 
     public static Reconciliation getReconciliationRandomSampleGenerator() {
@@ -89,6 +99,11 @@ public class ReconciliationTestSamples {
             .message(UUID.randomUUID().toString())
             .gatewayId(UUID.randomUUID().toString())
             .mode(UUID.randomUUID().toString())
-            .fileName(UUID.randomUUID().toString());
+            .fileName(UUID.randomUUID().toString())
+            .creditorName(UUID.randomUUID().toString())
+            .creditorIban(UUID.randomUUID().toString())
+            .creditorBic(UUID.randomUUID().toString())
+            .creditorId(UUID.randomUUID().toString())
+            .paymentInformationId(UUID.randomUUID().toString());
     }
 }

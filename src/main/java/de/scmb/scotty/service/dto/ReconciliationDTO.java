@@ -104,6 +104,25 @@ public class ReconciliationDTO implements Serializable {
     @Size(max = 255)
     private String fileName;
 
+    @Size(max = 70)
+    private String creditorName;
+
+    @Size(min = 16, max = 34)
+    private String creditorIban;
+
+    @Size(min = 8, max = 11)
+    private String creditorBic;
+
+    @Size(max = 35)
+    private String creditorId;
+
+    private Instant mandateDate;
+
+    private Instant executionDate;
+
+    @Size(max = 35)
+    private String paymentInformationId;
+
     private PaymentDTO scottyPayment;
 
     public Long getId() {
@@ -306,6 +325,62 @@ public class ReconciliationDTO implements Serializable {
         this.fileName = fileName;
     }
 
+    public String getCreditorName() {
+        return creditorName;
+    }
+
+    public void setCreditorName(String creditorName) {
+        this.creditorName = creditorName;
+    }
+
+    public String getCreditorIban() {
+        return creditorIban;
+    }
+
+    public void setCreditorIban(String creditorIban) {
+        this.creditorIban = creditorIban;
+    }
+
+    public String getCreditorBic() {
+        return creditorBic;
+    }
+
+    public void setCreditorBic(String creditorBic) {
+        this.creditorBic = creditorBic;
+    }
+
+    public String getCreditorId() {
+        return creditorId;
+    }
+
+    public void setCreditorId(String creditorId) {
+        this.creditorId = creditorId;
+    }
+
+    public Instant getMandateDate() {
+        return mandateDate;
+    }
+
+    public void setMandateDate(Instant mandateDate) {
+        this.mandateDate = mandateDate;
+    }
+
+    public Instant getExecutionDate() {
+        return executionDate;
+    }
+
+    public void setExecutionDate(Instant executionDate) {
+        this.executionDate = executionDate;
+    }
+
+    public String getPaymentInformationId() {
+        return paymentInformationId;
+    }
+
+    public void setPaymentInformationId(String paymentInformationId) {
+        this.paymentInformationId = paymentInformationId;
+    }
+
     public PaymentDTO getScottyPayment() {
         return scottyPayment;
     }
@@ -364,6 +439,13 @@ public class ReconciliationDTO implements Serializable {
             ", gatewayId='" + getGatewayId() + "'" +
             ", mode='" + getMode() + "'" +
             ", fileName='" + getFileName() + "'" +
+            ", creditorName='" + getCreditorName() + "'" +
+            ", creditorIban='" + getCreditorIban() + "'" +
+            ", creditorBic='" + getCreditorBic() + "'" +
+            ", creditorId='" + getCreditorId() + "'" +
+            ", mandateDate='" + getMandateDate() + "'" +
+            ", executionDate='" + getExecutionDate() + "'" +
+            ", paymentInformationId='" + getPaymentInformationId() + "'" +
             ", scottyPayment=" + getScottyPayment() +
             "}";
     }

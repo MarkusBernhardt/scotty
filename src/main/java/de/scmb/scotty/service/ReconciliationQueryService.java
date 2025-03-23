@@ -149,6 +149,29 @@ public class ReconciliationQueryService extends QueryService<Reconciliation> {
             if (criteria.getFileName() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getFileName(), Reconciliation_.fileName));
             }
+            if (criteria.getCreditorName() != null) {
+                specification = specification.and(buildStringSpecification(criteria.getCreditorName(), Reconciliation_.creditorName));
+            }
+            if (criteria.getCreditorIban() != null) {
+                specification = specification.and(buildStringSpecification(criteria.getCreditorIban(), Reconciliation_.creditorIban));
+            }
+            if (criteria.getCreditorBic() != null) {
+                specification = specification.and(buildStringSpecification(criteria.getCreditorBic(), Reconciliation_.creditorBic));
+            }
+            if (criteria.getCreditorId() != null) {
+                specification = specification.and(buildStringSpecification(criteria.getCreditorId(), Reconciliation_.creditorId));
+            }
+            if (criteria.getMandateDate() != null) {
+                specification = specification.and(buildRangeSpecification(criteria.getMandateDate(), Reconciliation_.mandateDate));
+            }
+            if (criteria.getExecutionDate() != null) {
+                specification = specification.and(buildRangeSpecification(criteria.getExecutionDate(), Reconciliation_.executionDate));
+            }
+            if (criteria.getPaymentInformationId() != null) {
+                specification = specification.and(
+                    buildStringSpecification(criteria.getPaymentInformationId(), Reconciliation_.paymentInformationId)
+                );
+            }
             if (criteria.getScottyPaymentId() != null) {
                 specification = specification.and(
                     buildSpecification(criteria.getScottyPaymentId(), root ->

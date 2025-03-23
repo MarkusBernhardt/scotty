@@ -141,6 +141,32 @@ public class Reconciliation implements Serializable {
     @Column(name = "file_name", length = 255)
     private String fileName;
 
+    @Size(max = 70)
+    @Column(name = "creditor_name", length = 70)
+    private String creditorName;
+
+    @Size(min = 16, max = 34)
+    @Column(name = "creditor_iban", length = 34)
+    private String creditorIban;
+
+    @Size(min = 8, max = 11)
+    @Column(name = "creditor_bic", length = 11)
+    private String creditorBic;
+
+    @Size(max = 35)
+    @Column(name = "creditor_id", length = 35)
+    private String creditorId;
+
+    @Column(name = "mandate_date")
+    private Instant mandateDate;
+
+    @Column(name = "execution_date")
+    private Instant executionDate;
+
+    @Size(max = 35)
+    @Column(name = "payment_information_id", length = 35)
+    private String paymentInformationId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = { "reconciliations" }, allowSetters = true)
     private Payment scottyPayment;
@@ -472,6 +498,97 @@ public class Reconciliation implements Serializable {
         this.fileName = fileName;
     }
 
+    public String getCreditorName() {
+        return this.creditorName;
+    }
+
+    public Reconciliation creditorName(String creditorName) {
+        this.setCreditorName(creditorName);
+        return this;
+    }
+
+    public void setCreditorName(String creditorName) {
+        this.creditorName = creditorName;
+    }
+
+    public String getCreditorIban() {
+        return this.creditorIban;
+    }
+
+    public Reconciliation creditorIban(String creditorIban) {
+        this.setCreditorIban(creditorIban);
+        return this;
+    }
+
+    public void setCreditorIban(String creditorIban) {
+        this.creditorIban = creditorIban;
+    }
+
+    public String getCreditorBic() {
+        return this.creditorBic;
+    }
+
+    public Reconciliation creditorBic(String creditorBic) {
+        this.setCreditorBic(creditorBic);
+        return this;
+    }
+
+    public void setCreditorBic(String creditorBic) {
+        this.creditorBic = creditorBic;
+    }
+
+    public String getCreditorId() {
+        return this.creditorId;
+    }
+
+    public Reconciliation creditorId(String creditorId) {
+        this.setCreditorId(creditorId);
+        return this;
+    }
+
+    public void setCreditorId(String creditorId) {
+        this.creditorId = creditorId;
+    }
+
+    public Instant getMandateDate() {
+        return this.mandateDate;
+    }
+
+    public Reconciliation mandateDate(Instant mandateDate) {
+        this.setMandateDate(mandateDate);
+        return this;
+    }
+
+    public void setMandateDate(Instant mandateDate) {
+        this.mandateDate = mandateDate;
+    }
+
+    public Instant getExecutionDate() {
+        return this.executionDate;
+    }
+
+    public Reconciliation executionDate(Instant executionDate) {
+        this.setExecutionDate(executionDate);
+        return this;
+    }
+
+    public void setExecutionDate(Instant executionDate) {
+        this.executionDate = executionDate;
+    }
+
+    public String getPaymentInformationId() {
+        return this.paymentInformationId;
+    }
+
+    public Reconciliation paymentInformationId(String paymentInformationId) {
+        this.setPaymentInformationId(paymentInformationId);
+        return this;
+    }
+
+    public void setPaymentInformationId(String paymentInformationId) {
+        this.paymentInformationId = paymentInformationId;
+    }
+
     public Payment getScottyPayment() {
         return this.scottyPayment;
     }
@@ -533,6 +650,13 @@ public class Reconciliation implements Serializable {
             ", gatewayId='" + getGatewayId() + "'" +
             ", mode='" + getMode() + "'" +
             ", fileName='" + getFileName() + "'" +
+            ", creditorName='" + getCreditorName() + "'" +
+            ", creditorIban='" + getCreditorIban() + "'" +
+            ", creditorBic='" + getCreditorBic() + "'" +
+            ", creditorId='" + getCreditorId() + "'" +
+            ", mandateDate='" + getMandateDate() + "'" +
+            ", executionDate='" + getExecutionDate() + "'" +
+            ", paymentInformationId='" + getPaymentInformationId() + "'" +
             "}";
     }
 }

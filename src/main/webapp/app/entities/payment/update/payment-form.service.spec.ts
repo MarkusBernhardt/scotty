@@ -43,6 +43,13 @@ describe('Payment Form Service', () => {
             gatewayId: expect.any(Object),
             mode: expect.any(Object),
             fileName: expect.any(Object),
+            creditorName: expect.any(Object),
+            creditorIban: expect.any(Object),
+            creditorBic: expect.any(Object),
+            creditorId: expect.any(Object),
+            mandateDate: expect.any(Object),
+            executionDate: expect.any(Object),
+            paymentInformationId: expect.any(Object),
           }),
         );
       });
@@ -76,6 +83,13 @@ describe('Payment Form Service', () => {
             gatewayId: expect.any(Object),
             mode: expect.any(Object),
             fileName: expect.any(Object),
+            creditorName: expect.any(Object),
+            creditorIban: expect.any(Object),
+            creditorBic: expect.any(Object),
+            creditorId: expect.any(Object),
+            mandateDate: expect.any(Object),
+            executionDate: expect.any(Object),
+            paymentInformationId: expect.any(Object),
           }),
         );
       });

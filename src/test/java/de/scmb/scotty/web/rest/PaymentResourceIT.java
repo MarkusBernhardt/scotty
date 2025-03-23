@@ -107,6 +107,27 @@ class PaymentResourceIT {
     private static final String DEFAULT_FILE_NAME = "AAAAAAAAAA";
     private static final String UPDATED_FILE_NAME = "BBBBBBBBBB";
 
+    private static final String DEFAULT_CREDITOR_NAME = "AAAAAAAAAA";
+    private static final String UPDATED_CREDITOR_NAME = "BBBBBBBBBB";
+
+    private static final String DEFAULT_CREDITOR_IBAN = "AAAAAAAAAAAAAAAA";
+    private static final String UPDATED_CREDITOR_IBAN = "BBBBBBBBBBBBBBBB";
+
+    private static final String DEFAULT_CREDITOR_BIC = "AAAAAAAAAA";
+    private static final String UPDATED_CREDITOR_BIC = "BBBBBBBBBB";
+
+    private static final String DEFAULT_CREDITOR_ID = "AAAAAAAAAA";
+    private static final String UPDATED_CREDITOR_ID = "BBBBBBBBBB";
+
+    private static final Instant DEFAULT_MANDATE_DATE = Instant.ofEpochMilli(0L);
+    private static final Instant UPDATED_MANDATE_DATE = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+
+    private static final Instant DEFAULT_EXECUTION_DATE = Instant.ofEpochMilli(0L);
+    private static final Instant UPDATED_EXECUTION_DATE = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+
+    private static final String DEFAULT_PAYMENT_INFORMATION_ID = "AAAAAAAAAA";
+    private static final String UPDATED_PAYMENT_INFORMATION_ID = "BBBBBBBBBB";
+
     private static final String ENTITY_API_URL = "/api/payments";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
@@ -162,7 +183,14 @@ class PaymentResourceIT {
             .message(DEFAULT_MESSAGE)
             .gatewayId(DEFAULT_GATEWAY_ID)
             .mode(DEFAULT_MODE)
-            .fileName(DEFAULT_FILE_NAME);
+            .fileName(DEFAULT_FILE_NAME)
+            .creditorName(DEFAULT_CREDITOR_NAME)
+            .creditorIban(DEFAULT_CREDITOR_IBAN)
+            .creditorBic(DEFAULT_CREDITOR_BIC)
+            .creditorId(DEFAULT_CREDITOR_ID)
+            .mandateDate(DEFAULT_MANDATE_DATE)
+            .executionDate(DEFAULT_EXECUTION_DATE)
+            .paymentInformationId(DEFAULT_PAYMENT_INFORMATION_ID);
     }
 
     /**
@@ -195,7 +223,14 @@ class PaymentResourceIT {
             .message(UPDATED_MESSAGE)
             .gatewayId(UPDATED_GATEWAY_ID)
             .mode(UPDATED_MODE)
-            .fileName(UPDATED_FILE_NAME);
+            .fileName(UPDATED_FILE_NAME)
+            .creditorName(UPDATED_CREDITOR_NAME)
+            .creditorIban(UPDATED_CREDITOR_IBAN)
+            .creditorBic(UPDATED_CREDITOR_BIC)
+            .creditorId(UPDATED_CREDITOR_ID)
+            .mandateDate(UPDATED_MANDATE_DATE)
+            .executionDate(UPDATED_EXECUTION_DATE)
+            .paymentInformationId(UPDATED_PAYMENT_INFORMATION_ID);
     }
 
     @BeforeEach
@@ -627,7 +662,14 @@ class PaymentResourceIT {
             .andExpect(jsonPath("$.[*].message").value(hasItem(DEFAULT_MESSAGE)))
             .andExpect(jsonPath("$.[*].gatewayId").value(hasItem(DEFAULT_GATEWAY_ID)))
             .andExpect(jsonPath("$.[*].mode").value(hasItem(DEFAULT_MODE)))
-            .andExpect(jsonPath("$.[*].fileName").value(hasItem(DEFAULT_FILE_NAME)));
+            .andExpect(jsonPath("$.[*].fileName").value(hasItem(DEFAULT_FILE_NAME)))
+            .andExpect(jsonPath("$.[*].creditorName").value(hasItem(DEFAULT_CREDITOR_NAME)))
+            .andExpect(jsonPath("$.[*].creditorIban").value(hasItem(DEFAULT_CREDITOR_IBAN)))
+            .andExpect(jsonPath("$.[*].creditorBic").value(hasItem(DEFAULT_CREDITOR_BIC)))
+            .andExpect(jsonPath("$.[*].creditorId").value(hasItem(DEFAULT_CREDITOR_ID)))
+            .andExpect(jsonPath("$.[*].mandateDate").value(hasItem(DEFAULT_MANDATE_DATE.toString())))
+            .andExpect(jsonPath("$.[*].executionDate").value(hasItem(DEFAULT_EXECUTION_DATE.toString())))
+            .andExpect(jsonPath("$.[*].paymentInformationId").value(hasItem(DEFAULT_PAYMENT_INFORMATION_ID)));
     }
 
     @Test
@@ -664,7 +706,14 @@ class PaymentResourceIT {
             .andExpect(jsonPath("$.message").value(DEFAULT_MESSAGE))
             .andExpect(jsonPath("$.gatewayId").value(DEFAULT_GATEWAY_ID))
             .andExpect(jsonPath("$.mode").value(DEFAULT_MODE))
-            .andExpect(jsonPath("$.fileName").value(DEFAULT_FILE_NAME));
+            .andExpect(jsonPath("$.fileName").value(DEFAULT_FILE_NAME))
+            .andExpect(jsonPath("$.creditorName").value(DEFAULT_CREDITOR_NAME))
+            .andExpect(jsonPath("$.creditorIban").value(DEFAULT_CREDITOR_IBAN))
+            .andExpect(jsonPath("$.creditorBic").value(DEFAULT_CREDITOR_BIC))
+            .andExpect(jsonPath("$.creditorId").value(DEFAULT_CREDITOR_ID))
+            .andExpect(jsonPath("$.mandateDate").value(DEFAULT_MANDATE_DATE.toString()))
+            .andExpect(jsonPath("$.executionDate").value(DEFAULT_EXECUTION_DATE.toString()))
+            .andExpect(jsonPath("$.paymentInformationId").value(DEFAULT_PAYMENT_INFORMATION_ID));
     }
 
     @Test
@@ -1836,6 +1885,349 @@ class PaymentResourceIT {
         defaultPaymentFiltering("fileName.doesNotContain=" + UPDATED_FILE_NAME, "fileName.doesNotContain=" + DEFAULT_FILE_NAME);
     }
 
+    @Test
+    @Transactional
+    void getAllPaymentsByCreditorNameIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where creditorName equals to
+        defaultPaymentFiltering("creditorName.equals=" + DEFAULT_CREDITOR_NAME, "creditorName.equals=" + UPDATED_CREDITOR_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByCreditorNameIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where creditorName in
+        defaultPaymentFiltering(
+            "creditorName.in=" + DEFAULT_CREDITOR_NAME + "," + UPDATED_CREDITOR_NAME,
+            "creditorName.in=" + UPDATED_CREDITOR_NAME
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByCreditorNameIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where creditorName is not null
+        defaultPaymentFiltering("creditorName.specified=true", "creditorName.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByCreditorNameContainsSomething() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where creditorName contains
+        defaultPaymentFiltering("creditorName.contains=" + DEFAULT_CREDITOR_NAME, "creditorName.contains=" + UPDATED_CREDITOR_NAME);
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByCreditorNameNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where creditorName does not contain
+        defaultPaymentFiltering(
+            "creditorName.doesNotContain=" + UPDATED_CREDITOR_NAME,
+            "creditorName.doesNotContain=" + DEFAULT_CREDITOR_NAME
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByCreditorIbanIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where creditorIban equals to
+        defaultPaymentFiltering("creditorIban.equals=" + DEFAULT_CREDITOR_IBAN, "creditorIban.equals=" + UPDATED_CREDITOR_IBAN);
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByCreditorIbanIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where creditorIban in
+        defaultPaymentFiltering(
+            "creditorIban.in=" + DEFAULT_CREDITOR_IBAN + "," + UPDATED_CREDITOR_IBAN,
+            "creditorIban.in=" + UPDATED_CREDITOR_IBAN
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByCreditorIbanIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where creditorIban is not null
+        defaultPaymentFiltering("creditorIban.specified=true", "creditorIban.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByCreditorIbanContainsSomething() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where creditorIban contains
+        defaultPaymentFiltering("creditorIban.contains=" + DEFAULT_CREDITOR_IBAN, "creditorIban.contains=" + UPDATED_CREDITOR_IBAN);
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByCreditorIbanNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where creditorIban does not contain
+        defaultPaymentFiltering(
+            "creditorIban.doesNotContain=" + UPDATED_CREDITOR_IBAN,
+            "creditorIban.doesNotContain=" + DEFAULT_CREDITOR_IBAN
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByCreditorBicIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where creditorBic equals to
+        defaultPaymentFiltering("creditorBic.equals=" + DEFAULT_CREDITOR_BIC, "creditorBic.equals=" + UPDATED_CREDITOR_BIC);
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByCreditorBicIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where creditorBic in
+        defaultPaymentFiltering(
+            "creditorBic.in=" + DEFAULT_CREDITOR_BIC + "," + UPDATED_CREDITOR_BIC,
+            "creditorBic.in=" + UPDATED_CREDITOR_BIC
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByCreditorBicIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where creditorBic is not null
+        defaultPaymentFiltering("creditorBic.specified=true", "creditorBic.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByCreditorBicContainsSomething() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where creditorBic contains
+        defaultPaymentFiltering("creditorBic.contains=" + DEFAULT_CREDITOR_BIC, "creditorBic.contains=" + UPDATED_CREDITOR_BIC);
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByCreditorBicNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where creditorBic does not contain
+        defaultPaymentFiltering("creditorBic.doesNotContain=" + UPDATED_CREDITOR_BIC, "creditorBic.doesNotContain=" + DEFAULT_CREDITOR_BIC);
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByCreditorIdIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where creditorId equals to
+        defaultPaymentFiltering("creditorId.equals=" + DEFAULT_CREDITOR_ID, "creditorId.equals=" + UPDATED_CREDITOR_ID);
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByCreditorIdIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where creditorId in
+        defaultPaymentFiltering("creditorId.in=" + DEFAULT_CREDITOR_ID + "," + UPDATED_CREDITOR_ID, "creditorId.in=" + UPDATED_CREDITOR_ID);
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByCreditorIdIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where creditorId is not null
+        defaultPaymentFiltering("creditorId.specified=true", "creditorId.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByCreditorIdContainsSomething() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where creditorId contains
+        defaultPaymentFiltering("creditorId.contains=" + DEFAULT_CREDITOR_ID, "creditorId.contains=" + UPDATED_CREDITOR_ID);
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByCreditorIdNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where creditorId does not contain
+        defaultPaymentFiltering("creditorId.doesNotContain=" + UPDATED_CREDITOR_ID, "creditorId.doesNotContain=" + DEFAULT_CREDITOR_ID);
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByMandateDateIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where mandateDate equals to
+        defaultPaymentFiltering("mandateDate.equals=" + DEFAULT_MANDATE_DATE, "mandateDate.equals=" + UPDATED_MANDATE_DATE);
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByMandateDateIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where mandateDate in
+        defaultPaymentFiltering(
+            "mandateDate.in=" + DEFAULT_MANDATE_DATE + "," + UPDATED_MANDATE_DATE,
+            "mandateDate.in=" + UPDATED_MANDATE_DATE
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByMandateDateIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where mandateDate is not null
+        defaultPaymentFiltering("mandateDate.specified=true", "mandateDate.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByExecutionDateIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where executionDate equals to
+        defaultPaymentFiltering("executionDate.equals=" + DEFAULT_EXECUTION_DATE, "executionDate.equals=" + UPDATED_EXECUTION_DATE);
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByExecutionDateIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where executionDate in
+        defaultPaymentFiltering(
+            "executionDate.in=" + DEFAULT_EXECUTION_DATE + "," + UPDATED_EXECUTION_DATE,
+            "executionDate.in=" + UPDATED_EXECUTION_DATE
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByExecutionDateIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where executionDate is not null
+        defaultPaymentFiltering("executionDate.specified=true", "executionDate.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByPaymentInformationIdIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where paymentInformationId equals to
+        defaultPaymentFiltering(
+            "paymentInformationId.equals=" + DEFAULT_PAYMENT_INFORMATION_ID,
+            "paymentInformationId.equals=" + UPDATED_PAYMENT_INFORMATION_ID
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByPaymentInformationIdIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where paymentInformationId in
+        defaultPaymentFiltering(
+            "paymentInformationId.in=" + DEFAULT_PAYMENT_INFORMATION_ID + "," + UPDATED_PAYMENT_INFORMATION_ID,
+            "paymentInformationId.in=" + UPDATED_PAYMENT_INFORMATION_ID
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByPaymentInformationIdIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where paymentInformationId is not null
+        defaultPaymentFiltering("paymentInformationId.specified=true", "paymentInformationId.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByPaymentInformationIdContainsSomething() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where paymentInformationId contains
+        defaultPaymentFiltering(
+            "paymentInformationId.contains=" + DEFAULT_PAYMENT_INFORMATION_ID,
+            "paymentInformationId.contains=" + UPDATED_PAYMENT_INFORMATION_ID
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByPaymentInformationIdNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where paymentInformationId does not contain
+        defaultPaymentFiltering(
+            "paymentInformationId.doesNotContain=" + UPDATED_PAYMENT_INFORMATION_ID,
+            "paymentInformationId.doesNotContain=" + DEFAULT_PAYMENT_INFORMATION_ID
+        );
+    }
+
     private void defaultPaymentFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {
         defaultPaymentShouldBeFound(shouldBeFound);
         defaultPaymentShouldNotBeFound(shouldNotBeFound);
@@ -1872,7 +2264,14 @@ class PaymentResourceIT {
             .andExpect(jsonPath("$.[*].message").value(hasItem(DEFAULT_MESSAGE)))
             .andExpect(jsonPath("$.[*].gatewayId").value(hasItem(DEFAULT_GATEWAY_ID)))
             .andExpect(jsonPath("$.[*].mode").value(hasItem(DEFAULT_MODE)))
-            .andExpect(jsonPath("$.[*].fileName").value(hasItem(DEFAULT_FILE_NAME)));
+            .andExpect(jsonPath("$.[*].fileName").value(hasItem(DEFAULT_FILE_NAME)))
+            .andExpect(jsonPath("$.[*].creditorName").value(hasItem(DEFAULT_CREDITOR_NAME)))
+            .andExpect(jsonPath("$.[*].creditorIban").value(hasItem(DEFAULT_CREDITOR_IBAN)))
+            .andExpect(jsonPath("$.[*].creditorBic").value(hasItem(DEFAULT_CREDITOR_BIC)))
+            .andExpect(jsonPath("$.[*].creditorId").value(hasItem(DEFAULT_CREDITOR_ID)))
+            .andExpect(jsonPath("$.[*].mandateDate").value(hasItem(DEFAULT_MANDATE_DATE.toString())))
+            .andExpect(jsonPath("$.[*].executionDate").value(hasItem(DEFAULT_EXECUTION_DATE.toString())))
+            .andExpect(jsonPath("$.[*].paymentInformationId").value(hasItem(DEFAULT_PAYMENT_INFORMATION_ID)));
 
         // Check, that the count call also returns 1
         restPaymentMockMvc
@@ -1943,7 +2342,14 @@ class PaymentResourceIT {
             .message(UPDATED_MESSAGE)
             .gatewayId(UPDATED_GATEWAY_ID)
             .mode(UPDATED_MODE)
-            .fileName(UPDATED_FILE_NAME);
+            .fileName(UPDATED_FILE_NAME)
+            .creditorName(UPDATED_CREDITOR_NAME)
+            .creditorIban(UPDATED_CREDITOR_IBAN)
+            .creditorBic(UPDATED_CREDITOR_BIC)
+            .creditorId(UPDATED_CREDITOR_ID)
+            .mandateDate(UPDATED_MANDATE_DATE)
+            .executionDate(UPDATED_EXECUTION_DATE)
+            .paymentInformationId(UPDATED_PAYMENT_INFORMATION_ID);
         PaymentDTO paymentDTO = paymentMapper.toDto(updatedPayment);
 
         restPaymentMockMvc
@@ -2038,7 +2444,10 @@ class PaymentResourceIT {
             .emailAddress(UPDATED_EMAIL_ADDRESS)
             .state(UPDATED_STATE)
             .message(UPDATED_MESSAGE)
-            .gatewayId(UPDATED_GATEWAY_ID);
+            .gatewayId(UPDATED_GATEWAY_ID)
+            .creditorIban(UPDATED_CREDITOR_IBAN)
+            .mandateDate(UPDATED_MANDATE_DATE)
+            .paymentInformationId(UPDATED_PAYMENT_INFORMATION_ID);
 
         restPaymentMockMvc
             .perform(
@@ -2089,7 +2498,14 @@ class PaymentResourceIT {
             .message(UPDATED_MESSAGE)
             .gatewayId(UPDATED_GATEWAY_ID)
             .mode(UPDATED_MODE)
-            .fileName(UPDATED_FILE_NAME);
+            .fileName(UPDATED_FILE_NAME)
+            .creditorName(UPDATED_CREDITOR_NAME)
+            .creditorIban(UPDATED_CREDITOR_IBAN)
+            .creditorBic(UPDATED_CREDITOR_BIC)
+            .creditorId(UPDATED_CREDITOR_ID)
+            .mandateDate(UPDATED_MANDATE_DATE)
+            .executionDate(UPDATED_EXECUTION_DATE)
+            .paymentInformationId(UPDATED_PAYMENT_INFORMATION_ID);
 
         restPaymentMockMvc
             .perform(

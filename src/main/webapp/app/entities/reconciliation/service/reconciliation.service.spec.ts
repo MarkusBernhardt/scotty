@@ -10,6 +10,8 @@ import { ReconciliationService, RestReconciliation } from './reconciliation.serv
 const requireRestSample: RestReconciliation = {
   ...sampleWithRequiredData,
   timestamp: sampleWithRequiredData.timestamp?.toJSON(),
+  mandateDate: sampleWithRequiredData.mandateDate?.toJSON(),
+  executionDate: sampleWithRequiredData.executionDate?.toJSON(),
 };
 
 describe('Reconciliation Service', () => {

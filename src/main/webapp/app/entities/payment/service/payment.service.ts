@@ -11,8 +11,10 @@ import { IPayment, NewPayment } from '../payment.model';
 
 export type PartialUpdatePayment = Partial<IPayment> & Pick<IPayment, 'id'>;
 
-type RestOf<T extends IPayment | NewPayment> = Omit<T, 'timestamp'> & {
+type RestOf<T extends IPayment | NewPayment> = Omit<T, 'timestamp' | 'mandateDate' | 'executionDate'> & {
   timestamp?: string | null;
+  mandateDate?: string | null;
+  executionDate?: string | null;
 };
 
 export type RestPayment = RestOf<IPayment>;
@@ -101,6 +103,8 @@ export class PaymentService {
     return {
       ...payment,
       timestamp: payment.timestamp?.toJSON() ?? null,
+      mandateDate: payment.mandateDate?.toJSON() ?? null,
+      executionDate: payment.executionDate?.toJSON() ?? null,
     };
   }
 
@@ -108,6 +112,8 @@ export class PaymentService {
     return {
       ...restPayment,
       timestamp: restPayment.timestamp ? dayjs(restPayment.timestamp) : undefined,
+      mandateDate: restPayment.mandateDate ? dayjs(restPayment.mandateDate) : undefined,
+      executionDate: restPayment.executionDate ? dayjs(restPayment.executionDate) : undefined,
     };
   }
 

@@ -16,27 +16,27 @@ describe('Reconciliation e2e test', () => {
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
   const reconciliationSample = {
-    mandateId: 'whether secret questioningly',
-    paymentId: 'whopping afore insolence',
-    gateway: 'CCBILL',
-    iban: 'RO40GIIG969244292L55S511',
-    bic: 'CSDGTHCVE1D',
-    amount: 18253,
-    currencyCode: 'SDG',
-    softDescriptor: 'knickers',
-    firstName: 'Brent',
-    lastName: 'Ernser',
-    streetName: 'Hansen Wells',
-    houseNumber: 'window finding c',
-    postalCode: 'transcend cop-ou',
-    city: 'Ullrichboro',
-    countryCode: 'IR',
-    remoteIp: 'finished',
-    emailAddress: 'polarisation to',
-    timestamp: '2024-03-01T09:17:54.177Z',
-    state: 'satirize kaleidoscopic safe',
-    reasonCode: 'hence fellow encouragement',
-    message: 'hotfoot blindly',
+    mandateId: 'brr',
+    paymentId: 'or excluding typeface',
+    gateway: 'EMERCHANTPAY',
+    iban: 'GT6162B7709114427987628L7694',
+    bic: 'DZEZGE7SXXX',
+    amount: 11400,
+    currencyCode: 'RSD',
+    softDescriptor: 'mockingly tough circa',
+    firstName: 'Hans',
+    lastName: 'Smitham',
+    streetName: 'Emmalee Walks',
+    houseNumber: 'unblinking',
+    postalCode: 'multicolored',
+    city: 'Fort Brisaport',
+    countryCode: 'ZA',
+    remoteIp: 'who incidentally',
+    emailAddress: 'yet radiant convection',
+    timestamp: '2024-03-01T03:47:57.131Z',
+    state: 'ugh',
+    reasonCode: 'hence joyously horse',
+    message: 'homely instead',
   };
 
   let reconciliation;
@@ -182,77 +182,100 @@ describe('Reconciliation e2e test', () => {
     });
 
     it('should create an instance of Reconciliation', () => {
-      cy.get(`[data-cy="mandateId"]`).type('tenderly too');
-      cy.get(`[data-cy="mandateId"]`).should('have.value', 'tenderly too');
+      cy.get(`[data-cy="mandateId"]`).type('vivid wretched');
+      cy.get(`[data-cy="mandateId"]`).should('have.value', 'vivid wretched');
 
-      cy.get(`[data-cy="paymentId"]`).type('minus mountain');
-      cy.get(`[data-cy="paymentId"]`).should('have.value', 'minus mountain');
+      cy.get(`[data-cy="paymentId"]`).type('buck');
+      cy.get(`[data-cy="paymentId"]`).should('have.value', 'buck');
 
-      cy.get(`[data-cy="gateway"]`).select('EMERCHANTPAY');
+      cy.get(`[data-cy="gateway"]`).select('UNKNOWN');
 
-      cy.get(`[data-cy="iban"]`).type('DO72RNEH00570392405038924692');
-      cy.get(`[data-cy="iban"]`).should('have.value', 'DO72RNEH00570392405038924692');
+      cy.get(`[data-cy="iban"]`).type('MU10GOYP5426165118001160013UAW');
+      cy.get(`[data-cy="iban"]`).should('have.value', 'MU10GOYP5426165118001160013UAW');
 
-      cy.get(`[data-cy="bic"]`).type('LRKCMRJT');
-      cy.get(`[data-cy="bic"]`).should('have.value', 'LRKCMRJT');
+      cy.get(`[data-cy="bic"]`).type('RXSHPYOK');
+      cy.get(`[data-cy="bic"]`).should('have.value', 'RXSHPYOK');
 
-      cy.get(`[data-cy="amount"]`).type('23877');
-      cy.get(`[data-cy="amount"]`).should('have.value', '23877');
+      cy.get(`[data-cy="amount"]`).type('26910');
+      cy.get(`[data-cy="amount"]`).should('have.value', '26910');
 
-      cy.get(`[data-cy="currencyCode"]`).type('CDF');
-      cy.get(`[data-cy="currencyCode"]`).should('have.value', 'CDF');
+      cy.get(`[data-cy="currencyCode"]`).type('CHF');
+      cy.get(`[data-cy="currencyCode"]`).should('have.value', 'CHF');
 
-      cy.get(`[data-cy="softDescriptor"]`).type('ha');
-      cy.get(`[data-cy="softDescriptor"]`).should('have.value', 'ha');
+      cy.get(`[data-cy="softDescriptor"]`).type('extent pfft ew');
+      cy.get(`[data-cy="softDescriptor"]`).should('have.value', 'extent pfft ew');
 
-      cy.get(`[data-cy="firstName"]`).type('Clovis');
-      cy.get(`[data-cy="firstName"]`).should('have.value', 'Clovis');
+      cy.get(`[data-cy="firstName"]`).type('Bernie');
+      cy.get(`[data-cy="firstName"]`).should('have.value', 'Bernie');
 
-      cy.get(`[data-cy="lastName"]`).type('Bernier');
-      cy.get(`[data-cy="lastName"]`).should('have.value', 'Bernier');
+      cy.get(`[data-cy="lastName"]`).type('Davis');
+      cy.get(`[data-cy="lastName"]`).should('have.value', 'Davis');
 
-      cy.get(`[data-cy="streetName"]`).type('Omari Junction');
-      cy.get(`[data-cy="streetName"]`).should('have.value', 'Omari Junction');
+      cy.get(`[data-cy="streetName"]`).type('Elmira Forks');
+      cy.get(`[data-cy="streetName"]`).should('have.value', 'Elmira Forks');
 
-      cy.get(`[data-cy="houseNumber"]`).type('gee impeccable b');
-      cy.get(`[data-cy="houseNumber"]`).should('have.value', 'gee impeccable b');
+      cy.get(`[data-cy="houseNumber"]`).type('randomize squigg');
+      cy.get(`[data-cy="houseNumber"]`).should('have.value', 'randomize squigg');
 
-      cy.get(`[data-cy="postalCode"]`).type('triumphantly val');
-      cy.get(`[data-cy="postalCode"]`).should('have.value', 'triumphantly val');
+      cy.get(`[data-cy="postalCode"]`).type('without');
+      cy.get(`[data-cy="postalCode"]`).should('have.value', 'without');
 
-      cy.get(`[data-cy="city"]`).type('Patienceview');
-      cy.get(`[data-cy="city"]`).should('have.value', 'Patienceview');
+      cy.get(`[data-cy="city"]`).type('Wylie');
+      cy.get(`[data-cy="city"]`).should('have.value', 'Wylie');
 
-      cy.get(`[data-cy="countryCode"]`).type('BS');
-      cy.get(`[data-cy="countryCode"]`).should('have.value', 'BS');
+      cy.get(`[data-cy="countryCode"]`).type('SK');
+      cy.get(`[data-cy="countryCode"]`).should('have.value', 'SK');
 
-      cy.get(`[data-cy="remoteIp"]`).type('masquerade broadcast');
-      cy.get(`[data-cy="remoteIp"]`).should('have.value', 'masquerade broadcast');
+      cy.get(`[data-cy="remoteIp"]`).type('afore insolence hm');
+      cy.get(`[data-cy="remoteIp"]`).should('have.value', 'afore insolence hm');
 
-      cy.get(`[data-cy="emailAddress"]`).type('affect webbed');
-      cy.get(`[data-cy="emailAddress"]`).should('have.value', 'affect webbed');
+      cy.get(`[data-cy="emailAddress"]`).type('mummify tenant now');
+      cy.get(`[data-cy="emailAddress"]`).should('have.value', 'mummify tenant now');
 
-      cy.get(`[data-cy="timestamp"]`).type('2024-03-01T04:39');
+      cy.get(`[data-cy="timestamp"]`).type('2024-03-01T02:35');
       cy.get(`[data-cy="timestamp"]`).blur();
-      cy.get(`[data-cy="timestamp"]`).should('have.value', '2024-03-01T04:39');
+      cy.get(`[data-cy="timestamp"]`).should('have.value', '2024-03-01T02:35');
 
-      cy.get(`[data-cy="state"]`).type('utter nor twine');
-      cy.get(`[data-cy="state"]`).should('have.value', 'utter nor twine');
+      cy.get(`[data-cy="state"]`).type('clamor indeed ouch');
+      cy.get(`[data-cy="state"]`).should('have.value', 'clamor indeed ouch');
 
-      cy.get(`[data-cy="reasonCode"]`).type('though amongst');
-      cy.get(`[data-cy="reasonCode"]`).should('have.value', 'though amongst');
+      cy.get(`[data-cy="reasonCode"]`).type('knickers');
+      cy.get(`[data-cy="reasonCode"]`).should('have.value', 'knickers');
 
-      cy.get(`[data-cy="message"]`).type('times incidentally respray');
-      cy.get(`[data-cy="message"]`).should('have.value', 'times incidentally respray');
+      cy.get(`[data-cy="message"]`).type('mundane');
+      cy.get(`[data-cy="message"]`).should('have.value', 'mundane');
 
-      cy.get(`[data-cy="gatewayId"]`).type('atomize');
-      cy.get(`[data-cy="gatewayId"]`).should('have.value', 'atomize');
+      cy.get(`[data-cy="gatewayId"]`).type('furiously more');
+      cy.get(`[data-cy="gatewayId"]`).should('have.value', 'furiously more');
 
-      cy.get(`[data-cy="mode"]`).type('meh divine colorfully');
-      cy.get(`[data-cy="mode"]`).should('have.value', 'meh divine colorfully');
+      cy.get(`[data-cy="mode"]`).type('unless');
+      cy.get(`[data-cy="mode"]`).should('have.value', 'unless');
 
-      cy.get(`[data-cy="fileName"]`).type('before');
-      cy.get(`[data-cy="fileName"]`).should('have.value', 'before');
+      cy.get(`[data-cy="fileName"]`).type('far ew tangible');
+      cy.get(`[data-cy="fileName"]`).should('have.value', 'far ew tangible');
+
+      cy.get(`[data-cy="creditorName"]`).type('a kowtow');
+      cy.get(`[data-cy="creditorName"]`).should('have.value', 'a kowtow');
+
+      cy.get(`[data-cy="creditorIban"]`).type('thoroughlyXXXXXX');
+      cy.get(`[data-cy="creditorIban"]`).should('have.value', 'thoroughlyXXXXXX');
+
+      cy.get(`[data-cy="creditorBic"]`).type('quixotic bo');
+      cy.get(`[data-cy="creditorBic"]`).should('have.value', 'quixotic bo');
+
+      cy.get(`[data-cy="creditorId"]`).type('madly whereas');
+      cy.get(`[data-cy="creditorId"]`).should('have.value', 'madly whereas');
+
+      cy.get(`[data-cy="mandateDate"]`).type('2024-02-29T23:41');
+      cy.get(`[data-cy="mandateDate"]`).blur();
+      cy.get(`[data-cy="mandateDate"]`).should('have.value', '2024-02-29T23:41');
+
+      cy.get(`[data-cy="executionDate"]`).type('2024-02-29T20:59');
+      cy.get(`[data-cy="executionDate"]`).blur();
+      cy.get(`[data-cy="executionDate"]`).should('have.value', '2024-02-29T20:59');
+
+      cy.get(`[data-cy="paymentInformationId"]`).type('so');
+      cy.get(`[data-cy="paymentInformationId"]`).should('have.value', 'so');
 
       cy.get(entityCreateSaveButtonSelector).click();
 
