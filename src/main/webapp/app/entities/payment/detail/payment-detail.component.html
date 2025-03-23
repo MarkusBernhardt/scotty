@@ -26,9 +26,15 @@
           <dt><span jhiTranslate="scottyApp.payment.gateway">Gateway</span></dt>
           <dd>
             <span [jhiTranslate]="'scottyApp.Gateway.' + (paymentRef.gateway ?? 'null')">{{
-              { null: '', CCBILL: 'ccbill', EMERCHANTPAY: 'emerchantpay', NOVALNET: 'novalnet', OPENPAYD: 'openpayd', UNKNOWN: 'unknown' }[
-                paymentRef.gateway ?? 'null'
-              ]
+              {
+                null: '',
+                BANKINGCIRCLE: 'bankingcircle',
+                CCBILL: 'ccbill',
+                EMERCHANTPAY: 'emerchantpay',
+                NOVALNET: 'novalnet',
+                OPENPAYD: 'openpayd',
+                UNKNOWN: 'unknown',
+              }[paymentRef.gateway ?? 'null']
             }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.payment.iban">Iban</span></dt>

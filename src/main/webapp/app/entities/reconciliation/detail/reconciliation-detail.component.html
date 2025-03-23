@@ -26,9 +26,15 @@
           <dt><span jhiTranslate="scottyApp.reconciliation.gateway">Gateway</span></dt>
           <dd>
             <span [jhiTranslate]="'scottyApp.Gateway.' + (reconciliationRef.gateway ?? 'null')">{{
-              { null: '', CCBILL: 'ccbill', EMERCHANTPAY: 'emerchantpay', NOVALNET: 'novalnet', OPENPAYD: 'openpayd', UNKNOWN: 'unknown' }[
-                reconciliationRef.gateway ?? 'null'
-              ]
+              {
+                null: '',
+                BANKINGCIRCLE: 'bankingcircle',
+                CCBILL: 'ccbill',
+                EMERCHANTPAY: 'emerchantpay',
+                NOVALNET: 'novalnet',
+                OPENPAYD: 'openpayd',
+                UNKNOWN: 'unknown',
+              }[reconciliationRef.gateway ?? 'null']
             }}</span>
           </dd>
           <dt><span jhiTranslate="scottyApp.reconciliation.iban">Iban</span></dt>

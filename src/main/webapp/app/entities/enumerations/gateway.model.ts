@@ -1,4 +1,6 @@
 export enum Gateway {
+  BANKINGCIRCLE = 'bankingcircle',
+
   CCBILL = 'ccbill',
 
   EMERCHANTPAY = 'emerchantpay',

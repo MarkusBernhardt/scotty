@@ -46,8 +46,8 @@ class ReconciliationResourceIT {
     private static final String DEFAULT_PAYMENT_ID = "AAAAAAAAAA";
     private static final String UPDATED_PAYMENT_ID = "BBBBBBBBBB";
 
-    private static final Gateway DEFAULT_GATEWAY = Gateway.CCBILL;
-    private static final Gateway UPDATED_GATEWAY = Gateway.EMERCHANTPAY;
+    private static final Gateway DEFAULT_GATEWAY = Gateway.BANKINGCIRCLE;
+    private static final Gateway UPDATED_GATEWAY = Gateway.CCBILL;
 
     private static final String DEFAULT_IBAN = "AAAAAAAAAAAAAAAA";
     private static final String UPDATED_IBAN = "BBBBBBBBBBBBBBBB";

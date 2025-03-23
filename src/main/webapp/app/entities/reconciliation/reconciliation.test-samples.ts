@@ -31,7 +31,7 @@ export const sampleWithPartialData: IReconciliation = {
   id: 18482,
   mandateId: 'instead',
   paymentId: 'avow jogging',
-  gateway: 'CCBILL',
+  gateway: 'BANKINGCIRCLE',
   iban: 'SI49690079829900470',
   bic: 'ENGANUWRONQ',
   amount: 8077,

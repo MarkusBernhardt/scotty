@@ -18,7 +18,7 @@ describe('Reconciliation e2e test', () => {
   const reconciliationSample = {
     mandateId: 'brr',
     paymentId: 'or excluding typeface',
-    gateway: 'EMERCHANTPAY',
+    gateway: 'CCBILL',
     iban: 'GT6162B7709114427987628L7694',
     bic: 'DZEZGE7SXXX',
     amount: 11400,

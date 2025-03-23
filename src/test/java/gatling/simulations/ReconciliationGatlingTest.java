@@ -70,7 +70,7 @@ public class ReconciliationGatlingTest extends Simulation {
                                 "{" +
                                 "\"mandateId\": \"SAMPLE_TEXT\"" +
                                 ", \"paymentId\": \"SAMPLE_TEXT\"" +
-                                ", \"gateway\": \"CCBILL\"" +
+                                ", \"gateway\": \"BANKINGCIRCLE\"" +
                                 ", \"iban\": \"SAMPLE_TEXT\"" +
                                 ", \"bic\": \"SAMPLE_TEXT\"" +
                                 ", \"amount\": 0" +
