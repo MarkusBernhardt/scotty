@@ -90,7 +90,7 @@ index 477a3a1..5e66f2e 100644
      "@types/node": "20.11.25",
      "angular-eslint": "18.4.0",
 diff --git b/pom.xml a/pom.xml
-index f5d713c..6191087 100644
+index f5d713c..60c29a2 100644
 --- b/pom.xml
 +++ a/pom.xml
 @@ -5,7 +5,7 @@
@@ -237,15 +237,6 @@ index f5d713c..6191087 100644
          </plugins>
          <pluginManagement>
              <plugins>
-@@ -855,7 +932,7 @@
-                         <defaultSchemaName/>
-                         <username>${liquibase-plugin.username}</username>
-                         <password>${liquibase-plugin.password}</password>
--                        <referenceUrl>hibernate:spring:de.scmb.scotty.domain?dialect=org.hibernate.dialect.PostgreSQLDialect&amp;hibernate.physical_naming_strategy=org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy&amp;hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy</referenceUrl>
-+                        <referenceUrl>hibernate:spring:de.scmb.scotty.domain?dialect=org.hibernate.dialect.PostgreSQLDialect&amp;hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy&amp;hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy</referenceUrl>
-                         <verbose>true</verbose>
-                         <logging>debug</logging>
-                         <contexts>!test</contexts>
 @@ -888,6 +965,22 @@
                      <artifactId>sonar-maven-plugin</artifactId>
                      <version>${sonar-maven-plugin.version}</version>

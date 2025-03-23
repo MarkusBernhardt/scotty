@@ -11,10 +11,9 @@ import jakarta.xml.bind.Unmarshaller;
 import java.io.*;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import org.apache.poi.ss.usermodel.Row;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,7 +28,7 @@ public class XmlService {
         throw new RuntimeException("Unknown XML format");
     }
 
-    private PaymentsUploadPayments.ValidationResult validatePain00800102FromStream(String xml) throws IOException, JAXBException {
+    private PaymentsUploadPayments.ValidationResult validatePain00800102FromStream(String xml) throws JAXBException {
         JAXBContext jaxbContext = JAXBContext.newInstance(Document.class);
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         Document document = (Document) unmarshaller.unmarshal(new StringReader(xml));
@@ -80,7 +79,7 @@ public class XmlService {
         return new PaymentsUploadPayments.ValidationResult(nbOfTxs, ctrlSum.multiply(new BigDecimal(100)).doubleValue());
     }
 
-    public List<Payment> readPaymentsFromStream(InputStream inputStream, @Valid String fileName) throws IOException {
+    public List<Payment> readPaymentsFromStream(InputStream inputStream, @Valid String fileName) throws IOException, JAXBException {
         String xml = readInputStreamToString(inputStream);
         if (xml.indexOf("pain.008.001.02", 0, Math.min(xml.length(), 1000)) != -1) {
             return readPain00800102PaymentsFromStream(xml, fileName);
@@ -102,29 +101,30 @@ public class XmlService {
             }
 
             for (DirectDebitTransactionInformation9 directDebitTransactionInformation9 : paymentInstructionInformation4.getDrctDbtTxInves()) {
-                payments.add(buildPayment(directDebitTransactionInformation9, null, fileName));
+                payments.add(buildPayment(paymentInstructionInformation4, directDebitTransactionInformation9, null, fileName));
             }
         }
         return payments;
     }
 
     private static Payment buildPayment(
+        PaymentInstructionInformation4 paymentInstructionInformation4,
         DirectDebitTransactionInformation9 directDebitTransactionInformation9,
         Gateway gateway,
         String fileName
     ) {
         Payment payment = new Payment();
         payment.setAmount(directDebitTransactionInformation9.getInstdAmt().getValue().multiply(new BigDecimal(100)).intValue());
-        payment.setCurrencyCode(cutRight(directDebitTransactionInformation9.getInstdAmt().getCcy(), 3));
+        payment.setCurrencyCode(directDebitTransactionInformation9.getInstdAmt().getCcy());
 
         String name = directDebitTransactionInformation9.getDbtr().getNm().trim();
         int index = name.lastIndexOf(' ');
         if (index == -1) {
             payment.setFirstName("");
-            payment.setLastName(cutRight(name, 35));
+            payment.setLastName(name);
         } else {
-            payment.setFirstName(cutRight(name.substring(0, index), 35));
-            payment.setLastName(cutRight(name.substring(index + 1), 35));
+            payment.setFirstName(name.substring(0, index));
+            payment.setLastName(name.substring(index + 1));
         }
 
         List<String> addrLines = directDebitTransactionInformation9.getDbtr().getPstlAdr().getAdrLines();
@@ -132,28 +132,28 @@ public class XmlService {
             String addrLine = addrLines.getFirst();
             index = indexOfHouseNumber(addrLine);
             if (index == -1) {
-                payment.setStreetName(cutRight(addrLine, 70));
+                payment.setStreetName(addrLine);
                 payment.setHouseNumber("");
             } else {
-                payment.setStreetName(cutRight(addrLine.substring(0, index), 70));
-                payment.setHouseNumber(cutRight(addrLine.substring(index + 1), 16));
+                payment.setStreetName(addrLine.substring(0, index));
+                payment.setHouseNumber(addrLine.substring(index + 1));
             }
 
             addrLine = addrLines.get(1);
             index = addrLine.lastIndexOf(' ');
             if (index == -1) {
                 payment.setPostalCode("");
-                payment.setCity(cutRight(addrLine, 35));
+                payment.setCity(addrLine);
             } else {
-                payment.setPostalCode(cutRight(addrLine.substring(0, index), 16));
-                payment.setCity(cutRight(addrLine.substring(index + 1), 35));
+                payment.setPostalCode(addrLine.substring(0, index));
+                payment.setCity(addrLine.substring(index + 1));
             }
         }
 
-        payment.setCountryCode(cutRight(directDebitTransactionInformation9.getDbtr().getPstlAdr().getCtry(), 2));
-        payment.setIban(cutRight(directDebitTransactionInformation9.getDbtrAcct().getId().getIBAN(), 34));
-        payment.setBic(cutRight(directDebitTransactionInformation9.getDbtrAgt().getFinInstnId().getBIC(), 11));
-        payment.setPaymentId(cutRight(directDebitTransactionInformation9.getPmtId().getEndToEndId(), 35));
+        payment.setCountryCode(directDebitTransactionInformation9.getDbtr().getPstlAdr().getCtry());
+        payment.setIban(directDebitTransactionInformation9.getDbtrAcct().getId().getIBAN());
+        payment.setBic(directDebitTransactionInformation9.getDbtrAgt().getFinInstnId().getBIC());
+        payment.setPaymentId(directDebitTransactionInformation9.getPmtId().getEndToEndId());
 
         String verkett = "";
         StringBuilder ustrd = new StringBuilder();
@@ -162,33 +162,33 @@ public class XmlService {
             ustrd.append(ustrdLine);
             verkett = " ";
         }
-        payment.setSoftDescriptor(cutRight(ustrd.toString(), 140));
+        payment.setSoftDescriptor(ustrd.toString());
 
         payment.setRemoteIp("");
         payment.setEmailAddress("");
         payment.setGateway(gateway);
-        payment.setMandateId(cutRight(directDebitTransactionInformation9.getDrctDbtTx().getMndtRltdInf().getMndtId(), 35));
-        payment.setFileName(cutRight(fileName, 255));
+        payment.setMandateId(directDebitTransactionInformation9.getDrctDbtTx().getMndtRltdInf().getMndtId());
+        payment.setFileName(fileName);
 
-        // <PmtInfId>PAYP20250123D2301-0000689730-000001</PmtInfId>
-        // <ReqdColltnDt>2025-01-23</ReqdColltnDt>
-        // <Cdtr>
-        //   <Nm>Gruenwelt Waermestrom GmbH</Nm>
-        // <CdtrAcct>
-        //   <Id>
-        //     <IBAN>DE96740201500001209949</IBAN>
-        // <CdtrAgt>
-        //   <FinInstnId>
-        //     <BIC>RZOODE77050</BIC>
-        // <DrctDbtTxInf>
-        //   <DrctDbtTx>
-        //     <MndtRltdInf>
-        //       <DtOfSgntr>2025-01-20</DtOfSgntr>
-        //     <CdtrSchmeId>
-        //       <Id>
-        //         <PrvtId>
-        //           <Othr>
-        //             <Id>DE84ZZZ00001776855</Id>
+        payment.setCreditorName(paymentInstructionInformation4.getCdtr().getNm());
+        payment.setCreditorIban(paymentInstructionInformation4.getCdtrAcct().getId().getIBAN());
+        payment.setCreditorBic(paymentInstructionInformation4.getCdtrAgt().getFinInstnId().getBIC());
+        payment.setCreditorId(
+            directDebitTransactionInformation9.getDrctDbtTx().getCdtrSchmeId().getId().getPrvtId().getOthrs().getFirst().getId()
+        );
+
+        payment.setPaymentInformationId(paymentInstructionInformation4.getPmtInfId());
+
+        payment.setMandateDate(
+            directDebitTransactionInformation9
+                .getDrctDbtTx()
+                .getMndtRltdInf()
+                .getDtOfSgntr()
+                .toGregorianCalendar()
+                .toZonedDateTime()
+                .toLocalDate()
+        );
+        payment.setExecutionDate(paymentInstructionInformation4.getReqdColltnDt().toGregorianCalendar().toZonedDateTime().toLocalDate());
 
         return payment;
     }
@@ -200,18 +200,6 @@ public class XmlService {
             }
         }
         return -1;
-    }
-
-    private static String cutRight(String value, int length) {
-        if (value == null) {
-            return "";
-        }
-
-        value = value.trim();
-        if (value.length() > length) {
-            value = value.substring(0, length);
-        }
-        return value.trim();
     }
 
     private static String readInputStreamToString(InputStream inputStream) throws IOException {

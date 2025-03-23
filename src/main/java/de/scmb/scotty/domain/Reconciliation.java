@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.time.Instant;
+import java.time.LocalDate;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -158,10 +159,10 @@ public class Reconciliation implements Serializable {
     private String creditorId;
 
     @Column(name = "mandate_date")
-    private Instant mandateDate;
+    private LocalDate mandateDate;
 
     @Column(name = "execution_date")
-    private Instant executionDate;
+    private LocalDate executionDate;
 
     @Size(max = 35)
     @Column(name = "payment_information_id", length = 35)
@@ -550,29 +551,29 @@ public class Reconciliation implements Serializable {
         this.creditorId = creditorId;
     }
 
-    public Instant getMandateDate() {
+    public LocalDate getMandateDate() {
         return this.mandateDate;
     }
 
-    public Reconciliation mandateDate(Instant mandateDate) {
+    public Reconciliation mandateDate(LocalDate mandateDate) {
         this.setMandateDate(mandateDate);
         return this;
     }
 
-    public void setMandateDate(Instant mandateDate) {
+    public void setMandateDate(LocalDate mandateDate) {
         this.mandateDate = mandateDate;
     }
 
-    public Instant getExecutionDate() {
+    public LocalDate getExecutionDate() {
         return this.executionDate;
     }
 
-    public Reconciliation executionDate(Instant executionDate) {
+    public Reconciliation executionDate(LocalDate executionDate) {
         this.setExecutionDate(executionDate);
         return this;
     }
 
-    public void setExecutionDate(Instant executionDate) {
+    public void setExecutionDate(LocalDate executionDate) {
         this.executionDate = executionDate;
     }
 

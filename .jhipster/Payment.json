@@ -173,11 +173,11 @@
     },
     {
       "fieldName": "mandateDate",
-      "fieldType": "Instant"
+      "fieldType": "LocalDate"
     },
     {
       "fieldName": "executionDate",
-      "fieldType": "Instant"
+      "fieldType": "LocalDate"
     },
     {
       "fieldName": "paymentInformationId",

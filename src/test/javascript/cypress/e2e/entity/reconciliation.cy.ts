@@ -266,13 +266,13 @@ describe('Reconciliation e2e test', () => {
       cy.get(`[data-cy="creditorId"]`).type('madly whereas');
       cy.get(`[data-cy="creditorId"]`).should('have.value', 'madly whereas');
 
-      cy.get(`[data-cy="mandateDate"]`).type('2024-02-29T23:41');
+      cy.get(`[data-cy="mandateDate"]`).type('2024-02-29');
       cy.get(`[data-cy="mandateDate"]`).blur();
-      cy.get(`[data-cy="mandateDate"]`).should('have.value', '2024-02-29T23:41');
+      cy.get(`[data-cy="mandateDate"]`).should('have.value', '2024-02-29');
 
-      cy.get(`[data-cy="executionDate"]`).type('2024-02-29T20:59');
+      cy.get(`[data-cy="executionDate"]`).type('2024-02-29');
       cy.get(`[data-cy="executionDate"]`).blur();
-      cy.get(`[data-cy="executionDate"]`).should('have.value', '2024-02-29T20:59');
+      cy.get(`[data-cy="executionDate"]`).should('have.value', '2024-02-29');
 
       cy.get(`[data-cy="paymentInformationId"]`).type('so');
       cy.get(`[data-cy="paymentInformationId"]`).should('have.value', 'so');

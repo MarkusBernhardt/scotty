@@ -28,4 +28,5 @@
     <include file="/config/liquibase/changelog/20240328080140_changes_for_Novalnet.xml" relativeToChangelogFile="false"/>
     <include file="/config/liquibase/changelog/20250224013733_changes_for_OpenPayd.xml" relativeToChangelogFile="false"/>
     <include file="/config/liquibase/changelog/20250224013734_changes_for_OpenPayd2.xml" relativeToChangelogFile="false"/>
+    <include file="/config/liquibase/changelog/20250323160807_changes_for_Pain.xml" relativeToChangelogFile="false"/>
 </databaseChangeLog>

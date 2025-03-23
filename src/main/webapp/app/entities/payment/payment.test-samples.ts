@@ -49,8 +49,8 @@ export const sampleWithPartialData: IPayment = {
   state: 'acquire besides',
   message: 'vanadyl',
   gatewayId: 'thyme expense',
-  mandateDate: dayjs('2024-02-29T21:38'),
-  executionDate: dayjs('2024-02-29T21:27'),
+  mandateDate: dayjs('2024-02-29'),
+  executionDate: dayjs('2024-02-29'),
   paymentInformationId: 'meanwhile',
 };
 
@@ -83,8 +83,8 @@ export const sampleWithFullData: IPayment = {
   creditorIban: 'ack feminizeXXXX',
   creditorBic: 'provided',
   creditorId: 'status urgently',
-  mandateDate: dayjs('2024-03-01T07:27'),
-  executionDate: dayjs('2024-02-29T13:33'),
+  mandateDate: dayjs('2024-03-01'),
+  executionDate: dayjs('2024-02-29'),
   paymentInformationId: 'stylish',
 };
 

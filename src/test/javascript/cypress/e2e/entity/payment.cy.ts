@@ -262,13 +262,13 @@ describe('Payment e2e test', () => {
       cy.get(`[data-cy="creditorId"]`).type('pace dreamily gosh');
       cy.get(`[data-cy="creditorId"]`).should('have.value', 'pace dreamily gosh');
 
-      cy.get(`[data-cy="mandateDate"]`).type('2024-02-29T18:09');
+      cy.get(`[data-cy="mandateDate"]`).type('2024-02-29');
       cy.get(`[data-cy="mandateDate"]`).blur();
-      cy.get(`[data-cy="mandateDate"]`).should('have.value', '2024-02-29T18:09');
+      cy.get(`[data-cy="mandateDate"]`).should('have.value', '2024-02-29');
 
-      cy.get(`[data-cy="executionDate"]`).type('2024-03-01T06:40');
+      cy.get(`[data-cy="executionDate"]`).type('2024-03-01');
       cy.get(`[data-cy="executionDate"]`).blur();
-      cy.get(`[data-cy="executionDate"]`).should('have.value', '2024-03-01T06:40');
+      cy.get(`[data-cy="executionDate"]`).should('have.value', '2024-03-01');
 
       cy.get(`[data-cy="paymentInformationId"]`).type('duh meanwhile beside');
       cy.get(`[data-cy="paymentInformationId"]`).should('have.value', 'duh meanwhile beside');

@@ -53,7 +53,7 @@ export const sampleWithPartialData: IReconciliation = {
   creditorName: 'brr daddy substantiate',
   creditorIban: 'past quaintlyXXX',
   creditorBic: 'lavishXX',
-  mandateDate: dayjs('2024-02-29T21:52'),
+  mandateDate: dayjs('2024-02-29'),
   paymentInformationId: 'gah meanwhile',
 };
 
@@ -87,8 +87,8 @@ export const sampleWithFullData: IReconciliation = {
   creditorIban: 'rudelyXXXXXXXXXX',
   creditorBic: 'coaxingly',
   creditorId: 'than',
-  mandateDate: dayjs('2024-03-01T06:42'),
-  executionDate: dayjs('2024-03-01T03:29'),
+  mandateDate: dayjs('2024-03-01'),
+  executionDate: dayjs('2024-03-01'),
   paymentInformationId: 'gee galvanize buzzing',
 };
 

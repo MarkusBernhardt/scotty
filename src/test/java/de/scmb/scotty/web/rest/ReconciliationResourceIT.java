@@ -17,6 +17,8 @@ import de.scmb.scotty.service.dto.ReconciliationDTO;
 import de.scmb.scotty.service.mapper.ReconciliationMapper;
 import jakarta.persistence.EntityManager;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
@@ -123,11 +125,13 @@ class ReconciliationResourceIT {
     private static final String DEFAULT_CREDITOR_ID = "AAAAAAAAAA";
     private static final String UPDATED_CREDITOR_ID = "BBBBBBBBBB";
 
-    private static final Instant DEFAULT_MANDATE_DATE = Instant.ofEpochMilli(0L);
-    private static final Instant UPDATED_MANDATE_DATE = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+    private static final LocalDate DEFAULT_MANDATE_DATE = LocalDate.ofEpochDay(0L);
+    private static final LocalDate UPDATED_MANDATE_DATE = LocalDate.now(ZoneId.systemDefault());
+    private static final LocalDate SMALLER_MANDATE_DATE = LocalDate.ofEpochDay(-1L);
 
-    private static final Instant DEFAULT_EXECUTION_DATE = Instant.ofEpochMilli(0L);
-    private static final Instant UPDATED_EXECUTION_DATE = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+    private static final LocalDate DEFAULT_EXECUTION_DATE = LocalDate.ofEpochDay(0L);
+    private static final LocalDate UPDATED_EXECUTION_DATE = LocalDate.now(ZoneId.systemDefault());
+    private static final LocalDate SMALLER_EXECUTION_DATE = LocalDate.ofEpochDay(-1L);
 
     private static final String DEFAULT_PAYMENT_INFORMATION_ID = "AAAAAAAAAA";
     private static final String UPDATED_PAYMENT_INFORMATION_ID = "BBBBBBBBBB";
@@ -2261,6 +2265,55 @@ class ReconciliationResourceIT {
 
     @Test
     @Transactional
+    void getAllReconciliationsByMandateDateIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where mandateDate is greater than or equal to
+        defaultReconciliationFiltering(
+            "mandateDate.greaterThanOrEqual=" + DEFAULT_MANDATE_DATE,
+            "mandateDate.greaterThanOrEqual=" + UPDATED_MANDATE_DATE
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByMandateDateIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where mandateDate is less than or equal to
+        defaultReconciliationFiltering(
+            "mandateDate.lessThanOrEqual=" + DEFAULT_MANDATE_DATE,
+            "mandateDate.lessThanOrEqual=" + SMALLER_MANDATE_DATE
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByMandateDateIsLessThanSomething() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where mandateDate is less than
+        defaultReconciliationFiltering("mandateDate.lessThan=" + UPDATED_MANDATE_DATE, "mandateDate.lessThan=" + DEFAULT_MANDATE_DATE);
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByMandateDateIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where mandateDate is greater than
+        defaultReconciliationFiltering(
+            "mandateDate.greaterThan=" + SMALLER_MANDATE_DATE,
+            "mandateDate.greaterThan=" + DEFAULT_MANDATE_DATE
+        );
+    }
+
+    @Test
+    @Transactional
     void getAllReconciliationsByExecutionDateIsEqualToSomething() throws Exception {
         // Initialize the database
         insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
@@ -2290,6 +2343,58 @@ class ReconciliationResourceIT {
 
         // Get all the reconciliationList where executionDate is not null
         defaultReconciliationFiltering("executionDate.specified=true", "executionDate.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByExecutionDateIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where executionDate is greater than or equal to
+        defaultReconciliationFiltering(
+            "executionDate.greaterThanOrEqual=" + DEFAULT_EXECUTION_DATE,
+            "executionDate.greaterThanOrEqual=" + UPDATED_EXECUTION_DATE
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByExecutionDateIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where executionDate is less than or equal to
+        defaultReconciliationFiltering(
+            "executionDate.lessThanOrEqual=" + DEFAULT_EXECUTION_DATE,
+            "executionDate.lessThanOrEqual=" + SMALLER_EXECUTION_DATE
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByExecutionDateIsLessThanSomething() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where executionDate is less than
+        defaultReconciliationFiltering(
+            "executionDate.lessThan=" + UPDATED_EXECUTION_DATE,
+            "executionDate.lessThan=" + DEFAULT_EXECUTION_DATE
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllReconciliationsByExecutionDateIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        insertedReconciliation = reconciliationRepository.saveAndFlush(reconciliation);
+
+        // Get all the reconciliationList where executionDate is greater than
+        defaultReconciliationFiltering(
+            "executionDate.greaterThan=" + SMALLER_EXECUTION_DATE,
+            "executionDate.greaterThan=" + DEFAULT_EXECUTION_DATE
+        );
     }
 
     @Test

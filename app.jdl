@@ -56,8 +56,8 @@ entity Payment {
     creditorIban String minlength(16) maxlength(34),
     creditorBic String minlength(8) maxlength(11),
     creditorId String maxlength(35),
-    mandateDate Date,
-    executionDate Date,
+    mandateDate LocalDate,
+    executionDate LocalDate,
     paymentInformationId String maxlength(35),
 }
 
@@ -90,8 +90,8 @@ entity Reconciliation {
     creditorIban String minlength(16) maxlength(34),
     creditorBic String minlength(8) maxlength(11),
     creditorId String maxlength(35),
-    mandateDate Date,
-    executionDate Date,
+    mandateDate LocalDate,
+    executionDate LocalDate,
     paymentInformationId String maxlength(35),
 }
 
@@ -101,8 +101,9 @@ entity KeyValue {
 }
 
 enum Gateway {
-    CCBILL(ccbill),
-    EMERCHANTPAY(emerchantpay),
+    BANKINGCIRCLE("bankingcircle"),
+    CCBILL("ccbill"),
+    EMERCHANTPAY("emerchantpay"),
     NOVALNET("novalnet"),
     OPENPAYD("openpayd"),
     UNKNOWN(unknown)

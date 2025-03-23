@@ -5,6 +5,7 @@ import { Observable, map } from 'rxjs';
 import dayjs from 'dayjs/esm';
 
 import { isPresent } from 'app/core/util/operators';
+import { DATE_FORMAT } from 'app/config/input.constants';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
 import { IReconciliation, NewReconciliation } from '../reconciliation.model';
@@ -107,8 +108,8 @@ export class ReconciliationService {
     return {
       ...reconciliation,
       timestamp: reconciliation.timestamp?.toJSON() ?? null,
-      mandateDate: reconciliation.mandateDate?.toJSON() ?? null,
-      executionDate: reconciliation.executionDate?.toJSON() ?? null,
+      mandateDate: reconciliation.mandateDate?.format(DATE_FORMAT) ?? null,
+      executionDate: reconciliation.executionDate?.format(DATE_FORMAT) ?? null,
     };
   }
 

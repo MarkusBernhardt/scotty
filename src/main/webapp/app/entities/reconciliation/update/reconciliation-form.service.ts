@@ -19,17 +19,15 @@ type ReconciliationFormGroupInput = IReconciliation | PartialWithRequiredKeyOf<N
 /**
  * Type that converts some properties for forms.
  */
-type FormValueOf<T extends IReconciliation | NewReconciliation> = Omit<T, 'timestamp' | 'mandateDate' | 'executionDate'> & {
+type FormValueOf<T extends IReconciliation | NewReconciliation> = Omit<T, 'timestamp'> & {
   timestamp?: string | null;
-  mandateDate?: string | null;
-  executionDate?: string | null;
 };
 
 type ReconciliationFormRawValue = FormValueOf<IReconciliation>;
 
 type NewReconciliationFormRawValue = FormValueOf<NewReconciliation>;
 
-type ReconciliationFormDefaults = Pick<NewReconciliation, 'id' | 'timestamp' | 'mandateDate' | 'executionDate'>;
+type ReconciliationFormDefaults = Pick<NewReconciliation, 'id' | 'timestamp'>;
 
 type ReconciliationFormGroupContent = {
   id: FormControl<ReconciliationFormRawValue['id'] | NewReconciliation['id']>;
@@ -199,8 +197,6 @@ export class ReconciliationFormService {
     return {
       id: null,
       timestamp: currentTime,
-      mandateDate: currentTime,
-      executionDate: currentTime,
     };
   }
 
@@ -210,8 +206,6 @@ export class ReconciliationFormService {
     return {
       ...rawReconciliation,
       timestamp: dayjs(rawReconciliation.timestamp, DATE_TIME_FORMAT),
-      mandateDate: dayjs(rawReconciliation.mandateDate, DATE_TIME_FORMAT),
-      executionDate: dayjs(rawReconciliation.executionDate, DATE_TIME_FORMAT),
     };
   }
 
@@ -221,8 +215,6 @@ export class ReconciliationFormService {
     return {
       ...reconciliation,
       timestamp: reconciliation.timestamp ? reconciliation.timestamp.format(DATE_TIME_FORMAT) : undefined,
-      mandateDate: reconciliation.mandateDate ? reconciliation.mandateDate.format(DATE_TIME_FORMAT) : undefined,
-      executionDate: reconciliation.executionDate ? reconciliation.executionDate.format(DATE_TIME_FORMAT) : undefined,
     };
   }
 }

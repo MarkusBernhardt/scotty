@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+   <changeSet author="markusbernhardt (generated)" id="1742746098181-2">
+      <addColumn tableName="payment">
+         <column name="creditor_bic" type="varchar(11)"/>
+      </addColumn>
+   </changeSet>
+   <changeSet author="markusbernhardt (generated)" id="1742746098181-3">
+      <addColumn tableName="reconciliation">
+         <column name="creditor_bic" type="varchar(11)"/>
+      </addColumn>
+   </changeSet>
+   <changeSet author="markusbernhardt (generated)" id="1742746098181-4">
+      <addColumn tableName="payment">
+         <column name="creditor_iban" type="varchar(34)"/>
+      </addColumn>
+   </changeSet>
+   <changeSet author="markusbernhardt (generated)" id="1742746098181-5">
+      <addColumn tableName="reconciliation">
+         <column name="creditor_iban" type="varchar(34)"/>
+      </addColumn>
+   </changeSet>
+   <changeSet author="markusbernhardt (generated)" id="1742746098181-6">
+      <addColumn tableName="payment">
+         <column name="creditor_id" type="varchar(35)"/>
+      </addColumn>
+   </changeSet>
+   <changeSet author="markusbernhardt (generated)" id="1742746098181-7">
+      <addColumn tableName="reconciliation">
+         <column name="creditor_id" type="varchar(35)"/>
+      </addColumn>
+   </changeSet>
+   <changeSet author="markusbernhardt (generated)" id="1742746098181-8">
+      <addColumn tableName="payment">
+         <column name="creditor_name" type="varchar(70)"/>
+      </addColumn>
+   </changeSet>
+   <changeSet author="markusbernhardt (generated)" id="1742746098181-9">
+      <addColumn tableName="reconciliation">
+         <column name="creditor_name" type="varchar(70)"/>
+      </addColumn>
+   </changeSet>
+   <changeSet author="markusbernhardt (generated)" id="1742746098181-10">
+      <addColumn tableName="payment">
+         <column name="execution_date" type="timestamp(6)"/>
+      </addColumn>
+   </changeSet>
+   <changeSet author="markusbernhardt (generated)" id="1742746098181-11">
+      <addColumn tableName="reconciliation">
+         <column name="execution_date" type="timestamp(6)"/>
+      </addColumn>
+   </changeSet>
+   <changeSet author="markusbernhardt (generated)" id="1742746098181-12">
+      <addColumn tableName="payment">
+         <column name="mandate_date" type="timestamp(6)"/>
+      </addColumn>
+   </changeSet>
+   <changeSet author="markusbernhardt (generated)" id="1742746098181-13">
+      <addColumn tableName="reconciliation">
+         <column name="mandate_date" type="timestamp(6)"/>
+      </addColumn>
+   </changeSet>
+   <changeSet author="markusbernhardt (generated)" id="1742746098181-14">
+      <addColumn tableName="payment">
+         <column name="payment_information_id" type="varchar(35)"/>
+      </addColumn>
+   </changeSet>
+   <changeSet author="markusbernhardt (generated)" id="1742746098181-15">
+      <addColumn tableName="reconciliation">
+         <column name="payment_information_id" type="varchar(35)"/>
+      </addColumn>
+   </changeSet>
+    <changeSet author="markusbernhardt (generated)" id="1742746098181-16">
+        <createIndex indexName="IX_PAYMENT_PAYMENT_INFORMATION_ID" tableName="payment" unique="false">
+            <column name="payment_information_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="markusbernhardt (generated)" id="1742746098181-17">
+        <createIndex indexName="IX_RECONCILIATION_PAYMENT_INFORMATION_ID" tableName="reconciliation" unique="false">
+            <column name="payment_information_id"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

@@ -98,9 +98,9 @@ public class ReconciliationCriteria implements Serializable, Criteria {
 
     private StringFilter creditorId;
 
-    private InstantFilter mandateDate;
+    private LocalDateFilter mandateDate;
 
-    private InstantFilter executionDate;
+    private LocalDateFilter executionDate;
 
     private StringFilter paymentInformationId;
 
@@ -140,8 +140,8 @@ public class ReconciliationCriteria implements Serializable, Criteria {
         this.creditorIban = other.optionalCreditorIban().map(StringFilter::copy).orElse(null);
         this.creditorBic = other.optionalCreditorBic().map(StringFilter::copy).orElse(null);
         this.creditorId = other.optionalCreditorId().map(StringFilter::copy).orElse(null);
-        this.mandateDate = other.optionalMandateDate().map(InstantFilter::copy).orElse(null);
-        this.executionDate = other.optionalExecutionDate().map(InstantFilter::copy).orElse(null);
+        this.mandateDate = other.optionalMandateDate().map(LocalDateFilter::copy).orElse(null);
+        this.executionDate = other.optionalExecutionDate().map(LocalDateFilter::copy).orElse(null);
         this.paymentInformationId = other.optionalPaymentInformationId().map(StringFilter::copy).orElse(null);
         this.scottyPaymentId = other.optionalScottyPaymentId().map(LongFilter::copy).orElse(null);
         this.distinct = other.distinct;
@@ -703,41 +703,41 @@ public class ReconciliationCriteria implements Serializable, Criteria {
         this.creditorId = creditorId;
     }
 
-    public InstantFilter getMandateDate() {
+    public LocalDateFilter getMandateDate() {
         return mandateDate;
     }
 
-    public Optional<InstantFilter> optionalMandateDate() {
+    public Optional<LocalDateFilter> optionalMandateDate() {
         return Optional.ofNullable(mandateDate);
     }
 
-    public InstantFilter mandateDate() {
+    public LocalDateFilter mandateDate() {
         if (mandateDate == null) {
-            setMandateDate(new InstantFilter());
+            setMandateDate(new LocalDateFilter());
         }
         return mandateDate;
     }
 
-    public void setMandateDate(InstantFilter mandateDate) {
+    public void setMandateDate(LocalDateFilter mandateDate) {
         this.mandateDate = mandateDate;
     }
 
-    public InstantFilter getExecutionDate() {
+    public LocalDateFilter getExecutionDate() {
         return executionDate;
     }
 
-    public Optional<InstantFilter> optionalExecutionDate() {
+    public Optional<LocalDateFilter> optionalExecutionDate() {
         return Optional.ofNullable(executionDate);
     }
 
-    public InstantFilter executionDate() {
+    public LocalDateFilter executionDate() {
         if (executionDate == null) {
-            setExecutionDate(new InstantFilter());
+            setExecutionDate(new LocalDateFilter());
         }
         return executionDate;
     }
 
-    public void setExecutionDate(InstantFilter executionDate) {
+    public void setExecutionDate(LocalDateFilter executionDate) {
         this.executionDate = executionDate;
     }
 

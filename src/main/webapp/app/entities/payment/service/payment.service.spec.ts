@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
 
+import { DATE_FORMAT } from 'app/config/input.constants';
 import { IPayment } from '../payment.model';
 import { sampleWithFullData, sampleWithNewData, sampleWithPartialData, sampleWithRequiredData } from '../payment.test-samples';
 
@@ -10,8 +11,8 @@ import { PaymentService, RestPayment } from './payment.service';
 const requireRestSample: RestPayment = {
   ...sampleWithRequiredData,
   timestamp: sampleWithRequiredData.timestamp?.toJSON(),
-  mandateDate: sampleWithRequiredData.mandateDate?.toJSON(),
-  executionDate: sampleWithRequiredData.executionDate?.toJSON(),
+  mandateDate: sampleWithRequiredData.mandateDate?.format(DATE_FORMAT),
+  executionDate: sampleWithRequiredData.executionDate?.format(DATE_FORMAT),
 };
 
 describe('Payment Service', () => {

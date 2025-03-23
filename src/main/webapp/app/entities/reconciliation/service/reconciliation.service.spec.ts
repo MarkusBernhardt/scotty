@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
 
+import { DATE_FORMAT } from 'app/config/input.constants';
 import { IReconciliation } from '../reconciliation.model';
 import { sampleWithFullData, sampleWithNewData, sampleWithPartialData, sampleWithRequiredData } from '../reconciliation.test-samples';
 
@@ -10,8 +11,8 @@ import { ReconciliationService, RestReconciliation } from './reconciliation.serv
 const requireRestSample: RestReconciliation = {
   ...sampleWithRequiredData,
   timestamp: sampleWithRequiredData.timestamp?.toJSON(),
-  mandateDate: sampleWithRequiredData.mandateDate?.toJSON(),
-  executionDate: sampleWithRequiredData.executionDate?.toJSON(),
+  mandateDate: sampleWithRequiredData.mandateDate?.format(DATE_FORMAT),
+  executionDate: sampleWithRequiredData.executionDate?.format(DATE_FORMAT),
 };
 
 describe('Reconciliation Service', () => {

@@ -4,6 +4,7 @@ import de.scmb.scotty.domain.enumeration.Gateway;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Objects;
 
 /**
@@ -112,9 +113,9 @@ public class PaymentDTO implements Serializable {
     @Size(max = 35)
     private String creditorId;
 
-    private Instant mandateDate;
+    private LocalDate mandateDate;
 
-    private Instant executionDate;
+    private LocalDate executionDate;
 
     @Size(max = 35)
     private String paymentInformationId;
@@ -343,19 +344,19 @@ public class PaymentDTO implements Serializable {
         this.creditorId = creditorId;
     }
 
-    public Instant getMandateDate() {
+    public LocalDate getMandateDate() {
         return mandateDate;
     }
 
-    public void setMandateDate(Instant mandateDate) {
+    public void setMandateDate(LocalDate mandateDate) {
         this.mandateDate = mandateDate;
     }
 
-    public Instant getExecutionDate() {
+    public LocalDate getExecutionDate() {
         return executionDate;
     }
 
-    public void setExecutionDate(Instant executionDate) {
+    public void setExecutionDate(LocalDate executionDate) {
         this.executionDate = executionDate;
     }
 

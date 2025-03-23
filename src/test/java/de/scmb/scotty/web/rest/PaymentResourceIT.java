@@ -16,6 +16,8 @@ import de.scmb.scotty.service.dto.PaymentDTO;
 import de.scmb.scotty.service.mapper.PaymentMapper;
 import jakarta.persistence.EntityManager;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
@@ -119,11 +121,13 @@ class PaymentResourceIT {
     private static final String DEFAULT_CREDITOR_ID = "AAAAAAAAAA";
     private static final String UPDATED_CREDITOR_ID = "BBBBBBBBBB";
 
-    private static final Instant DEFAULT_MANDATE_DATE = Instant.ofEpochMilli(0L);
-    private static final Instant UPDATED_MANDATE_DATE = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+    private static final LocalDate DEFAULT_MANDATE_DATE = LocalDate.ofEpochDay(0L);
+    private static final LocalDate UPDATED_MANDATE_DATE = LocalDate.now(ZoneId.systemDefault());
+    private static final LocalDate SMALLER_MANDATE_DATE = LocalDate.ofEpochDay(-1L);
 
-    private static final Instant DEFAULT_EXECUTION_DATE = Instant.ofEpochMilli(0L);
-    private static final Instant UPDATED_EXECUTION_DATE = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+    private static final LocalDate DEFAULT_EXECUTION_DATE = LocalDate.ofEpochDay(0L);
+    private static final LocalDate UPDATED_EXECUTION_DATE = LocalDate.now(ZoneId.systemDefault());
+    private static final LocalDate SMALLER_EXECUTION_DATE = LocalDate.ofEpochDay(-1L);
 
     private static final String DEFAULT_PAYMENT_INFORMATION_ID = "AAAAAAAAAA";
     private static final String UPDATED_PAYMENT_INFORMATION_ID = "BBBBBBBBBB";
@@ -2135,6 +2139,52 @@ class PaymentResourceIT {
 
     @Test
     @Transactional
+    void getAllPaymentsByMandateDateIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where mandateDate is greater than or equal to
+        defaultPaymentFiltering(
+            "mandateDate.greaterThanOrEqual=" + DEFAULT_MANDATE_DATE,
+            "mandateDate.greaterThanOrEqual=" + UPDATED_MANDATE_DATE
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByMandateDateIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where mandateDate is less than or equal to
+        defaultPaymentFiltering(
+            "mandateDate.lessThanOrEqual=" + DEFAULT_MANDATE_DATE,
+            "mandateDate.lessThanOrEqual=" + SMALLER_MANDATE_DATE
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByMandateDateIsLessThanSomething() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where mandateDate is less than
+        defaultPaymentFiltering("mandateDate.lessThan=" + UPDATED_MANDATE_DATE, "mandateDate.lessThan=" + DEFAULT_MANDATE_DATE);
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByMandateDateIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where mandateDate is greater than
+        defaultPaymentFiltering("mandateDate.greaterThan=" + SMALLER_MANDATE_DATE, "mandateDate.greaterThan=" + DEFAULT_MANDATE_DATE);
+    }
+
+    @Test
+    @Transactional
     void getAllPaymentsByExecutionDateIsEqualToSomething() throws Exception {
         // Initialize the database
         insertedPayment = paymentRepository.saveAndFlush(payment);
@@ -2164,6 +2214,55 @@ class PaymentResourceIT {
 
         // Get all the paymentList where executionDate is not null
         defaultPaymentFiltering("executionDate.specified=true", "executionDate.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByExecutionDateIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where executionDate is greater than or equal to
+        defaultPaymentFiltering(
+            "executionDate.greaterThanOrEqual=" + DEFAULT_EXECUTION_DATE,
+            "executionDate.greaterThanOrEqual=" + UPDATED_EXECUTION_DATE
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByExecutionDateIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where executionDate is less than or equal to
+        defaultPaymentFiltering(
+            "executionDate.lessThanOrEqual=" + DEFAULT_EXECUTION_DATE,
+            "executionDate.lessThanOrEqual=" + SMALLER_EXECUTION_DATE
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByExecutionDateIsLessThanSomething() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where executionDate is less than
+        defaultPaymentFiltering("executionDate.lessThan=" + UPDATED_EXECUTION_DATE, "executionDate.lessThan=" + DEFAULT_EXECUTION_DATE);
+    }
+
+    @Test
+    @Transactional
+    void getAllPaymentsByExecutionDateIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        insertedPayment = paymentRepository.saveAndFlush(payment);
+
+        // Get all the paymentList where executionDate is greater than
+        defaultPaymentFiltering(
+            "executionDate.greaterThan=" + SMALLER_EXECUTION_DATE,
+            "executionDate.greaterThan=" + DEFAULT_EXECUTION_DATE
+        );
     }
 
     @Test

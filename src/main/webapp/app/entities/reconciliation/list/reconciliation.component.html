@@ -315,8 +315,8 @@
               <td>{{ reconciliation.creditorIban }}</td>
               <td>{{ reconciliation.creditorBic }}</td>
               <td>{{ reconciliation.creditorId }}</td>
-              <td>{{ reconciliation.mandateDate | formatMediumDatetime }}</td>
-              <td>{{ reconciliation.executionDate | formatMediumDatetime }}</td>
+              <td>{{ reconciliation.mandateDate | formatMediumDate }}</td>
+              <td>{{ reconciliation.executionDate | formatMediumDate }}</td>
               <td>{{ reconciliation.paymentInformationId }}</td>
               <td>
                 @if (reconciliation.scottyPayment) {
