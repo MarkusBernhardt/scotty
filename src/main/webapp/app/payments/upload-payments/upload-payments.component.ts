@@ -49,7 +49,7 @@ export default class PaymentsUploadPaymentsComponent {
   }
 
   async onFileDropped(fileList: FileList): Promise<void> {
-    const allowedFileExtensions = new Set(['xls', 'xlsx']);
+    const allowedFileExtensions = new Set(['xls', 'xlsx', 'xml']);
     for (let i = 0; i < fileList.length; i++) {
       const file = fileList.item(i);
       await new Promise(f => setTimeout(f, 250));

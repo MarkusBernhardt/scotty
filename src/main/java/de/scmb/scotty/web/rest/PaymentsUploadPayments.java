@@ -4,9 +4,9 @@ import de.scmb.scotty.domain.Payment;
 import de.scmb.scotty.gateway.emerchantpay.EmerchantpayService;
 import de.scmb.scotty.gateway.novalnet.NovalnetService;
 import de.scmb.scotty.gateway.openpayd.OpenPaydService;
-import de.scmb.scotty.repository.PaymentRepository;
 import de.scmb.scotty.repository.PaymentRepositoryExtended;
 import de.scmb.scotty.service.ExcelService;
+import de.scmb.scotty.service.XmlService;
 import de.scmb.scotty.service.dto.PaymentsUploadPaymentsExecuteResponseDTO;
 import de.scmb.scotty.service.dto.PaymentsUploadPaymentsProgressResponseDTO;
 import de.scmb.scotty.service.dto.PaymentsUploadPaymentsValidateResponseDTO;
@@ -43,6 +43,8 @@ public class PaymentsUploadPayments {
 
     private final PaymentRepositoryExtended paymentRepositoryExtended;
 
+    private final XmlService xmlService;
+
     private final TaskExecutor taskExecutor;
 
     private final Map<String, String> deBlz2Bic;
@@ -57,6 +59,7 @@ public class PaymentsUploadPayments {
         NovalnetService novalnetService,
         OpenPaydService openPaydService,
         PaymentRepositoryExtended paymentRepositoryExtended,
+        XmlService xmlService,
         @Qualifier("taskExecutor") TaskExecutor taskExecutor,
         @Qualifier("deBlz2Bic") Map<String, String> deBlz2Bic
     ) {
@@ -65,6 +68,7 @@ public class PaymentsUploadPayments {
         this.novalnetService = novalnetService;
         this.openPaydService = openPaydService;
         this.paymentRepositoryExtended = paymentRepositoryExtended;
+        this.xmlService = xmlService;
         this.taskExecutor = taskExecutor;
         this.deBlz2Bic = deBlz2Bic;
     }
@@ -72,8 +76,13 @@ public class PaymentsUploadPayments {
     @PostMapping("/validate")
     public ResponseEntity<PaymentsUploadPaymentsValidateResponseDTO> validate(@Valid @RequestPart MultipartFile file) throws IOException {
         try {
+            ValidationResult validationResult = null;
             String contentType = file.getContentType();
-            ExcelService.ValidationResult validationResult = excelService.validatePaymentsFromStream(file.getInputStream());
+            if (MediaType.TEXT_XML_VALUE.equals(contentType) || MediaType.APPLICATION_XML_VALUE.equals(contentType)) {
+                validationResult = xmlService.validatePaymentsFromStream(file.getInputStream());
+            } else {
+                validationResult = excelService.validatePaymentsFromStream(file.getInputStream());
+            }
             return ResponseEntity.ok()
                 .body(new PaymentsUploadPaymentsValidateResponseDTO(true, validationResult.count, validationResult.amount, null));
         } catch (Throwable t) {
@@ -93,7 +102,13 @@ public class PaymentsUploadPayments {
                     try {
                         executionTasks.add(fileName);
 
-                        List<Payment> payments = excelService.readPaymentsFromStream(file.getInputStream(), fileName);
+                        List<Payment> payments = null;
+                        String contentType = file.getContentType();
+                        if (MediaType.TEXT_XML_VALUE.equals(contentType) || MediaType.APPLICATION_XML_VALUE.equals(contentType)) {
+                            payments = xmlService.readPaymentsFromStream(file.getInputStream(), fileName);
+                        } else {
+                            payments = excelService.readPaymentsFromStream(file.getInputStream(), fileName);
+                        }
 
                         for (Payment payment : payments) {
                             String iban = payment.getIban();
@@ -199,5 +214,17 @@ public class PaymentsUploadPayments {
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=payments.xlsx")
             .contentType(MediaType.APPLICATION_OCTET_STREAM)
             .body(stream);
+    }
+
+    public static class ValidationResult {
+
+        public int count;
+
+        public double amount;
+
+        public ValidationResult(int count, double amount) {
+            this.count = count;
+            this.amount = amount;
+        }
     }
 }

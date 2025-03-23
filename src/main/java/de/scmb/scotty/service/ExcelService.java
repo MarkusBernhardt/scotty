@@ -3,10 +3,9 @@ package de.scmb.scotty.service;
 import de.scmb.scotty.domain.Payment;
 import de.scmb.scotty.domain.Reconciliation;
 import de.scmb.scotty.domain.enumeration.Gateway;
-import de.scmb.scotty.repository.PaymentRepository;
 import de.scmb.scotty.repository.PaymentRepositoryExtended;
-import de.scmb.scotty.repository.ReconciliationRepository;
 import de.scmb.scotty.repository.ReconciliationRepositoryExtended;
+import de.scmb.scotty.web.rest.PaymentsUploadPayments;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -160,7 +159,7 @@ public class ExcelService {
         this.reconciliationRepositoryExtended = reconciliationRepositoryExtended;
     }
 
-    public ValidationResult validatePaymentsFromStream(InputStream inputStream) throws IOException {
+    public PaymentsUploadPayments.ValidationResult validatePaymentsFromStream(InputStream inputStream) throws IOException {
         Workbook workbook = new XSSFWorkbook(inputStream);
         Sheet sheet = workbook.getSheet("payments");
         Row firstRow = sheet.getRow(0);
@@ -199,7 +198,7 @@ public class ExcelService {
             count++;
         }
 
-        return new ValidationResult(count, amount);
+        return new PaymentsUploadPayments.ValidationResult(count, amount);
     }
 
     public List<Payment> readPaymentsFromStream(InputStream inputStream, String fileName) throws IOException {
@@ -754,18 +753,6 @@ public class ExcelService {
             this.level = level;
             this.description = description;
             this.example = example;
-        }
-    }
-
-    public static class ValidationResult {
-
-        public int count;
-
-        public double amount;
-
-        public ValidationResult(int count, double amount) {
-            this.count = count;
-            this.amount = amount;
         }
     }
 }
