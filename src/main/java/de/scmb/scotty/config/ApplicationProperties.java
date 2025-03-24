@@ -1,5 +1,6 @@
 package de.scmb.scotty.config;
 
+import de.scmb.scotty.domain.enumeration.Gateway;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.support.CronExpression;
@@ -15,6 +16,8 @@ public class ApplicationProperties {
 
     private final Liquibase liquibase = new Liquibase();
 
+    private final BankingCircle bankingCircle = new BankingCircle();
+
     private final Emerchantpay emerchantpay = new Emerchantpay();
 
     private final Novalnet novalnet = new Novalnet();
@@ -23,10 +26,16 @@ public class ApplicationProperties {
 
     private final Proxy proxy = new Proxy();
 
+    private final Sepa sepa = new Sepa();
+
     // jhipster-needle-application-properties-property
 
     public Liquibase getLiquibase() {
         return liquibase;
+    }
+
+    public BankingCircle getBankingCircle() {
+        return this.bankingCircle;
     }
 
     public Emerchantpay getEmerchantpay() {
@@ -43,6 +52,10 @@ public class ApplicationProperties {
 
     public Proxy getProxy() {
         return this.proxy;
+    }
+
+    public Sepa getSepa() {
+        return this.sepa;
     }
 
     // jhipster-needle-application-properties-property-getter
@@ -337,6 +350,82 @@ public class ApplicationProperties {
 
         public void setAccountHolderId(String accountHolderId) {
             this.accountHolderId = accountHolderId;
+        }
+    }
+
+    public static class BankingCircle {
+
+        private boolean enabled;
+
+        private String baseUrl;
+
+        private String authorizationUrl;
+
+        private String certificate;
+
+        private String username;
+
+        private String password;
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
+
+        public String getBaseUrl() {
+            return baseUrl;
+        }
+
+        public void setBaseUrl(String baseUrl) {
+            this.baseUrl = baseUrl;
+        }
+
+        public String getAuthorizationUrl() {
+            return authorizationUrl;
+        }
+
+        public void setAuthorizationUrl(String authorizationUrl) {
+            this.authorizationUrl = authorizationUrl;
+        }
+
+        public String getCertificate() {
+            return certificate;
+        }
+
+        public void setCertificate(String certificate) {
+            this.certificate = certificate;
+        }
+
+        public String getUsername() {
+            return username;
+        }
+
+        public void setUsername(String username) {
+            this.username = username;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
+        }
+    }
+
+    public static class Sepa {
+
+        private Gateway gateway;
+
+        public Gateway getGateway() {
+            return gateway;
+        }
+
+        public void setGateway(Gateway gateway) {
+            this.gateway = gateway;
         }
     }
     // jhipster-needle-application-properties-property-class

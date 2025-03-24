@@ -147,3 +147,5 @@ application:
     username: 'nltnshun9adjc6'
     password: 'r9h154ah4wkrbk39jgjpyugr6ft'
     non-proxy-hosts: 'payport.novalnet.de|sandbox-mt.openpayd.com|secure-mt.openpayd.com'
+  sepa:
+    gateway: bankingcircle

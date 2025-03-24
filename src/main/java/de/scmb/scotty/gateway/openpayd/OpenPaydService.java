@@ -63,7 +63,7 @@ public class OpenPaydService {
     public void execute(Payment payment) {
         try {
             if (!applicationProperties.getOpenPayd().isEnabled()) {
-                throw new IllegalArgumentException("Openpayd is not enabled");
+                throw new IllegalArgumentException("OpenPayd is not enabled");
             }
 
             if (openPaydAccessToken == null || openPaydAccessToken.getCreatedAt().isBefore(Instant.now().minus(600, ChronoUnit.SECONDS))) {
@@ -89,8 +89,9 @@ public class OpenPaydService {
     private void executeSct(Payment payment) {
         OpenPaydBeneficiaryPayout request = getOpenPaydBeneficiaryPayout(payment);
 
-        RequestBodyEntity requestBodyEntity = Unirest
-            .post(applicationProperties.getOpenPayd().getBaseUrl() + "/api/transactions/beneficiaryPayout")
+        RequestBodyEntity requestBodyEntity = Unirest.post(
+            applicationProperties.getOpenPayd().getBaseUrl() + "/api/transactions/beneficiaryPayout"
+        )
             .header("Authorization", "Bearer " + openPaydAccessToken.getAccessToken())
             .header("Content-Type", "application/json")
             .header("Charset", "utf-8")
@@ -156,8 +157,9 @@ public class OpenPaydService {
     private void executeSdd(Payment payment) {
         OpenPaydPayment request = getOpenPaydPayment(payment);
 
-        RequestBodyEntity requestBodyEntity = Unirest
-            .post(applicationProperties.getOpenPayd().getBaseUrl() + "/api/transactions/direct-debit")
+        RequestBodyEntity requestBodyEntity = Unirest.post(
+            applicationProperties.getOpenPayd().getBaseUrl() + "/api/transactions/direct-debit"
+        )
             .header("Authorization", "Bearer " + openPaydAccessToken.getAccessToken())
             .header("Content-Type", "application/json")
             .header("Charset", "utf-8")
@@ -310,8 +312,9 @@ public class OpenPaydService {
     }
 
     private void loadAccessToken() {
-        HttpResponse<OpenPaydAccessToken> response = Unirest
-            .post(applicationProperties.getOpenPayd().getBaseUrl() + "/api/oauth/token?grant_type=client_credentials")
+        HttpResponse<OpenPaydAccessToken> response = Unirest.post(
+            applicationProperties.getOpenPayd().getBaseUrl() + "/api/oauth/token?grant_type=client_credentials"
+        )
             .basicAuth(applicationProperties.getOpenPayd().getUsername(), applicationProperties.getOpenPayd().getPassword())
             .header("Content-Type", "application/json")
             .header("Charset", "utf-8")
@@ -381,8 +384,8 @@ public class OpenPaydService {
         if ( // Saturday
             date.getDayOfWeek() == DayOfWeek.SATURDAY ||
             // Sunday
-                date.getDayOfWeek() ==
-                DayOfWeek.SUNDAY ||
+            date.getDayOfWeek() ==
+            DayOfWeek.SUNDAY ||
             (date.getDayOfMonth() == 1 && date.getMonth() == Month.JANUARY) || // 1st of January
             (date.getDayOfMonth() == 1 && date.getMonth() == Month.MAY) || // 1st of May
             (date.getDayOfMonth() == 25 && date.getMonth() == Month.DECEMBER) || // 25th of December

@@ -1,5 +1,6 @@
 package de.scmb.scotty.service;
 
+import de.scmb.scotty.config.ApplicationProperties;
 import de.scmb.scotty.domain.Payment;
 import de.scmb.scotty.domain.enumeration.Gateway;
 import de.scmb.scotty.web.rest.PaymentsUploadPayments;
@@ -11,13 +12,18 @@ import jakarta.xml.bind.Unmarshaller;
 import java.io.*;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
 public class XmlService {
+
+    private final ApplicationProperties applicationProperties;
+
+    public XmlService(ApplicationProperties applicationProperties) {
+        this.applicationProperties = applicationProperties;
+    }
 
     public PaymentsUploadPayments.ValidationResult validatePaymentsFromStream(InputStream inputStream) throws IOException, JAXBException {
         String xml = readInputStreamToString(inputStream);
@@ -101,7 +107,14 @@ public class XmlService {
             }
 
             for (DirectDebitTransactionInformation9 directDebitTransactionInformation9 : paymentInstructionInformation4.getDrctDbtTxInves()) {
-                payments.add(buildPayment(paymentInstructionInformation4, directDebitTransactionInformation9, null, fileName));
+                payments.add(
+                    buildPayment(
+                        paymentInstructionInformation4,
+                        directDebitTransactionInformation9,
+                        applicationProperties.getSepa().getGateway(),
+                        fileName
+                    )
+                );
             }
         }
         return payments;
@@ -196,7 +209,7 @@ public class XmlService {
     private static int indexOfHouseNumber(String line) {
         for (int index = Math.max(0, line.length() - 16); index < line.length(); index++) {
             if (Character.isDigit(line.charAt(index))) {
-                return index;
+                return index - 1;
             }
         }
         return -1;

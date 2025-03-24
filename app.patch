@@ -378,22 +378,25 @@ index 0712e94..1019b55 100644
 -      - 127.0.0.1:5432:5432
 +      - 127.0.0.1:5433:5432
 diff --git b/src/main/java/de/scmb/scotty/config/ApplicationProperties.java a/src/main/java/de/scmb/scotty/config/ApplicationProperties.java
-index 0752776..76e3ee6 100644
+index 0752776..1f79f04 100644
 --- b/src/main/java/de/scmb/scotty/config/ApplicationProperties.java
 +++ a/src/main/java/de/scmb/scotty/config/ApplicationProperties.java
-@@ -1,6 +1,8 @@
+@@ -1,6 +1,9 @@
  package de.scmb.scotty.config;
  
++import de.scmb.scotty.domain.enumeration.Gateway;
  import org.springframework.boot.context.properties.ConfigurationProperties;
 +import org.springframework.scheduling.annotation.Scheduled;
 +import org.springframework.scheduling.support.CronExpression;
  
  /**
   * Properties specific to Scotty.
-@@ -13,12 +15,36 @@ public class ApplicationProperties {
+@@ -13,12 +16,48 @@ public class ApplicationProperties {
  
      private final Liquibase liquibase = new Liquibase();
  
++    private final BankingCircle bankingCircle = new BankingCircle();
++
 +    private final Emerchantpay emerchantpay = new Emerchantpay();
 +
 +    private final Novalnet novalnet = new Novalnet();
@@ -402,12 +405,18 @@ index 0752776..76e3ee6 100644
 +
 +    private final Proxy proxy = new Proxy();
 +
++    private final Sepa sepa = new Sepa();
++
      // jhipster-needle-application-properties-property
  
      public Liquibase getLiquibase() {
          return liquibase;
      }
  
++    public BankingCircle getBankingCircle() {
++        return this.bankingCircle;
++    }
++
 +    public Emerchantpay getEmerchantpay() {
 +        return this.emerchantpay;
 +    }
@@ -424,10 +433,14 @@ index 0752776..76e3ee6 100644
 +        return this.proxy;
 +    }
 +
++    public Sepa getSepa() {
++        return this.sepa;
++    }
++
      // jhipster-needle-application-properties-property-getter
  
      public static class Liquibase {
-@@ -33,5 +59,285 @@ public class ApplicationProperties {
+@@ -33,5 +72,361 @@ public class ApplicationProperties {
              this.asyncStart = asyncStart;
          }
      }
@@ -711,6 +724,82 @@ index 0752776..76e3ee6 100644
 +            this.accountHolderId = accountHolderId;
 +        }
 +    }
++
++    public static class BankingCircle {
++
++        private boolean enabled;
++
++        private String baseUrl;
++
++        private String authorizationUrl;
++
++        private String certificate;
++
++        private String username;
++
++        private String password;
++
++        public boolean isEnabled() {
++            return enabled;
++        }
++
++        public void setEnabled(boolean enabled) {
++            this.enabled = enabled;
++        }
++
++        public String getBaseUrl() {
++            return baseUrl;
++        }
++
++        public void setBaseUrl(String baseUrl) {
++            this.baseUrl = baseUrl;
++        }
++
++        public String getAuthorizationUrl() {
++            return authorizationUrl;
++        }
++
++        public void setAuthorizationUrl(String authorizationUrl) {
++            this.authorizationUrl = authorizationUrl;
++        }
++
++        public String getCertificate() {
++            return certificate;
++        }
++
++        public void setCertificate(String certificate) {
++            this.certificate = certificate;
++        }
++
++        public String getUsername() {
++            return username;
++        }
++
++        public void setUsername(String username) {
++            this.username = username;
++        }
++
++        public String getPassword() {
++            return password;
++        }
++
++        public void setPassword(String password) {
++            this.password = password;
++        }
++    }
++
++    public static class Sepa {
++
++        private Gateway gateway;
++
++        public Gateway getGateway() {
++            return gateway;
++        }
++
++        public void setGateway(Gateway gateway) {
++            this.gateway = gateway;
++        }
++    }
      // jhipster-needle-application-properties-property-class
  }
 diff --git b/src/main/java/de/scmb/scotty/config/SecurityConfiguration.java a/src/main/java/de/scmb/scotty/config/SecurityConfiguration.java
@@ -860,7 +949,7 @@ index 641843e..2a9ac09 100644
       * {@code GET  /activate} : activate the registered user.
       *
 diff --git b/src/main/resources/config/application-dev.yml a/src/main/resources/config/application-dev.yml
-index 59febe5..41362ac 100644
+index 59febe5..cf2b29f 100644
 --- b/src/main/resources/config/application-dev.yml
 +++ a/src/main/resources/config/application-dev.yml
 @@ -32,7 +32,7 @@ spring:
@@ -881,7 +970,7 @@ index 59febe5..41362ac 100644
    mail:
      host: localhost
      port: 25
-@@ -104,4 +104,46 @@ jhipster:
+@@ -104,4 +104,48 @@ jhipster:
  # https://www.jhipster.tech/common-application-properties/
  # ===================================================================
  
@@ -929,8 +1018,10 @@ index 59febe5..41362ac 100644
 +    username: 'nltnshun9adjc6'
 +    password: 'r9h154ah4wkrbk39jgjpyugr6ft'
 +    non-proxy-hosts: 'payport.novalnet.de|sandbox-mt.openpayd.com|secure-mt.openpayd.com'
++  sepa:
++    gateway: bankingcircle
 diff --git b/src/main/resources/config/application-prod.yml a/src/main/resources/config/application-prod.yml
-index 6c1a0c4..1c9f30a 100644
+index 6c1a0c4..61e411b 100644
 --- b/src/main/resources/config/application-prod.yml
 +++ a/src/main/resources/config/application-prod.yml
 @@ -33,7 +33,7 @@ spring:
@@ -942,7 +1033,7 @@ index 6c1a0c4..1c9f30a 100644
      username: scotty
      password: password
      hikari:
-@@ -121,4 +121,16 @@ jhipster:
+@@ -121,4 +121,18 @@ jhipster:
  # https://www.jhipster.tech/common-application-properties/
  # ===================================================================
  
@@ -960,6 +1051,8 @@ index 6c1a0c4..1c9f30a 100644
 +    username: 'nltnshun9adjc6'
 +    password: 'r9h154ah4wkrbk39jgjpyugr6ft'
 +    non-proxy-hosts: 'payport.novalnet.de|secure-mt.openpayd.com'
++  sepa:
++    gateway: bankingcircle
 diff --git b/src/main/resources/config/application.yml a/src/main/resources/config/application.yml
 index d081e6c..7a89ab8 100644
 --- b/src/main/resources/config/application.yml
