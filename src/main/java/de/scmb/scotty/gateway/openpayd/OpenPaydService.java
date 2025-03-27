@@ -89,8 +89,9 @@ public class OpenPaydService {
     private void executeSct(Payment payment) {
         OpenPaydBeneficiaryPayout request = getOpenPaydBeneficiaryPayout(payment);
 
-        RequestBodyEntity requestBodyEntity = Unirest
-            .post(applicationProperties.getOpenPayd().getBaseUrl() + "/api/transactions/beneficiaryPayout")
+        RequestBodyEntity requestBodyEntity = Unirest.post(
+            applicationProperties.getOpenPayd().getBaseUrl() + "/api/transactions/beneficiaryPayout"
+        )
             .header("Authorization", "Bearer " + openPaydAccessToken.getAccessToken())
             .header("Content-Type", "application/json")
             .header("Charset", "utf-8")
@@ -156,8 +157,9 @@ public class OpenPaydService {
     private void executeSdd(Payment payment) {
         OpenPaydPayment request = getOpenPaydPayment(payment);
 
-        RequestBodyEntity requestBodyEntity = Unirest
-            .post(applicationProperties.getOpenPayd().getBaseUrl() + "/api/transactions/direct-debit")
+        RequestBodyEntity requestBodyEntity = Unirest.post(
+            applicationProperties.getOpenPayd().getBaseUrl() + "/api/transactions/direct-debit"
+        )
             .header("Authorization", "Bearer " + openPaydAccessToken.getAccessToken())
             .header("Content-Type", "application/json")
             .header("Charset", "utf-8")
@@ -277,13 +279,24 @@ public class OpenPaydService {
         reconciliation.setState(state);
         reconciliation.setScottyPayment(payment);
         reconciliation.setReasonCode("");
+        reconciliation.setMessage("");
 
         if (state.equals("failed")) {
             reconciliation.setAmount(0);
-            reconciliation.setMessage(cutRight(openPaydWebhook.getFailureReason(), 255));
+            String reason = cutRight(openPaydWebhook.getFailureReason(), 255).trim();
+            if (reason.length() < 5) {
+                reconciliation.setReasonCode(reason);
+            } else {
+                reconciliation.setMessage(reason);
+            }
         } else if (state.equals("chargedBack")) {
             reconciliation.setAmount((int) (openPaydWebhook.getAmount().getValue() * 100));
-            reconciliation.setMessage(cutRight(openPaydWebhook.getRefundReason(), 255));
+            String reason = cutRight(openPaydWebhook.getRefundReason(), 255).trim();
+            if (reason.length() < 5) {
+                reconciliation.setReasonCode(reason);
+            } else {
+                reconciliation.setMessage(reason);
+            }
         }
 
         reconciliation.setTimestamp(Instant.now());
@@ -310,8 +323,9 @@ public class OpenPaydService {
     }
 
     private void loadAccessToken() {
-        HttpResponse<OpenPaydAccessToken> response = Unirest
-            .post(applicationProperties.getOpenPayd().getBaseUrl() + "/api/oauth/token?grant_type=client_credentials")
+        HttpResponse<OpenPaydAccessToken> response = Unirest.post(
+            applicationProperties.getOpenPayd().getBaseUrl() + "/api/oauth/token?grant_type=client_credentials"
+        )
             .basicAuth(applicationProperties.getOpenPayd().getUsername(), applicationProperties.getOpenPayd().getPassword())
             .header("Content-Type", "application/json")
             .header("Charset", "utf-8")
@@ -381,8 +395,8 @@ public class OpenPaydService {
         if ( // Saturday
             date.getDayOfWeek() == DayOfWeek.SATURDAY ||
             // Sunday
-                date.getDayOfWeek() ==
-                DayOfWeek.SUNDAY ||
+            date.getDayOfWeek() ==
+            DayOfWeek.SUNDAY ||
             (date.getDayOfMonth() == 1 && date.getMonth() == Month.JANUARY) || // 1st of January
             (date.getDayOfMonth() == 1 && date.getMonth() == Month.MAY) || // 1st of May
             (date.getDayOfMonth() == 25 && date.getMonth() == Month.DECEMBER) || // 25th of December
